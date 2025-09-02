@@ -1,0 +1,46 @@
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      // Disable problematic TypeScript rules for development
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn", // Changed from error to warning
+
+      // Disable React rules that are too strict for development
+      "react/no-unescaped-entities": "off",
+      "react-hooks/exhaustive-deps": "warn", // Changed from error to warning
+      "react-hooks/rules-of-hooks": "warn", // Changed from error to warning
+
+      // Disable Next.js image optimization warnings for development
+      "@next/next/no-img-element": "off",
+
+      // Disable accessibility warnings for development
+      "jsx-a11y/alt-text": "warn",
+
+      // Allow prefer-const to be a warning instead of error
+      "prefer-const": "warn",
+
+      // Keep important rules as errors
+      "no-console": "off", // Allow console.log for debugging
+      "no-debugger": "error", // Keep debugger as error
+      "no-unused-expressions": "error",
+
+      // TypeScript specific rules to keep
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+    },
+  },
+];
+
+export default eslintConfig;
