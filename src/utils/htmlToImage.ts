@@ -97,16 +97,16 @@ export class HTMLToImageConverter {
       }
 
       // Take screenshot of the math content
-      const screenshot = await container.screenshot({
-        type: 'png',
-        omitBackground: mergedOptions.backgroundColor === 'transparent'
-      });
+const screenshot = await container.screenshot({
+  type: 'png',
+  omitBackground: mergedOptions.backgroundColor === 'transparent'
+}) as Buffer;
 
       // Close browser
       await browser.close();
 
       // Convert to data URL
-      const dataUrl = `data:image/png;base64,${Buffer.from(screenshot).toString('base64')}`;
+const dataUrl = `data:image/png;base64,${screenshot.toString('base64')}`;
 
       console.log('Successfully converted math to image');
 
