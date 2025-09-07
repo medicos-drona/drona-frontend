@@ -201,46 +201,47 @@ function sanitizeLatexForPDF(text: string): string {
 
 export const POST = async (req: NextRequest) => {
   try {
+    console.log('PDF generation started');
     const payload = (await req.json()) as PdfGeneratorPayload;
 
-    const {
-      title,
-      description,
-      duration,
-      totalMarks,
-      questions,
-      includeAnswers,
-      filename = 'question-paper.pdf',
-      collegeName = '',
-      collegeLogoUrl = '',
-    } = payload;
-
-    // Debug logging
-    console.log('PDF Generation Request:', {
-      title,
-      questionsCount: questions?.length || 0,
-      firstQuestion: questions?.[0] ? {
-        question: questions[0].question?.substring(0, 100) + '...',
-        hasImageUrls: !!(questions[0] as any).imageUrls,
-        imageUrlsCount: ((questions[0] as any).imageUrls || []).length
-      } : null
+    // Add more detailed logging
+    console.log('Payload received:', {
+      title: payload.title,
+      questionsCount: payload.questions?.length || 0,
+      environment: process.env.NODE_ENV
     });
 
-    // Validate questions data
-    if (!questions || !Array.isArray(questions) || questions.length === 0) {
-      console.error('PDF Generation Error: No questions provided');
-      throw new Error('No questions provided for PDF generation');
+    // Validate payload
+    if (!payload.questions || !Array.isArray(payload.questions) || payload.questions.length === 0) {
+      console.error('No questions provided');
+      return new NextResponse(JSON.stringify({ error: 'No questions provided' }), { status: 400 });
     }
 
-    // Validate each question has required fields
-    const validQuestions = questions.filter(q => q && q.question);
-    if (validQuestions.length === 0) {
-      console.error('PDF Generation Error: No valid questions found');
-      throw new Error('No valid questions found for PDF generation');
-    }
+    console.log('Launching browser...');
+    const browser = await puppeteer.launch(
+      process.env.NODE_ENV === 'production'
+        ? {
+            args: [
+              ...chromium.args,
+              '--no-sandbox',
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage',
+              '--disable-gpu',
+              '--single-process'
+            ],
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+          }
+        : {
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          }
+    );
 
-    console.log(`Processing ${validQuestions.length} valid questions out of ${questions.length} total`);
+    console.log('Browser launched successfully');
+    const page = await browser.newPage();
 
+    // Generate HTML (your existing HTML generation code)
     const html = `<!doctype html>
 <html>
 <head>
@@ -712,66 +713,10 @@ export const POST = async (req: NextRequest) => {
 </body>
 </html>`;
 
-    const browser = await puppeteer.launch(
-      process.env.NODE_ENV === 'production'
-        ? {
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-          }
-        : {
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          }
-    );
-    const page = await browser.newPage();
-
+    console.log('Setting page content...');
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
 
-    // Wait for images to load
-    await page.evaluate(() => {
-      return Promise.all(Array.from(document.images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise((resolve) => {
-          img.addEventListener('load', resolve);
-          img.addEventListener('error', resolve); // Resolve even on error to not block
-          setTimeout(resolve, 3000); // Timeout after 3 seconds
-        });
-      }));
-    });
-
-    // Wait for KaTeX to load and render math
-    await page.waitForFunction(() => {
-      return (window as any).renderMathInElement !== undefined;
-    }, { timeout: 5000 }).catch(() => {});
-
-    // Trigger math rendering manually if needed
-    await page.evaluate(() => {
-      if ((window as any).renderMathInElement) {
-        (window as any).renderMathInElement(document.body, {
-          delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false},
-            {left: '\\(', right: '\\)', display: false},
-            {left: '\\[', right: '\\]', display: true}
-          ],
-          throwOnError: false,
-          errorColor: '#cc0000',
-          strict: false
-        });
-      }
-    });
-
-    // Wait for rendering to complete
-    await page.waitForFunction(() => {
-      const mathElements = document.querySelectorAll('script[type="math/tex"]');
-      const katexElements = document.querySelectorAll('.katex');
-      return mathElements.length === 0 || katexElements.length > 0;
-    }, { timeout: 5000 }).catch(() => {});
-
-    // Extra delay to ensure layout settles
-    await new Promise(resolve => setTimeout(resolve, 500));
-
+    console.log('Generating PDF...');
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -779,16 +724,28 @@ export const POST = async (req: NextRequest) => {
     });
 
     await browser.close();
+    console.log('PDF generated successfully, size:', pdfBuffer.length);
 
     return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `attachment; filename="${payload.filename || 'question-paper.pdf'}"`,
       },
     });
   } catch (error: any) {
-    console.error('PDF generation failed:', error);
-    return new NextResponse(JSON.stringify({ error: 'PDF generation failed' }), { status: 500 });
+    console.error('PDF generation failed with detailed error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    return new NextResponse(
+      JSON.stringify({ 
+        error: 'PDF generation failed',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      }), 
+      { status: 500 }
+    );
   }
 };
