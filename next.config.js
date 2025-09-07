@@ -10,14 +10,14 @@ const nextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
-    // Fix for chrome-aws-lambda webpack issues
+    // Fix for @sparticuz/chromium webpack issues
     config.resolve.alias = {
       ...config.resolve.alias,
-      'chrome-aws-lambda': isServer ? 'chrome-aws-lambda' : false,
+      '@sparticuz/chromium': isServer ? '@sparticuz/chromium' : false,
     };
 
     if (isServer) {
-      config.externals = [...config.externals, 'chrome-aws-lambda'];
+      config.externals = [...config.externals, '@sparticuz/chromium'];
     }
 
     // Ignore problematic files

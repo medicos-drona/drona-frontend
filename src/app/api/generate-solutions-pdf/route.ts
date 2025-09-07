@@ -5,8 +5,8 @@ let puppeteer: any;
 let chromium: any;
 
 if (process.env.NODE_ENV === 'production') {
-  // Production: Use chrome-aws-lambda
-  chromium = require('chrome-aws-lambda');
+  // Production: Use @sparticuz/chromium
+  chromium = require('@sparticuz/chromium');
   puppeteer = require('puppeteer-core');
 } else {
   // Local development: Use regular puppeteer
