@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+
+// Environment-based Puppeteer imports
+let puppeteer: any;
+let chromium: any;
+
+if (process.env.NODE_ENV === 'production') {
+  // Production: Use chrome-aws-lambda
+  chromium = require('chrome-aws-lambda');
+  puppeteer = require('puppeteer-core');
+} else {
+  // Local development: Use regular puppeteer
+  puppeteer = require('puppeteer');
+}
 
 interface PdfGeneratorPayload {
   title: string;
@@ -700,9 +712,18 @@ export const POST = async (req: NextRequest) => {
 </body>
 </html>`;
 
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    const browser = await puppeteer.launch(
+      process.env.NODE_ENV === 'production'
+        ? {
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+          }
+        : {
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          }
+    );
     const page = await browser.newPage();
 
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
