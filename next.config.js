@@ -4,11 +4,29 @@ const nextConfig = {
     domains: [
       'example.com',
       'localhost',
-      'medicos-backend.com', // Add your actual backend domain
-      'storage.googleapis.com', // If you're using Google Cloud Storage
-      'amazonaws.com', // If you're using AWS S3
-      // Add any other domains you need
+      'medicos-backend.com',
+      'storage.googleapis.com',
+      'amazonaws.com',
     ],
+  },
+  webpack: (config, { isServer }) => {
+    // Fix for chrome-aws-lambda webpack issues
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'chrome-aws-lambda': isServer ? 'chrome-aws-lambda' : false,
+    };
+
+    if (isServer) {
+      config.externals = [...config.externals, 'chrome-aws-lambda'];
+    }
+
+    // Ignore problematic files
+    config.module.rules.push({
+      test: /\.js\.map$/,
+      loader: 'ignore-loader'
+    });
+
+    return config;
   },
 }
 

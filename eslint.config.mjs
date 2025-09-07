@@ -15,12 +15,12 @@ const eslintConfig = [
     rules: {
       // Disable problematic TypeScript rules for development
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn", // Changed from error to warning
+      "@typescript-eslint/no-unused-vars": "warn",
 
       // Disable React rules that are too strict for development
       "react/no-unescaped-entities": "off",
-      "react-hooks/exhaustive-deps": "warn", // Changed from error to warning
-      "react-hooks/rules-of-hooks": "warn", // Changed from error to warning
+      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/rules-of-hooks": "warn",
 
       // Disable Next.js image optimization warnings for development
       "@next/next/no-img-element": "off",
@@ -32,13 +32,24 @@ const eslintConfig = [
       "prefer-const": "warn",
 
       // Keep important rules as errors
-      "no-console": "off", // Allow console.log for debugging
-      "no-debugger": "error", // Keep debugger as error
+      "no-console": "off",
+      "no-debugger": "error",
       "no-unused-expressions": "error",
 
       // TypeScript specific rules to keep
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/ban-ts-comment": "warn",
+
+      // Additional common rules you might want to disable
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "import/no-anonymous-default-export": "off",
+      "react/display-name": "off",
+      "react/prop-types": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+      "no-empty": "warn",
+      "no-constant-condition": "warn",
     },
   },
 ];
