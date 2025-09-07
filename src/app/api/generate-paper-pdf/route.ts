@@ -254,7 +254,6 @@ export const POST = async (req: NextRequest) => {
       }
     });
   </script>
-/* Updated styles for your route.ts file - replace the existing styles section */
 
 <style>
   @page {
