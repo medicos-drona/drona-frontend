@@ -217,6 +217,26 @@ export const POST = async (req: NextRequest) => {
       return new NextResponse(JSON.stringify({ error: 'No questions provided' }), { status: 400 });
     }
 
+    // Destructure payload variables
+    const {
+      title,
+      description,
+      duration,
+      totalMarks,
+      questions,
+      includeAnswers,
+      filename = 'question-paper.pdf',
+      collegeName = '',
+      collegeLogoUrl = '',
+    } = payload;
+
+    // Validate questions
+    const validQuestions = questions.filter(q => q && q.question && q.options);
+    if (validQuestions.length === 0) {
+      console.error('No valid questions found');
+      return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });
+    }
+
     console.log('Launching browser...');
     const browser = await puppeteer.launch(
       process.env.NODE_ENV === 'production'
@@ -241,7 +261,7 @@ export const POST = async (req: NextRequest) => {
     console.log('Browser launched successfully');
     const page = await browser.newPage();
 
-    // Generate HTML (your existing HTML generation code)
+    // Generate HTML (your existing HTML generation code continues here...)
     const html = `<!doctype html>
 <html>
 <head>
