@@ -106,18 +106,38 @@ const SubjectQuestionsChart = ({
         startDate,
         endDate
       );
-  
-      if (!Array.isArray(rawData)) {
-        console.warn("API did not return an array. Got:", rawData);
-        setChartData([]);
-        return;
-      }
-  
-      const formattedData: ChartDataPoint[] = rawData.map((entry: any) => ({
-        name: entry.dateLabel,
-        ...entry.subjectCounts,
-      }));
-  
+
+      // Backend returns an object: { data: [{ date, subjects: [{subjectName, generated, downloaded}]}], ... }
+      const items: any[] = Array.isArray(rawData) ? rawData : (rawData?.data || []);
+
+      const formattedData: ChartDataPoint[] = items.map((entry: any) => {
+        // Build a label from entry.date or dateLabel if provided
+        const dateObj = entry.date ? new Date(entry.date) : undefined;
+        const name = entry.dateLabel || (dateObj ? dateObj.toLocaleDateString() : '');
+
+        // Initialize each configured subject to 0
+        const base: Record<string, number> = {};
+        subjectColors.forEach(({ subject }) => {
+          base[subject] = 0;
+        });
+
+        // Fill counts for any subjects returned by backend. If it's not
+        // in subjectColors yet, add it with a default color and use it.
+        if (Array.isArray(entry.subjects)) {
+          entry.subjects.forEach((s: any) => {
+            const subjName: string = s.subjectName;
+            const generated: number = Number(s.generated || 0);
+            if (!(subjName in base)) {
+              // Dynamically accommodate new subjects (e.g., Botany, Zoology)
+              base[subjName] = 0;
+            }
+            base[subjName] = generated;
+          });
+        }
+
+        return { name, ...base } as ChartDataPoint;
+      });
+
       setChartData(formattedData);
     } catch (err) {
       console.error("Failed to fetch chart data:", err);

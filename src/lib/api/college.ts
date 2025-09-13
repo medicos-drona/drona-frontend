@@ -333,3 +333,28 @@ export async function getTopTeachers(id: string, limit = 10) {
     throw error;
   }
 }
+
+/**
+ * Fetch available subjects for question paper generation (used to drive the dashboard subjects legend/series)
+ */
+export async function getAvailableSubjects() {
+  const token = localStorage.getItem("backendToken");
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const url = `${baseUrl}/question-papers/available-subjects`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error: ${response.status}`);
+  }
+  return await response.json();
+}

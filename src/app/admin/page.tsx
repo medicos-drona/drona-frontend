@@ -82,7 +82,7 @@ export default function DashboardPage() {
         <div className="grid gap-8">
           {/* <CollegeChart />  */}
           <UsageChart highlightIndex={currentMonth} />
-          <CollegeChart />
+          {/* <CollegeChart /> */}
         </div>
       </div>
     </div>

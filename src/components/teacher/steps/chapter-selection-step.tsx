@@ -22,24 +22,26 @@ type ChapterSelectionStepProps = {
   backDisabled: boolean
 }
 
-export function ChapterSelectionStep({ 
-  formData, 
-  updateFormData, 
-  onNext, 
-  onSkip, 
-  onBack, 
-  backDisabled 
+export function ChapterSelectionStep({
+  formData,
+  updateFormData,
+  onNext,
+  onSkip,
+  onBack,
+  backDisabled
 }: ChapterSelectionStepProps) {
   const [chapters, setChapters] = useState<ChapterWithQuestionCount[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedChapters, setSelectedChapters] = useState<ChapterConfig[]>([])
 
-  // Load chapters when component mounts or subject changes
+  const [showChapters, setShowChapters] = useState(false)
+
+  // Load chapters ONLY when user opts in
   useEffect(() => {
-    if (formData.subject) {
+    if (formData.subject && showChapters) {
       loadChapters()
     }
-  }, [formData.subject])
+  }, [formData.subject, showChapters])
 
   const loadChapters = async () => {
     if (!formData.subject) return
@@ -62,22 +64,22 @@ export function ChapterSelectionStep({
         return
       }
 
-      // Convert topics to ChapterWithQuestionCount format for UI and fetch TOTAL question counts
+      // Convert topics to ChapterWithQuestionCount format for UI and fetch question counts
       const { getQuestionCountByTopic } = await import("@/lib/api/chapters")
 
       const topicsData = await Promise.all(
         subject.topics.map(async (topic) => {
           try {
-            const totalQuestionCount = await getQuestionCountByTopic(topic._id, subject._id)
+          const questionCount = await getQuestionCountByTopic(topic._id, subject._id)
             return {
               _id: topic._id,
               name: topic.name,
               subjectId: subject._id,
               description: topic.description,
-              questionCount: totalQuestionCount  // Shows total questions available
+            questionCount: questionCount
             }
           } catch (error) {
-            console.error(`Error fetching total count for topic ${topic.name}:`, error)
+            console.error(`Error fetching unused count for topic ${topic.name}:`, error)
             return {
               _id: topic._id,
               name: topic.name,
@@ -214,59 +216,72 @@ export function ChapterSelectionStep({
             </div>
           </div>
         </CardContent>
+      {/* Lazy-load trigger */}
+      <div className="flex justify-center">
+        {!showChapters ? (
+          <Button variant="outline" onClick={() => setShowChapters(true)}>
+            Select Chapter (Optional)
+          </Button>
+        ) : null}
+      </div>
+
       </Card>
 
       {/* Available Chapters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Available Chapters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-4">Loading chapters...</div>
-          ) : chapters.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">
-              No chapters available for the selected subject.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {chapters.map((chapter) => (
-                <TooltipProvider key={chapter._id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={isChapterSelected(chapter._id) ? "default" : "outline"}
-                        onClick={() => {
-                          if (isChapterSelected(chapter._id)) {
-                            removeChapter(chapter._id)
-                          } else {
-                            addChapter(chapter)
-                          }
-                        }}
-                        className="h-auto p-3 flex flex-col items-start space-y-1"
-                        disabled={chapter.questionCount === 0}
-                      >
-                        <div className="font-medium text-left">{chapter.name}</div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {chapter.questionCount} questions
-                          </Badge>
-                          <Info className="h-3 w-3" />
-                        </div>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{chapter.questionCount} questions available in {chapter.name}</p>
-                      <p className="text-xs mt-1 text-gray-400">Total questions in this topic</p>
-                      {chapter.description && <p className="text-xs mt-1">{chapter.description}</p>}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {showChapters && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Available Chapters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-4">Loading chapters...</div>
+            ) : chapters.length === 0 ? (
+              <div className="text-center py-4 text-gray-500">
+                No chapters available for the selected subject.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {chapters.map((chapter) => (
+                  <TooltipProvider key={chapter._id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant={isChapterSelected(chapter._id) ? "default" : "outline"}
+                          onClick={() => {
+                            if (isChapterSelected(chapter._id)) {
+                              removeChapter(chapter._id)
+                            } else {
+                              addChapter(chapter)
+                            }
+                          }}
+                          className="h-auto p-3 flex flex-col items-start space-y-1 text-left break-words whitespace-normal max-w-full"
+                          disabled={chapter.questionCount === 0}
+                        >
+                          <div className="font-medium text-left line-clamp-2 w-full break-words">
+                            {chapter.name}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {chapter.questionCount} questions
+                            </Badge>
+                            <Info className="h-3 w-3" />
+                          </div>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{chapter.questionCount} questions available in {chapter.name}</p>
+                        <p className="text-xs mt-1 text-gray-400">Total questions in this topic</p>
+                        {chapter.description && <p className="text-xs mt-1">{chapter.description}</p>}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Selected Chapters Configuration */}
       {selectedChapters.length > 0 && (
@@ -278,7 +293,7 @@ export function ChapterSelectionStep({
             {selectedChapters.map((chapter) => {
               const chapterData = chapters.find(c => c._id === chapter.chapterId)
               const maxQuestions = chapterData?.questionCount || 0
-              
+
               return (
                 <div key={chapter.chapterId} className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
@@ -291,7 +306,7 @@ export function ChapterSelectionStep({
                       <Minus className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Number of Questions (Max: {maxQuestions})</Label>
                     <Input
@@ -330,9 +345,9 @@ export function ChapterSelectionStep({
         </Card>
       )}
 
-      <StepNavigation 
-        onNext={onNext} 
-        onSkip={onSkip} 
+      <StepNavigation
+        onNext={onNext}
+        onSkip={onSkip}
         onBack={onBack}
         backDisabled={backDisabled}
         nextDisabled={!canProceed}

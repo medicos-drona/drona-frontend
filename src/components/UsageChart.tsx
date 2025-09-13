@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChartDataPoint } from "@/lib/types/interface";
 import { UsageChartProps } from "@/lib/types/interface";
 import { getUsageTrends, UsageTrendsResponse } from "@/lib/api/analytics";
@@ -40,8 +41,8 @@ const UsageChart: React.FC<UsageChartProps> = ({
   barGap = 2,
   maxBarSize = 20,
   highlightIndex,
-  highlightColor = "#4F46E5",
-  defaultBarColor = "#F3F4F6",
+  highlightColor = "#05603A", // green scheme
+  defaultBarColor = "#A7F3D0", // emerald-200 for better visibility
   showMoreButton = true,
 }) => {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
@@ -63,34 +64,35 @@ const UsageChart: React.FC<UsageChartProps> = ({
       try {
         // Get current year for default query
         const currentYear = new Date().getFullYear().toString();
-        
+
         // Fetch data using the API function
         const result = await getUsageTrends(currentYear);
-        
+
         // Transform API data to chart format
         const transformedData = result.data.map(item => ({
-          month: item.monthName,
-          [dataKey]: item[dataKey as keyof typeof item] || item.totalUsage,
+          month: item.month, // e.g., "2024-01"
+          monthName: item.monthName, // e.g., "January 2024"
+          [dataKey]: (item as any)[dataKey] ?? item.totalUsage,
           questionsCreated: item.questionsCreated,
-          papersGenerated: item.papersGenerated
+          papersGenerated: item.papersGenerated,
         }));
-        
+
         setChartData(transformedData);
-        
+
         // Calculate yAxisDomain and yAxisTicks if not provided
         if (!yAxisDomain || !yAxisTicks) {
           const maxValue = Math.max(...transformedData.map(item => item[dataKey] as number));
-          const roundedMax = Math.ceil(maxValue / 200) * 200;
-          
+          const roundedMax = Math.ceil(maxValue / 200) * 200 || 800;
+
           // Only update if props weren't provided
           if (!yAxisDomain) {
             yAxisDomain = [0, roundedMax];
           }
-          
+
           if (!yAxisTicks) {
             const tickCount = 5;
             const tickInterval = roundedMax / (tickCount - 1);
-            yAxisTicks = Array.from({ length: tickCount }, (_, i) => i * tickInterval);
+            yAxisTicks = Array.from({ length: tickCount }, (_, i) => Math.round(i * tickInterval));
           }
         }
       } catch (err) {
@@ -105,35 +107,57 @@ const UsageChart: React.FC<UsageChartProps> = ({
 
     fetchUsageTrends();
   }, [data, dataKey]);
-  
+
   function generateData(): ChartDataPoint[] {
     const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
-    
+
     // This approximates the data from the image
     const values = [450, 750, 380, 620, 350, 680, 500, 650, 580, 600, 400, 520];
-    
-    return monthNames.map((month, index) => {
-      const dataPoint: ChartDataPoint = { month };
-      dataPoint[dataKey] = values[index];
+
+    return monthNames.map((label, index) => {
+      const dataPoint: ChartDataPoint = { month: String(index + 1).padStart(2, '0'), monthName: label } as any;
+      (dataPoint as any)[dataKey] = values[index];
       return dataPoint;
     });
   }
 
-  // Use calculated or provided domain and ticks
-  const finalYAxisDomain = yAxisDomain || [0, 800];
-  const finalYAxisTicks = yAxisTicks || [0, 200, 400, 600, 800];
+  // Compute Y axis domain and ticks from data if not provided
+  const computedMax = Math.max(
+    0,
+    ...chartData.map((d) => Number((d as any)[dataKey]) || 0)
+  );
+  const niceMax = (() => {
+    if (computedMax <= 10) return 10;
+    if (computedMax <= 50) return Math.ceil(computedMax / 10) * 10;
+    if (computedMax <= 100) return Math.ceil(computedMax / 20) * 20;
+    if (computedMax <= 200) return Math.ceil(computedMax / 50) * 50;
+    if (computedMax <= 500) return Math.ceil(computedMax / 100) * 100;
+    if (computedMax <= 1000) return Math.ceil(computedMax / 200) * 200;
+    return Math.ceil(computedMax / 500) * 500;
+  })();
+  const finalYAxisDomain = yAxisDomain || [0, niceMax];
+  const finalYAxisTicks =
+    yAxisTicks || Array.from({ length: 5 }, (_, i) => Math.round((niceMax / 4) * i));
 
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between pb-0 pt-4 px-4">
         <CardTitle className="text-base font-medium text-gray-800">{title}</CardTitle>
         {showMoreButton && (
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-5 w-5 text-gray-400" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="h-5 w-5 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => window.location.reload()}>Refresh</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setChartData(generateData())}>Show sample data</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </CardHeader>
       <CardContent className="p-4">
@@ -157,7 +181,7 @@ const UsageChart: React.FC<UsageChartProps> = ({
               >
                 <CartesianGrid vertical={false} horizontal={true} strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
-                  dataKey={xAxisKey} 
+                  dataKey={xAxisKey || 'monthName'}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#6b7280' }}

@@ -73,13 +73,13 @@ export const adminMenuItems: MenuSection[] = [
         href: "/dashboard/chat",
         roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
       },
-      {
-        title: "Email",
-        iconPath:"/assets/icons/email.svg",
-        icon: null,
-        href: "/dashboard/email",
-        roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
-      },
+      // {
+      //   title: "Email",
+      //   iconPath:"/assets/icons/email.svg",
+      //   icon: null,
+      //   href: "/dashboard/email",
+      //   roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
+      // },
       {
         title: "Invoice",
         iconPath:"/assets/icons/invoice.svg",
@@ -132,13 +132,13 @@ export const teacherMenuItems: MenuSection[] = [
         href: "/dashboard/chat",
         roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
       },
-      {
-        title: "Email",
-        iconPath:"/assets/icons/email.svg",
-        icon: null,
-        href: "/dashboard/email",
-        roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
-      },
+      // {
+      //   title: "Email",
+      //   iconPath:"/assets/icons/email.svg",
+      //   icon: null,
+      //   href: "/dashboard/email",
+      //   roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
+      // },
       {
         title: "Invoice",
         iconPath:"/assets/icons/invoice.svg",
@@ -178,13 +178,13 @@ export const collegeMenuItems: MenuSection[] = [
         href: "/dashboard/chat",
         roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
       },
-      {
-        title: "Email",
-        iconPath:"/assets/icons/email.svg",
-        icon: null,
-        href: "/dashboard/email",
-        roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
-      },
+      // {
+      //   title: "Email",
+      //   iconPath:"/assets/icons/email.svg",
+      //   icon: null,
+      //   href: "/dashboard/email",
+      //   roles: [UserRole.SUPER_ADMIN, UserRole.COLLEGE_ADMIN, UserRole.TEACHER],
+      // },
       {
         title: "Invoice",
         iconPath:"/assets/icons/invoice.svg",

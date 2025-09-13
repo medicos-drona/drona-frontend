@@ -1,6 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
@@ -42,7 +45,10 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ role }: DashboardSidebarProps) {
   const pathname = usePathname()
 
-  let menuItems = adminMenuItems 
+  let menuItems = adminMenuItems
+  const [notSupportedOpen, setNotSupportedOpen] = useState(false)
+  const [pendingFeature, setPendingFeature] = useState<string | null>(null)
+
 
   switch (role) {
     case UserRole.COLLEGE_ADMIN:
@@ -55,7 +61,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
       menuItems = adminMenuItems
       break
     default:
-      menuItems = adminMenuItems 
+      menuItems = adminMenuItems
       break
   }
 
@@ -84,7 +90,8 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                   const isActive = pathname === item.href ||
                     (item.submenu &&
                     item.submenu.some((subItem) => pathname === subItem.href));
-                  
+                  const isSupportFeature = section.title === 'SUPPORT' && (item.title === 'Chat' || item.title === 'Invoice')
+
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
@@ -96,8 +103,9 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                         )}
                         style={isActive ? { background: "#E8F5E8" } : {}}
                       >
-                        <Link 
-                          href={item.href} 
+                        <Link
+                          href={isSupportFeature ? '#' : item.href}
+                          onClick={isSupportFeature ? (e) => { e.preventDefault(); setPendingFeature(item.title); setNotSupportedOpen(true); } : undefined}
                           className={cn(
                             "flex items-center",
                             isActive && "bg-[#E8F5E8]"
@@ -116,7 +124,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                             )}
 
                           <span className={cn(
-                            "text-sm font-medium", 
+                            "text-sm font-medium",
                             isActive ? "text-[#05603A]" : "text-white"
                           )}>
                             {item.title}
@@ -139,6 +147,24 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+      {/* Not Supported Modal */}
+      <AlertDialog open={notSupportedOpen} onOpenChange={setNotSupportedOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Feature not supported yet</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingFeature ? `${pendingFeature} is not supported yet. ` : ''}
+              {/* Please use existing UI styles. */}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setNotSupportedOpen(false)}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

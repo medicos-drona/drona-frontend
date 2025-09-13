@@ -5,7 +5,7 @@ import StatCard from "@/components/StatCard";
 import { Users, UserCheck, FileText, FileQuestion, Download } from "lucide-react";
 import SubjectQuestionsChart from "@/components/SubjectQuestionsChart";
 import TopTeachersList from "@/components/TopTeachersList";
-import { getCollegeAnalytics, getTopTeachers } from "@/lib/api/college";
+import { getCollegeAnalytics, getTopTeachers, getAvailableSubjects } from "@/lib/api/college";
 
 export default function DashboardPage() {
   const [collegeId, setCollegeId] = useState<string | null>(null);
@@ -15,12 +15,19 @@ export default function DashboardPage() {
   const [teachersLoading, setTeachersLoading] = useState(false);
   const [teachersError, setTeachersError] = useState<string | null>(null);
 
-  // Subject colors
-  const subjectColors = [
-    { subject: "Math", color: "#4F46E5" },
-    { subject: "Physics", color: "#10B981" },
-    { subject: "Chemistry", color: "#F59E0B" },
-    { subject: "Biology", color: "#EC4899" }
+  // Dynamic subjects/colors (fetched)
+  const [subjectColors, setSubjectColors] = useState<{ subject: string; color: string }[]>([]);
+
+  // Color palette for new/unknown subjects
+  const colorPalette = [
+    "#4F46E5", // indigo
+    "#10B981", // emerald
+    "#F59E0B", // amber
+    "#EC4899", // pink
+    "#06B6D4", // cyan
+    "#8B5CF6", // violet
+    "#84CC16", // lime
+    "#F97316", // orange
   ];
 
     // Add this useEffect to get collegeId from multiple sources
@@ -117,6 +124,47 @@ export default function DashboardPage() {
     };
     fetchTopTeachers();
   }, [collegeId]);
+
+  // Fetch dynamic subjects for chart legend/series
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await getAvailableSubjects();
+        const subjects: { _id: string; name: string }[] = res?.subjects || [];
+
+        // Keep a stable, readable order; use first six palette colors
+        const colors = new Map<string, string>();
+        const preferredOrder = ["Math", "Physics", "Chemistry", "Biology", "Botany", "Zoology"];
+        let colorIdx = 0;
+
+        // Assign in preferred order if present
+        preferredOrder.forEach((name) => {
+          if (subjects.find((s) => s.name.toLowerCase() === name.toLowerCase())) {
+            colors.set(name, colorPalette[colorIdx % colorPalette.length]);
+            colorIdx++;
+          }
+        });
+        // Assign remaining subjects
+        subjects
+          .filter((s) => !Array.from(colors.keys()).some((n) => n.toLowerCase() === s.name.toLowerCase()))
+          .forEach((s) => {
+            colors.set(s.name, colorPalette[colorIdx % colorPalette.length]);
+            colorIdx++;
+          });
+
+        setSubjectColors(Array.from(colors.entries()).map(([subject, color]) => ({ subject, color })));
+      } catch (e) {
+        console.warn('Failed to fetch subjects; falling back to defaults');
+        setSubjectColors([
+          { subject: 'Math', color: colorPalette[0] },
+          { subject: 'Physics', color: colorPalette[1] },
+          { subject: 'Chemistry', color: colorPalette[2] },
+          { subject: 'Biology', color: colorPalette[3] },
+        ]);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   return (
     <div className="space-y-6">

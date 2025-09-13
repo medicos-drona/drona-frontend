@@ -48,6 +48,8 @@ export function MultiSubjectConfigStep({
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [loadingSubjects, setLoadingSubjects] = useState(false)
 
+  const [showChaptersForSubject, setShowChaptersForSubject] = useState<Record<string, boolean>>({})
+
   // Helper function to get display name
   const getDisplayName = (subjectValue: string) => {
     return subjectDisplayMap[subjectValue] || subjectValue
@@ -74,6 +76,7 @@ export function MultiSubjectConfigStep({
 
   // Load topics (displayed as chapters) for a subject
   const loadChaptersForSubject = async (subject: string) => {
+    if (!showChaptersForSubject[subject]) return
     if (subjectChapters[subject] || loadingChapters[subject]) return
 
     setLoadingChapters(prev => ({ ...prev, [subject]: true }))
@@ -94,11 +97,11 @@ export function MultiSubjectConfigStep({
         return
       }
 
-      // Convert topics to ChapterWithQuestionCount format for UI and fetch question counts
+      // Convert topics to ChapterWithQuestionCount format for UI and fetch UNUSED counts for this college
       const { getQuestionCountByTopic } = await import("@/lib/api/chapters")
       const topicsData = await Promise.all(
         subjectObj.topics.map(async (topic) => {
-          const questionCount = await getQuestionCountByTopic(topic._id, subjectObj._id)
+                    const questionCount = await getQuestionCountByTopic(topic._id, subjectObj._id)
           return {
             _id: topic._id,
             name: topic.name,
@@ -119,10 +122,10 @@ export function MultiSubjectConfigStep({
 
   // Load chapters when tab changes and subjects are loaded
   useEffect(() => {
-    if (activeTab && subjects.length > 0) {
+    if (activeTab && subjects.length > 0 && showChaptersForSubject[activeTab]) {
       loadChaptersForSubject(activeTab)
     }
-  }, [activeTab, subjects])
+  }, [activeTab, subjects, showChaptersForSubject])
 
   // Initialize subject configs if they don't exist
   const initializeSubjectConfig = (subject: string): SubjectConfig => {
@@ -149,7 +152,7 @@ export function MultiSubjectConfigStep({
   const updateSubjectConfig = (subject: string, updates: Partial<SubjectConfig>) => {
     const currentConfig = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
     const updatedConfig = { ...currentConfig, ...updates }
-    
+
     updateFormData({
       subjectConfigs: {
         ...formData.subjectConfigs,
@@ -195,7 +198,7 @@ export function MultiSubjectConfigStep({
   const adjustDifficulty = (subject: string, level: keyof CustomDifficultyConfig, amount: number) => {
     const config = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
     const newValue = Math.max(0, Math.min(100, config.difficultyLevels[level] + amount))
-    
+
     updateSubjectConfig(subject, {
       difficultyLevels: {
         ...config.difficultyLevels,
@@ -208,13 +211,13 @@ export function MultiSubjectConfigStep({
   const calculateTotals = () => {
     let totalQuestions = 0
     let totalMarks = 0
-    
+
     formData.subjects.forEach(subject => {
       const config = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
       totalQuestions += config.numberOfQuestions
       totalMarks += config.totalMarks
     })
-    
+
     return { totalQuestions, totalMarks }
   }
 
@@ -223,8 +226,8 @@ export function MultiSubjectConfigStep({
   // Validation
   const isValid = formData.subjects.every(subject => {
     const config = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
-    const difficultySum = config.difficultyLevels.easyPercentage + 
-                         config.difficultyLevels.mediumPercentage + 
+    const difficultySum = config.difficultyLevels.easyPercentage +
+                         config.difficultyLevels.mediumPercentage +
                          config.difficultyLevels.hardPercentage
     return difficultySum === 100 && config.numberOfQuestions > 0 && config.totalMarks > 0
   })
@@ -292,8 +295,8 @@ export function MultiSubjectConfigStep({
 
         {formData.subjects.map((subject) => {
           const config = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
-          const difficultySum = config.difficultyLevels.easyPercentage + 
-                               config.difficultyLevels.mediumPercentage + 
+          const difficultySum = config.difficultyLevels.easyPercentage +
+                               config.difficultyLevels.mediumPercentage +
                                config.difficultyLevels.hardPercentage
 
           return (
@@ -435,9 +438,23 @@ export function MultiSubjectConfigStep({
                     </p>
 
                     {/* Available Chapters */}
+                        {/* Lazy-load trigger per subject */}
+                        {!showChaptersForSubject[subject] && (
+                          <div className="flex justify-start">
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowChaptersForSubject(prev => ({ ...prev, [subject]: true }))}
+                            >
+                              Select Chapter (Optional)
+                            </Button>
+                          </div>
+                        )}
+
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Available Chapters</Label>
-                      {loadingChapters[subject] ? (
+                      {(!showChaptersForSubject[subject]) ? (
+                        <div className="text-muted-foreground text-sm">Click "Select Chapter (Optional)" to load topics.</div>
+                      ) : loadingChapters[subject] ? (
                         <div className="text-center py-4 text-sm text-gray-500">Loading chapters...</div>
                       ) : subjectChapters[subject]?.length === 0 ? (
                         <div className="text-center py-4 text-sm text-gray-500">
@@ -458,10 +475,10 @@ export function MultiSubjectConfigStep({
                                         addChapterToSubject(subject, chapter)
                                       }
                                     }}
-                                    className="h-auto p-3 flex flex-col items-start space-y-1 text-left"
+                                    className="h-auto p-3 flex flex-col items-start space-y-1 text-left break-words whitespace-normal max-w-full"
                                     disabled={chapter.questionCount === 0}
                                   >
-                                    <div className="font-medium">{chapter.name}</div>
+                                    <div className="font-medium line-clamp-2 w-full break-words">{chapter.name}</div>
                                     <div className="flex items-center space-x-2">
                                       <Badge variant="secondary" className="text-xs">
                                         {chapter.questionCount} unused
@@ -552,17 +569,17 @@ export function MultiSubjectConfigStep({
         })}
       </Tabs>
 
-      <StepNavigation 
-        onNext={onNext} 
-        onSkip={onSkip} 
+      <StepNavigation
+        onNext={onNext}
+        onSkip={onSkip}
         onBack={onBack}
         backDisabled={backDisabled}
-        nextDisabled={!isValid} 
+        nextDisabled={!isValid}
       />
 
       {!isValid && (
-        <InfoMessage 
-          message="Please ensure all subjects have valid configurations (difficulty percentages must sum to 100% and questions/marks must be greater than 0)." 
+        <InfoMessage
+          message="Please ensure all subjects have valid configurations (difficulty percentages must sum to 100% and questions/marks must be greater than 0)."
         />
       )}
     </div>
