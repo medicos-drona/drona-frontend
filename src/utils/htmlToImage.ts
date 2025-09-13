@@ -6,7 +6,9 @@
  */
 
 import { JSDOM } from 'jsdom';
-import puppeteer from 'puppeteer';
+// Use puppeteer-core with @sparticuz/chromium; avoid bundling puppeteer in the client
+let puppeteerCore: any;
+let chromium: any;
 
 export interface ImageConversionOptions {
   width?: number;
@@ -49,10 +51,23 @@ export class HTMLToImageConverter {
     try {
       console.log('Converting math HTML to image:', html.substring(0, 100) + '...');
 
-      // Launch Puppeteer browser
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      // Launch Chromium using puppeteer-core only in Node/server context
+      if (typeof window !== 'undefined') {
+        throw new Error('HTMLToImageConverter requires server-side execution.');
+      }
+
+      if (!puppeteerCore || !chromium) {
+        // Lazy import to avoid bundling in the client
+        puppeteerCore = (await import('puppeteer-core')).default;
+        chromium = await import('@sparticuz/chromium');
+      }
+
+      const executablePath = await chromium.executablePath;
+      const browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: { width: mergedOptions.width || 800, height: mergedOptions.height || 200, deviceScaleFactor: mergedOptions.scale || 2 },
+        executablePath,
+        headless: chromium.headless,
       });
 
       const page = await browser.newPage();
