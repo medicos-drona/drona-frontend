@@ -1,16 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Environment-based Puppeteer imports
-let puppeteer: any;
-let chromium: any;
+import fs from 'node:fs';
 
-if (process.env.NODE_ENV === 'production') {
-  // Production: Use @sparticuz/chromium
+// Use puppeteer-core everywhere
+const puppeteer = require('puppeteer-core');
+let chromium: any;
+try {
   chromium = require('@sparticuz/chromium');
-  puppeteer = require('puppeteer-core');
-} else {
-  // Local development: Use regular puppeteer
-  puppeteer = require('puppeteer');
+} catch {}
+
+function findLocalChromeExecutable(): string | undefined {
+  const candidates = process.platform === 'win32'
+    ? [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+      ]
+    : process.platform === 'darwin'
+    ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
+
+  for (const p of candidates) {
+    try { if (fs.existsSync(p)) return p; } catch {}
+  }
+  return undefined;
+}
+
+async function getLaunchOptions() {
+  // 1) Env override
+  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
+  let executablePath: string | undefined = envPath && fs.existsSync(envPath) ? envPath : undefined;
+
+  // 2) Local Chrome/Edge
+  if (!executablePath) {
+    executablePath = findLocalChromeExecutable();
+  }
+
+  // 3) @sparticuz/chromium fallback (only if path exists)
+  if (!executablePath && chromium) {
+    try {
+      const fromChromium: any = typeof chromium.executablePath === 'function'
+        ? await chromium.executablePath()
+        : chromium.executablePath;
+      if (fromChromium && fs.existsSync(fromChromium)) {
+        executablePath = fromChromium;
+      }
+    } catch {}
+  }
+
+  const baseArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
+  const args = chromium && chromium.args ? [...chromium.args, ...baseArgs] : baseArgs;
+  const headless: any = chromium && typeof chromium.headless !== 'undefined' ? chromium.headless : 'new';
+  const defaultViewport = chromium && chromium.defaultViewport ? chromium.defaultViewport : { width: 1280, height: 800 };
+
+  return { executablePath, args, headless, defaultViewport } as any;
 }
 
 interface PdfGeneratorPayload {
@@ -29,6 +73,7 @@ interface PdfGeneratorPayload {
   collegeName?: string;
   collegeLogoUrl?: string;
 }
+
 
 // Complete updated processTextForPDF function with image fixes
 function processTextForPDF(text: string): string {
@@ -155,7 +200,6 @@ function processTextForPDF(text: string): string {
 
   return processedText;
 }
-
 // Normalize LaTeX inside math delimiters and fix common broken constructs
 function sanitizeLatexForPDF(text: string): string {
   if (!text) return '';
@@ -238,25 +282,19 @@ export const POST = async (req: NextRequest) => {
     }
 
     console.log('Launching browser...');
-    const browser = await puppeteer.launch(
-      process.env.NODE_ENV === 'production'
-        ? {
-            args: [
-              ...chromium.args,
-              '--no-sandbox',
-              '--disable-setuid-sandbox',
-              '--disable-dev-shm-usage',
-              '--disable-gpu',
-              '--single-process'
-            ],
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
-          }
-        : {
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          }
-    );
+    const launchOpts = await getLaunchOptions();
+    console.log('Resolved executablePath:', launchOpts.executablePath || '(none)');
+    if (!launchOpts.executablePath) {
+      console.error('No Chrome/Chromium executable found. Set CHROME_EXECUTABLE_PATH or install Chrome/Edge.');
+      return new NextResponse(JSON.stringify({ error: 'Chrome/Chromium executable not found. Please set CHROME_EXECUTABLE_PATH or install Chrome/Edge.' }), { status: 500 });
+    }
+    const browser = await puppeteer.launch({
+      args: launchOpts.args,
+      defaultViewport: launchOpts.defaultViewport,
+      executablePath: launchOpts.executablePath,
+      headless: launchOpts.headless,
+    } as any);
+
 
     console.log('Browser launched successfully');
     const page = await browser.newPage();
@@ -281,8 +319,8 @@ export const POST = async (req: NextRequest) => {
             {left: '\\[', right: '\\]', display: true}
           ],
           throwOnError: false,
-          errorColor: '#cc0000',
-          strict: false
+          errorColor: '#000000',
+          strict: 'ignore'
         });
       }
     });
@@ -339,23 +377,27 @@ export const POST = async (req: NextRequest) => {
   }
   
   /* KEY FIX: Question container styling */
-  .question { 
+  .question {
     break-inside: avoid; /* Prevents question from breaking across columns */
+    break-inside: avoid-column; /* Explicit for multi-column */
+    -webkit-column-break-inside: avoid; /* Vendor prefix for Chromium */
     page-break-inside: avoid; /* Prevents question from breaking across pages */
-    margin-bottom: 12px; 
+    margin-bottom: 12px;
     display: block; /* Ensure it's a block container */
     overflow: visible; /* Allow content to flow naturally */
   }
-  
+
   /* Options styling */
-  .options { 
-    margin-left: 16px; 
+  .options {
+    margin-left: 16px;
     break-inside: avoid; /* Keep options with their question */
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
   }
-  .options p { margin: 2px 0; }
-  
+  .options p { margin: 2px 0; break-inside: avoid; -webkit-column-break-inside: avoid; }
+
   footer { position: fixed; bottom: 3mm; left: 0; right: 0; text-align: center; font-size: 9pt; color: #666; background: #fff; z-index: 2; }
-  
+
   .subject-heading {
     font-weight: bold;
     font-size: 12pt;
@@ -368,7 +410,7 @@ export const POST = async (req: NextRequest) => {
     display: inline-block;
     vertical-align: top;
   }
-  
+
   /* Table styling for proper rendering */
   table {
     border-collapse: collapse;
@@ -390,7 +432,7 @@ export const POST = async (req: NextRequest) => {
   tr:nth-child(even) {
     background-color: #f9f9f9;
   }
-  
+
   /* Math rendering support */
   .katex {
     font-size: 1em;
@@ -398,26 +440,46 @@ export const POST = async (req: NextRequest) => {
   .katex-display {
     margin: 0.3em 0;
   }
-  
-  /* FIXED: Image styling to keep images within question blocks */
+
+  /* Global image styling */
   img {
-    max-width: 90% !important; /* Reduced from 300px to percentage for better column fit */
+    max-width: 85% !important; /* Better fit within column */
+    max-height: 140px !important; /* Cap height to keep options with question */
     width: auto !important;
     height: auto !important;
+    object-fit: contain !important;
     display: block !important;
-    margin: 8px auto !important; /* Reduced margin */
+    margin: 6px auto !important;
     border: 1px solid #ddd !important;
-    padding: 3px !important; /* Reduced padding */
-    break-inside: avoid; /* Prevent image from breaking across columns */
-    page-break-inside: avoid; /* Prevent image from breaking across pages */
-  }
-  
-  /* Ensure question text and images stay together */
-  .question p {
+    padding: 3px !important;
     break-inside: avoid;
+    -webkit-column-break-inside: avoid;
     page-break-inside: avoid;
   }
-  
+
+  /* More specific control for question text images */
+  .question-content img {
+    max-width: 80% !important;
+    max-height: 120px !important;
+  }
+
+  /* Options images slightly smaller */
+  .options img {
+    max-width: 70% !important;
+    max-height: 100px !important;
+    display: inline-block !important;
+    vertical-align: middle;
+    margin: 4px 6px !important;
+  }
+
+  /* Ensure question text and images stay together */
+  .question p, .question img, .options, .options p {
+    break-inside: avoid;
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   /* Additional fix for better column layout with images */
   .question img + * {
     break-before: avoid; /* Prevent elements after images from breaking */
@@ -462,267 +524,257 @@ export const POST = async (req: NextRequest) => {
             <div class="subject-heading">Subject: ${subject}</div>
 
             <div class="subject-content">
-              ${subjectQuestions.map((q, questionIndex) => {
-                const currentQuestionNumber = overallQuestionNumber++;
-                try {
-                // Process question text and handle images from imageUrls array
-                let questionText = q.question;
+            // Updated question processing section within the HTML generation
+${subjectQuestions.map((q, questionIndex) => {
+  const currentQuestionNumber = overallQuestionNumber++;
+  try {
+    // Process question text and handle images from imageUrls array
+    let questionText = q.question;
 
-                try {
-                  // Check for images in imageUrls array (new database structure)
-                  const imageUrls = (q as any).imageUrls || [];
-                  console.log(`Question ${questionIndex + 1} imageUrls:`, imageUrls?.length || 0, 'images');
+    try {
+      // Check for images in imageUrls array (new database structure)
+      const imageUrls = (q as any).imageUrls || [];
+      console.log(`Question ${questionIndex + 1} imageUrls:`, imageUrls?.length || 0, 'images');
 
-                  if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
-                    // Validate that the first image is a valid base64 string
-                    const firstImage = imageUrls[0];
-                    console.log(`Question ${questionIndex + 1} first image:`, firstImage ? firstImage.substring(0, 50) + '...' : 'null');
+      if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
+        // Process all images in the imageUrls array
+        imageUrls.forEach((imageUrl: string, imgIndex: number) => {
+          if (imageUrl && typeof imageUrl === 'string' && imageUrl.startsWith('data:image/')) {
+            console.log(`Question ${questionIndex + 1} image ${imgIndex + 1}:`, imageUrl.substring(0, 50) + '...');
 
-                    if (firstImage && typeof firstImage === 'string' && firstImage.startsWith('data:image/')) {
-                      console.log(`Question ${questionIndex + 1}: Processing valid base64 image`);
+            // For the first image, try to replace markdown/HTML references
+            if (imgIndex === 0) {
+              // Replace markdown image references like ![img-13.jpeg](img-13.jpeg) with actual images
+              const originalText = questionText;
+              let markdownReplacements = 0;
+              questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt) => {
+                console.log(`Replacing markdown image: ${match}`);
+                markdownReplacements++;
+                return `<img src="${imageUrl}" alt="${alt || 'Question Image'}" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
+              });
 
-                      // Replace markdown image references like ![img-13.jpeg](img-13.jpeg) with actual images
-                      const originalText = questionText;
-                      let markdownReplacements = 0;
-                      questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt) => {
-                        console.log(`Replacing markdown image: ${match}`);
-                        markdownReplacements++;
-                        return `<img src="${firstImage}" alt="${alt || 'Question Image'}" style="max-width:300px;height:auto;display:block;margin:10px auto;border:1px solid #ddd;padding:5px;" onerror="this.style.display='none';" />`;
-                      });
-
-                      // Replace HTML img tags with actual images (but preserve existing valid ones)
-                      let htmlReplacements = 0;
-                      questionText = questionText.replace(/<img[^>]*>/gi, (match) => {
-                        // If it already has a valid src attribute, keep it
-                        if (match.includes('src="data:image/')) {
-                          return match;
-                        }
-                        console.log(`Replacing incomplete HTML img tag: ${match.substring(0, 50)}...`);
-                        htmlReplacements++;
-                        return `<img src="${firstImage}" alt="Question Image" style="max-width:300px;height:auto;display:block;margin:10px auto;border:1px solid #ddd;padding:5px;" onerror="this.style.display='none';" />`;
-                      });
-
-                      console.log(`Question ${questionIndex + 1}: Made ${markdownReplacements} markdown replacements, ${htmlReplacements} HTML replacements`);
-
-                      // If content mentions images but no image tags found, append the first image
-                      if (!questionText.includes('<img') && imageUrls.length > 0) {
-                        const hasImageKeywords = /image|figure|diagram|chart|graph|picture|represents|shown|below|above/i.test(questionText);
-                        if (hasImageKeywords) {
-                          console.log(`Question ${questionIndex + 1}: Adding image for keywords`);
-                          questionText += `\n<img src="${firstImage}" alt="Question Image" style="max-width:300px;height:auto;display:block;margin:10px auto;border:1px solid #ddd;padding:5px;" onerror="this.style.display='none';" />`;
-                        }
-                      }
-
-                      if (originalText !== questionText) {
-                        console.log(`Question ${questionIndex + 1}: Text modified for images`);
-                      }
-                    } else {
-                      console.log(`Question ${questionIndex + 1}: Invalid image format:`, typeof firstImage, firstImage ? firstImage.substring(0, 20) : 'null');
-                    }
-                  } else {
-                    console.log(`Question ${questionIndex + 1}: No imageUrls found`);
-                  }
-                } catch (error) {
-                  console.error(`Error processing images for question ${questionIndex + 1}:`, error);
-                  // Continue without images if there's an error
+              // Replace HTML img tags with actual images (but preserve existing valid ones)
+              let htmlReplacements = 0;
+              questionText = questionText.replace(/<img[^>]*>/gi, (match) => {
+                // If it already has a valid src attribute, keep it
+                if (match.includes('src="data:image/')) {
+                  return match;
                 }
+                console.log(`Replacing incomplete HTML img tag: ${match.substring(0, 50)}...`);
+                htmlReplacements++;
+                return `<img src="${imageUrl}" alt="Question Image" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
+              });
 
-                // Fallback: Check for legacy imageData or chemicalImages fields
-                try {
-                  const imageData = (q as any).imageData || (q as any).chemicalImages;
-                  if (imageData && typeof imageData === 'object' && !questionText.includes('<img')) {
-                    // If we have image data but no images in question text, add them
-                    const hasImagesInText = questionText.includes('data:image/') || questionText.includes('![');
-                    if (!hasImagesInText) {
-                      // Add the first available image to the question text
-                      const firstImageKey = Object.keys(imageData)[0];
-                      if (firstImageKey && imageData[firstImageKey]) {
-                        questionText = questionText + '\n' + imageData[firstImageKey];
-                      }
-                    }
-                  }
-                } catch (error) {
-                  console.error('Error processing legacy image data:', error);
+              console.log(`Question ${questionIndex + 1}: Made ${markdownReplacements} markdown replacements, ${htmlReplacements} HTML replacements`);
+
+              // If content mentions images but no image tags found, append the image
+              if (!questionText.includes('<img') && imageUrls.length > 0) {
+                const hasImageKeywords = /image|figure|diagram|chart|graph|picture|represents|shown|below|above|given/i.test(questionText);
+                if (hasImageKeywords) {
+                  console.log(`Question ${questionIndex + 1}: Adding image for keywords`);
+                  questionText += `\n<img src="${imageUrl}" alt="Question Image" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
                 }
+              }
+            } else {
+              // For additional images, append them to the question text
+              questionText += `\n<img src="${imageUrl}" alt="Additional Image ${imgIndex + 1}" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
+            }
+          } else {
+            console.log(`Question ${questionIndex + 1} image ${imgIndex + 1}: Invalid format:`, typeof imageUrl, imageUrl ? imageUrl.substring(0, 20) : 'null');
+          }
+        });
+      } else {
+        console.log(`Question ${questionIndex + 1}: No imageUrls found`);
+      }
+    } catch (error) {
+      console.error(`Error processing images for question ${questionIndex + 1}:`, error);
+      // Continue without images if there's an error
+    }
 
-                // Process question text with tables, images, and LaTeX
-                let processedQuestion = '';
-                try {
-                  const sanitizedQuestion = sanitizeLatexForPDF(questionText);
-                  processedQuestion = processTextForPDF(sanitizedQuestion);
+    // Fallback: Check for legacy imageData or chemicalImages fields
+    try {
+      const imageData = (q as any).imageData || (q as any).chemicalImages;
+      if (imageData && typeof imageData === 'object' && !questionText.includes('<img')) {
+        // If we have image data but no images in question text, add them
+        const hasImagesInText = questionText.includes('data:image/') || questionText.includes('![');
+        if (!hasImagesInText) {
+          // Add the first available image to the question text
+          const firstImageKey = Object.keys(imageData)[0];
+          if (firstImageKey && imageData[firstImageKey]) {
+            questionText = questionText + '\n' + imageData[firstImageKey];
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error processing legacy image data:', error);
+    }
 
-                  // Final cleanup: Remove any broken img tags that don't have src attributes
-                  processedQuestion = processedQuestion.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
+    // Process question text with tables, images, and LaTeX
+    let processedQuestion = '';
+    try {
+      // IMPORTANT: Apply processTextForPDF BEFORE LaTeX sanitization
+      // This ensures base64 images are converted to img tags first
+      processedQuestion = processTextForPDF(questionText);
+      
+      // Then apply LaTeX sanitization
+      processedQuestion = sanitizeLatexForPDF(processedQuestion);
 
-                  // Also clean up any remaining broken image references
-                  processedQuestion = processedQuestion.replace(/img\s*[−-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '');
+      // Final cleanup: Remove any broken img tags that don't have src attributes
+      processedQuestion = processedQuestion.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
 
-                } catch (error) {
-                  console.error('Error processing question text:', error);
-                  processedQuestion = questionText; // Fallback to raw text
-                }
+      // Also clean up any remaining broken image references
+      processedQuestion = processedQuestion.replace(/img\s*[âˆ'-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '');
 
-                // Apply LaTeX fixes after table processing
-                processedQuestion = processedQuestion
-                  // Fix the main \ffrac issue - exact patterns from your examples
-                  .replace(/\\ffracωLR/g, '\\frac{ω}{LR}')
-                  .replace(/\\ffrac1ωCR/g, '\\frac{1}{ωCR}')
-                  .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
-                  .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
-                  .replace(/\\ffrac100πMHz/g, '\\frac{100}{πMHz}')
-                  .replace(/\\ffrac1000πHz/g, '\\frac{1000}{πHz}')
-                  .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
-                  .replace(/\\ffrac1Cω/g, '\\frac{1}{Cω}')
+    } catch (error) {
+      console.error('Error processing question text:', error);
+      processedQuestion = questionText; // Fallback to raw text
+    }
 
-                  // Fix basic \ffrac patterns
-                  .replace(/\\ffrac\{/g, '\\frac{')
-                  .replace(/\\ffrac([ωπα-ωΩ])([A-Z]+)/g, '\\frac{$1}{$2}')
-                  .replace(/\\ffrac(\d+)([ωπα-ωΩ])([A-Z]+)/g, '\\frac{$1}{$2$3}')
-                  .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
+    // Apply LaTeX fixes after table processing
+    processedQuestion = processedQuestion
+      // Fix the main \ffrac issue - exact patterns from your examples
+      .replace(/\\ffracÏ‰LR/g, '\\frac{Ï‰}{LR}')
+      .replace(/\\ffrac1Ï‰CR/g, '\\frac{1}{Ï‰CR}')
+      .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
+      .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
+      .replace(/\\ffrac100Ï€MHz/g, '\\frac{100}{Ï€MHz}')
+      .replace(/\\ffrac1000Ï€Hz/g, '\\frac{1000}{Ï€Hz}')
+      .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
+      .replace(/\\ffrac1CÏ‰/g, '\\frac{1}{CÏ‰}')
+      // Fix basic \ffrac patterns
+      .replace(/\\ffrac\{/g, '\\frac{')
+      .replace(/\\ffrac([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2}')
+      .replace(/\\ffrac(\d+)([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2$3}')
+      .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
+      // Convert Greek letters to Unicode symbols
+      .replace(/\\alpha/g, 'Î±')
+      .replace(/\\beta/g, 'Î²')
+      .replace(/\\gamma/g, 'Î³')
+      .replace(/\\delta/g, 'Î´')
+      .replace(/\\epsilon/g, 'Îµ')
+      .replace(/\\varepsilon/g, 'Îµ')
+      .replace(/\\zeta/g, 'Î¶')
+      .replace(/\\eta/g, 'Î·')
+      .replace(/\\theta/g, 'Î¸')
+      .replace(/\\iota/g, 'Î¹')
+      .replace(/\\kappa/g, 'Îº')
+      .replace(/\\lambda/g, 'Î»')
+      .replace(/\\mu/g, 'Î¼')
+      .replace(/\\nu/g, 'Î½')
+      .replace(/\\xi/g, 'Î¾')
+      .replace(/\\pi/g, 'Ï€')
+      .replace(/\\rho/g, 'Ï')
+      .replace(/\\sigma/g, 'Ïƒ')
+      .replace(/\\tau/g, 'Ï„')
+      .replace(/\\upsilon/g, 'Ï…')
+      .replace(/\\phi/g, 'Ï†')
+      .replace(/\\chi/g, 'Ï‡')
+      .replace(/\\psi/g, 'Ïˆ')
+      .replace(/\\omega/g, 'Ï‰')
+      .replace(/\\Omega/g, 'Î©')
+      .replace(/\\Delta/g, 'Î"')
+      .replace(/\\Gamma/g, 'Î"')
+      .replace(/\\Lambda/g, 'Î›')
+      .replace(/\\Phi/g, 'Î¦')
+      .replace(/\\Pi/g, 'Î ')
+      .replace(/\\Psi/g, 'Î¨')
+      .replace(/\\Sigma/g, 'Î£')
+      .replace(/\\Theta/g, 'Î˜')
+      .replace(/\\Xi/g, 'Îž')
+      // Remove any remaining broken image references
+      .replace(/img\s*[âˆ'-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
+      ;
 
-                  // Convert Greek letters to Unicode symbols for better PDF display
-                  .replace(/\\alpha/g, 'α')
-                  .replace(/\\beta/g, 'β')
-                  .replace(/\\gamma/g, 'γ')
-                  .replace(/\\delta/g, 'δ')
-                  .replace(/\\epsilon/g, 'ε')
-                  .replace(/\\varepsilon/g, 'ε')
-                  .replace(/\\zeta/g, 'ζ')
-                  .replace(/\\eta/g, 'η')
-                  .replace(/\\theta/g, 'θ')
-                  .replace(/\\iota/g, 'ι')
-                  .replace(/\\kappa/g, 'κ')
-                  .replace(/\\lambda/g, 'λ')
-                  .replace(/\\mu/g, 'μ')
-                  .replace(/\\nu/g, 'ν')
-                  .replace(/\\xi/g, 'ξ')
-                  .replace(/\\pi/g, 'π')
-                  .replace(/\\rho/g, 'ρ')
-                  .replace(/\\sigma/g, 'σ')
-                  .replace(/\\tau/g, 'τ')
-                  .replace(/\\upsilon/g, 'υ')
-                  .replace(/\\phi/g, 'φ')
-                  .replace(/\\chi/g, 'χ')
-                  .replace(/\\psi/g, 'ψ')
-                  .replace(/\\omega/g, 'ω')
-                  .replace(/\\Omega/g, 'Ω')
-                  .replace(/\\Delta/g, 'Δ')
-                  .replace(/\\Gamma/g, 'Γ')
-                  .replace(/\\Lambda/g, 'Λ')
-                  .replace(/\\Phi/g, 'Φ')
-                  .replace(/\\Pi/g, 'Π')
-                  .replace(/\\Psi/g, 'Ψ')
-                  .replace(/\\Sigma/g, 'Σ')
-                  .replace(/\\Theta/g, 'Θ')
-                  .replace(/\\Xi/g, 'Ξ')
+    const processedOptions = (q.options || []).map((opt: string) => {
+      try {
+        // Process option text with images first, then apply LaTeX sanitization
+        let processedOpt = processTextForPDF(opt);
+        processedOpt = sanitizeLatexForPDF(processedOpt);
 
-                  // Remove any remaining broken image references
-                  .replace(/img\s*[−-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-                  // Remove any remaining standalone base64 strings that couldn't be processed
+        // Clean up any broken img tags in options too
+        processedOpt = processedOpt.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
 
-                  // Remove broken image references like "img − 1.jpeg (data:...)"
-                  .replace(/img\s*[−-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-                  // Remove any remaining standalone base64 strings that couldn't be processed
-                  ;
+        // Apply LaTeX fixes after table processing
+        return processedOpt
+          // Fix the main \ffrac issue - exact patterns
+          .replace(/\\ffracÏ‰LR/g, '\\frac{Ï‰}{LR}')
+          .replace(/\\ffrac1Ï‰CR/g, '\\frac{1}{Ï‰CR}')
+          .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
+          .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
+          .replace(/\\ffrac100Ï€MHz/g, '\\frac{100}{Ï€MHz}')
+          .replace(/\\ffrac1000Ï€Hz/g, '\\frac{1000}{Ï€Hz}')
+          .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
+          .replace(/\\ffrac1CÏ‰/g, '\\frac{1}{CÏ‰}')
+          // Fix basic \ffrac patterns
+          .replace(/\\ffrac\{/g, '\\frac{')
+          .replace(/\\ffrac([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2}')
+          .replace(/\\ffrac(\d+)([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2$3}')
+          .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
+          // Convert Greek letters to Unicode symbols
+          .replace(/\\alpha/g, 'Î±')
+          .replace(/\\beta/g, 'Î²')
+          .replace(/\\gamma/g, 'Î³')
+          .replace(/\\delta/g, 'Î´')
+          .replace(/\\epsilon/g, 'Îµ')
+          .replace(/\\varepsilon/g, 'Îµ')
+          .replace(/\\zeta/g, 'Î¶')
+          .replace(/\\eta/g, 'Î·')
+          .replace(/\\theta/g, 'Î¸')
+          .replace(/\\iota/g, 'Î¹')
+          .replace(/\\kappa/g, 'Îº')
+          .replace(/\\lambda/g, 'Î»')
+          .replace(/\\mu/g, 'Î¼')
+          .replace(/\\nu/g, 'Î½')
+          .replace(/\\xi/g, 'Î¾')
+          .replace(/\\pi/g, 'Ï€')
+          .replace(/\\rho/g, 'Ï')
+          .replace(/\\sigma/g, 'Ïƒ')
+          .replace(/\\tau/g, 'Ï„')
+          .replace(/\\upsilon/g, 'Ï…')
+          .replace(/\\phi/g, 'Ï†')
+          .replace(/\\chi/g, 'Ï‡')
+          .replace(/\\psi/g, 'Ïˆ')
+          .replace(/\\omega/g, 'Ï‰')
+          .replace(/\\Omega/g, 'Î©')
+          .replace(/\\Delta/g, 'Î"')
+          .replace(/\\Gamma/g, 'Î"')
+          .replace(/\\Lambda/g, 'Î›')
+          .replace(/\\Phi/g, 'Î¦')
+          .replace(/\\Pi/g, 'Î ')
+          .replace(/\\Psi/g, 'Î¨')
+          .replace(/\\Sigma/g, 'Î£')
+          .replace(/\\Theta/g, 'Î˜')
+          .replace(/\\Xi/g, 'Îž')
+          // Remove any remaining broken image references
+          .replace(/img\s*[âˆ'-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
+          ;
+      } catch (error) {
+        console.error('Error processing option:', error);
+        return opt; // Fallback to raw option text
+      }
+    });
 
-                const processedOptions = (q.options || []).map((opt: string) => {
-                  try {
-                    // Sanitize math and then process option text with tables
-                    const sanitizedOpt = sanitizeLatexForPDF(opt);
-                    let processedOpt = processTextForPDF(sanitizedOpt);
-
-                    // Clean up any broken img tags in options too
-                    processedOpt = processedOpt.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
-
-                  // Apply LaTeX fixes after table processing
-                  return processedOpt
-                    // Fix the main \ffrac issue - exact patterns
-                    .replace(/\\ffracωLR/g, '\\frac{ω}{LR}')
-                    .replace(/\\ffrac1ωCR/g, '\\frac{1}{ωCR}')
-                    .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
-                    .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
-                    .replace(/\\ffrac100πMHz/g, '\\frac{100}{πMHz}')
-                    .replace(/\\ffrac1000πHz/g, '\\frac{1000}{πHz}')
-                    .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
-                    .replace(/\\ffrac1Cω/g, '\\frac{1}{Cω}')
-
-                    // Fix basic \ffrac patterns
-                    .replace(/\\ffrac\{/g, '\\frac{')
-                    .replace(/\\ffrac([ωπα-ωΩ])([A-Z]+)/g, '\\frac{$1}{$2}')
-                    .replace(/\\ffrac(\d+)([ωπα-ωΩ])([A-Z]+)/g, '\\frac{$1}{$2$3}')
-                    .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
-
-                    // Convert Greek letters to Unicode symbols for better PDF display
-                    .replace(/\\alpha/g, 'α')
-                    .replace(/\\beta/g, 'β')
-                    .replace(/\\gamma/g, 'γ')
-                    .replace(/\\delta/g, 'δ')
-                    .replace(/\\epsilon/g, 'ε')
-                    .replace(/\\varepsilon/g, 'ε')
-                    .replace(/\\zeta/g, 'ζ')
-                    .replace(/\\eta/g, 'η')
-                    .replace(/\\theta/g, 'θ')
-                    .replace(/\\iota/g, 'ι')
-                    .replace(/\\kappa/g, 'κ')
-                    .replace(/\\lambda/g, 'λ')
-                    .replace(/\\mu/g, 'μ')
-                    .replace(/\\nu/g, 'ν')
-                    .replace(/\\xi/g, 'ξ')
-                    .replace(/\\pi/g, 'π')
-                    .replace(/\\rho/g, 'ρ')
-                    .replace(/\\sigma/g, 'σ')
-                    .replace(/\\tau/g, 'τ')
-                    .replace(/\\upsilon/g, 'υ')
-                    .replace(/\\phi/g, 'φ')
-                    .replace(/\\chi/g, 'χ')
-                    .replace(/\\psi/g, 'ψ')
-                    .replace(/\\omega/g, 'ω')
-                    .replace(/\\Omega/g, 'Ω')
-                    .replace(/\\Delta/g, 'Δ')
-                    .replace(/\\Gamma/g, 'Γ')
-                    .replace(/\\Lambda/g, 'Λ')
-                    .replace(/\\Phi/g, 'Φ')
-                    .replace(/\\Pi/g, 'Π')
-                    .replace(/\\Psi/g, 'Ψ')
-                    .replace(/\\Sigma/g, 'Σ')
-                    .replace(/\\Theta/g, 'Θ')
-                    .replace(/\\Xi/g, 'Ξ')
-
-                    // Remove any remaining broken image references
-                    .replace(/img\s*[−-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-                    // Remove any remaining standalone base64 strings that couldn't be processed
-
-                    // Remove broken image references like "img − 1.jpeg (data:...)"
-                    .replace(/img\s*[−-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-                    // Remove any remaining standalone base64 strings that couldn't be processed
-                    ;
-                  } catch (error) {
-                    console.error('Error processing option:', error);
-                    return opt; // Fallback to raw option text
-                  }
-                });
-
-                return `
-                  <div class="question">
-                    <p><strong>${currentQuestionNumber}.</strong> ${processedQuestion}</p>
-                    <div class="options">
-                      ${processedOptions.map((opt: string, i: number) => `<p>${String.fromCharCode(97 + i)}) ${opt}</p>`).join('')}
-                      ${includeAnswers ? `<p><em>Answer:</em> ${q.answer}</p>` : ''}
-                    </div>
-                  </div>`;
-                } catch (error) {
-                  console.error('Error processing question:', error);
-                  // Fallback to basic question display
-                  return `
-                    <div class="question">
-                      <p><strong>${currentQuestionNumber}.</strong> ${q.question || 'Error loading question'}</p>
-                      <div class="options">
-                        ${(q.options || []).map((opt: string, i: number) => `<p>${String.fromCharCode(97 + i)}) ${opt}</p>`).join('')}
-                        ${includeAnswers ? `<p><em>Answer:</em> ${q.answer}</p>` : ''}
-                      </div>
-                    </div>`;
-                }
-              }).join('')}
+    return `
+      <div class="question">
+        <p><strong>${currentQuestionNumber}.</strong> ${processedQuestion}</p>
+        <div class="options">
+          ${processedOptions.map((opt: string, i: number) => `<p>${String.fromCharCode(97 + i)}) ${opt}</p>`).join('')}
+          ${includeAnswers ? `<p><em>Answer:</em> ${q.answer}</p>` : ''}
+        </div>
+      </div>`;
+  } catch (error) {
+    console.error('Error processing question:', error);
+    // Fallback to basic question display
+    return `
+      <div class="question">
+        <p><strong>${currentQuestionNumber}.</strong> ${q.question || 'Error loading question'}</p>
+        <div class="options">
+          ${(q.options || []).map((opt: string, i: number) => `<p>${String.fromCharCode(97 + i)}) ${opt}</p>`).join('')}
+          ${includeAnswers ? `<p><em>Answer:</em> ${q.answer}</p>` : ''}
+        </div>
+      </div>`;
+  }
+}).join('')}
             </div>
           </div>`;
         return subjectHtml;

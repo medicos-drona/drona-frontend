@@ -1,16 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Environment-based Puppeteer imports
-let puppeteer: any;
-let chromium: any;
+import fs from 'node:fs';
 
-if (process.env.NODE_ENV === 'production') {
-  // Production: Use @sparticuz/chromium
+// Use puppeteer-core everywhere
+const puppeteer = require('puppeteer-core');
+let chromium: any;
+try {
   chromium = require('@sparticuz/chromium');
-  puppeteer = require('puppeteer-core');
-} else {
-  // Local development: Use regular puppeteer
-  puppeteer = require('puppeteer');
+} catch {}
+
+function findLocalChromeExecutable(): string | undefined {
+  const candidates = process.platform === 'win32'
+    ? [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+      ]
+    : process.platform === 'darwin'
+    ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
+
+  for (const p of candidates) {
+    try { if (fs.existsSync(p)) return p; } catch {}
+  }
+  return undefined;
+}
+
+async function getLaunchOptions() {
+  // 1) Env override
+  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
+  let executablePath: string | undefined = envPath && fs.existsSync(envPath) ? envPath : undefined;
+
+  // 2) Local Chrome/Edge
+  if (!executablePath) {
+    executablePath = findLocalChromeExecutable();
+  }
+
+  // 3) @sparticuz/chromium fallback (only if path exists)
+  if (!executablePath && chromium) {
+    try {
+      const fromChromium: any = typeof chromium.executablePath === 'function'
+        ? await chromium.executablePath()
+        : chromium.executablePath;
+      if (fromChromium && fs.existsSync(fromChromium)) {
+        executablePath = fromChromium;
+      }
+    } catch {}
+  }
+
+  const baseArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
+  const args = chromium && chromium.args ? [...chromium.args, ...baseArgs] : baseArgs;
+  const headless: any = chromium && typeof chromium.headless !== 'undefined' ? chromium.headless : 'new';
+  const defaultViewport = chromium && chromium.defaultViewport ? chromium.defaultViewport : { width: 1280, height: 800 };
+
+  return { executablePath, args, headless, defaultViewport } as any;
 }
 
 interface SolutionsPdfPayload {
@@ -41,20 +85,28 @@ function processTextForPDF(text: string): string {
 
   let processedText = text;
 
+  // Normalize common OCR/typo cases before image handling
+  // Convert ':image/jpeg;base64,...' -> 'data:image/jpeg;base64,...'
+  processedText = processedText.replace(/(^|[\s(])\:image\/([A-Za-z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n\-\u2212]+)/gi, '$1data:image/$2;base64,$3');
+  // Remove stray 'Image' labels before base64 blocks
+  processedText = processedText.replace(/(?:^|\n)\s*Image\s*\)?\s*(?=(data:image|:image))/gi, '');
+  // Remove a leading quote just before a data:image URI
+  processedText = processedText.replace(/(^|[\s(])\"(?=data:image\/[A-Za-z0-9.+-]+;base64,)/g, '$1');
+
   // Helper function to create properly styled image tags
   const createImageTag = (src: string, alt: string = 'Image') => {
-    const cleanBase64 = src.replace(/\s+/g, '');
-    return `<img src="${cleanBase64}" alt="${alt}" style="max-width:90%;width:auto;height:auto;display:block;margin:8px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;" onerror="this.style.display='none';" />`;
+    const cleanBase64 = src.replace(/[\s\u00AD\u2010\u2011\u2012\u2013\u2014\u2212\-]+/g, '');
+    return `<img src="${cleanBase64}" alt="${alt}" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
   };
 
   // Process standalone base64 image data that appears directly in text
   // First, handle patterns like "! (data:image/...)" or "!\n(data:image/...)"
-  processedText = processedText.replace(/!\s*\(\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)\s*\)/g, (_, base64Data) => {
-    return createImageTag(base64Data);
+  processedText = processedText.replace(/!\s*\(\s*(data:image\/[A-Za-z0-9.+-]+;base64,[A-Za-z0-9+/=\r\n\s\-]+)\s*\)/g, (_, base64Data) => {
+    return createImageTag(base64Data.replace(/[\s\-]+/g, ''));
   });
 
   // Then handle any remaining standalone base64 data
-  const base64Pattern = /data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g;
+  const base64Pattern = /data:image\/[A-Za-z0-9.+-]+;base64,[A-Za-z0-9+/=\r\n\s\-]+/g;
   const matches = processedText.match(base64Pattern);
 
   if (matches) {
@@ -166,7 +218,7 @@ function processTextForPDF(text: string): string {
   // Fix any remaining improperly formatted img tags to use our standard styling
   // FIXED: Use a safer approach that doesn't put large base64 strings in regex
   const imgTagRegex = /<img([^>]*)src=["']([^"']*)["']([^>]*)>/gi;
-  processedText = processedText.replace(imgTagRegex, (match, before, src, after) => {
+  processedText = processedText.replace(imgTagRegex, (match, _before, src, _after) => {
     // Only process data:image sources
     if (src.startsWith('data:image')) {
       // Extract alt text if it exists
@@ -213,7 +265,10 @@ export const POST = async (req: NextRequest) => {
             {left: '$', right: '$', display: false},
             {left: '\\(', right: '\\)', display: false},
             {left: '\\[', right: '\\]', display: true}
-          ]
+          ],
+          throwOnError: false,
+          errorColor: '#000000',
+          strict: 'ignore'
         });
       }
     });
@@ -245,10 +300,10 @@ export const POST = async (req: NextRequest) => {
     .meta div { margin: 0; }
 
     .questions { position: relative; z-index: 1; padding-bottom: 25mm; }
-    .question { break-inside: avoid; margin-bottom: 20px; page-break-inside: avoid; }
+    .question { break-inside: avoid; break-inside: avoid-column; -webkit-column-break-inside: avoid; margin-bottom: 16px; page-break-inside: avoid; }
     .question-content { margin-bottom: 8px; }
-    .options { margin-left: 12px; margin-bottom: 8px; }
-    .options p { margin: 2px 0; }
+    .options { margin-left: 12px; margin-bottom: 8px; break-inside: avoid; break-inside: avoid-column; -webkit-column-break-inside: avoid; }
+    .options p { margin: 2px 0; break-inside: avoid; }
     .answer { margin-top: 8px; padding: 6px 10px; background-color: #f0f8ff; border-left: 4px solid #2563eb; border-radius: 3px; }
     .answer-text { font-weight: bold; color: #000; font-size: 10pt; }
     .solution { margin-top: 10px; padding: 8px 12px; background-color: #f9f9f9; border-left: 4px solid #10b981; border-radius: 3px; }
@@ -558,18 +613,19 @@ export const POST = async (req: NextRequest) => {
 </html>`;
 
     console.log('Launching Puppeteer for solutions PDF generation...');
-    const browser = await puppeteer.launch(
-      process.env.NODE_ENV === 'production'
-        ? {
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-          }
-        : {
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          }
-    );
+    const launchOpts = await getLaunchOptions();
+    console.log('Resolved executablePath:', launchOpts.executablePath || '(none)');
+    if (!launchOpts.executablePath) {
+      console.error('No Chrome/Chromium executable found. Set CHROME_EXECUTABLE_PATH or install Chrome/Edge.');
+      return new NextResponse(JSON.stringify({ error: 'Chrome/Chromium executable not found. Please set CHROME_EXECUTABLE_PATH or install Chrome/Edge.' }), { status: 500 });
+    }
+    const browser = await puppeteer.launch({
+      args: launchOpts.args,
+      defaultViewport: launchOpts.defaultViewport,
+      executablePath: launchOpts.executablePath,
+      headless: launchOpts.headless,
+    } as any);
+
     const page = await browser.newPage();
 
     console.log('Setting HTML content for solutions PDF...');
