@@ -623,7 +623,7 @@ export const POST = async (req: NextRequest) => {
 
 
       console.log('Setting HTML content for solutions PDF...');
-      await page.setContent(html, { waitUntil: 'networkidle' });
+      await page.setContent(html, { waitUntil: 'networkidle2' });
 
       // Wait until KaTeX has rendered math. Small delay to be safe.
       await page.waitForFunction(() => {

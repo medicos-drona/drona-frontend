@@ -864,7 +864,7 @@ ${subjectQuestions.map((q, questionIndex) => {
     console.log('Setting page content...');
     if (!page) throw new Error('Playwright page not initialized');
 
-    await page.setContent(html, { waitUntil: 'networkidle' });
+    await page.setContent(html, { waitUntil: 'networkidle2' });
 
     // Wait until KaTeX has rendered math (best-effort)
     try {
