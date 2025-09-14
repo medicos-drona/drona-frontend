@@ -402,11 +402,16 @@ export const POST = async (req: NextRequest) => {
       let launchOptions: any;
 
       if (isProd) {
-        const chromiumModName = '@sparticuz/chromium-min' as any;
-        chromium = (await (import(chromiumModName))).default;
+        try {
+          chromium = (await import('@sparticuz/chromium-min')).default;
+        } catch {
+          chromium = (await import('@sparticuz/chromium')).default;
+        }
         const core = await import('puppeteer-core');
         puppeteer = (core as any).default || (core as any);
-        const executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK);
+        let executablePath: string | undefined;
+        try { executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK); }
+        catch { executablePath = await chromium.executablePath(); }
         launchOptions = {
           args: chromium.args,
           executablePath,

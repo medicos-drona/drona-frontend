@@ -36,16 +36,22 @@ async function getLaunchOptions() {
   let launchOptions: any = { headless: true };
 
   if (isVercel) {
-    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium-min with remote pack
-    const chromiumModName = '@sparticuz/chromium-min' as any;
-    chromium = (await (import(chromiumModName))).default;
+    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium(-min) with remote pack fallback
+    try {
+      chromium = (await import('@sparticuz/chromium-min')).default;
+    } catch {
+      chromium = (await import('@sparticuz/chromium')).default;
+    }
     const core = await import('puppeteer-core');
     puppeteer = (core as any).default || (core as any);
 
     try { chromium.setHeadlessMode?.(true); } catch {}
     try { chromium.setGraphicsMode?.(false); } catch {}
 
-    const executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK);
+    let executablePath: string | undefined;
+    try { executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK); }
+    catch { executablePath = await chromium.executablePath(); }
+
     launchOptions = {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport ?? { width: 1280, height: 800 },
