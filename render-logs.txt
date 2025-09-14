@@ -1,0 +1,397 @@
+2025-09-14T17:22:14.971811155Z ==> Cloning from https://github.com/medicos-drona/drona-frontend
+2025-09-14T17:22:16.146512506Z ==> Checking out commit adcecfdb72c84f4394135c1f51267e73c663abe5 in branch main
+2025-09-14T17:24:25.640280963Z ==> Using Node.js version 22.16.0 (default)
+2025-09-14T17:24:25.665644267Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-09-14T17:24:27.825320051Z ==> Running build command 'npm install; npm run build'...
+2025-09-14T17:25:18.621644082Z 
+2025-09-14T17:25:18.621672174Z > medicos@0.1.0 postinstall
+2025-09-14T17:25:18.621679784Z > playwright install chromium
+2025-09-14T17:25:18.621684834Z 
+2025-09-14T17:25:19.215461432Z Downloading Chromium 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-linux.zip
+2025-09-14T17:25:19.450433106Z |                                                                                |   0% of 173.7 MiB
+2025-09-14T17:25:19.580908034Z |■■■■■■■■                                                                        |  10% of 173.7 MiB
+2025-09-14T17:25:19.650357756Z |■■■■■■■■■■■■■■■■                                                                |  20% of 173.7 MiB
+2025-09-14T17:25:19.71823891Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.7 MiB
+2025-09-14T17:25:19.78075237Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.7 MiB
+2025-09-14T17:25:19.84071788Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.7 MiB
+2025-09-14T17:25:19.902686946Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.7 MiB
+2025-09-14T17:25:19.983258672Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.7 MiB
+2025-09-14T17:25:20.050357612Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.7 MiB
+2025-09-14T17:25:20.106530176Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.7 MiB
+2025-09-14T17:25:20.17348648Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.7 MiB
+2025-09-14T17:25:23.455721683Z Chromium 140.0.7339.16 (playwright build v1187) downloaded to /opt/render/.cache/ms-playwright/chromium-1187
+2025-09-14T17:25:23.456069979Z Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2025-09-14T17:25:23.659053721Z |                                                                                |   0% of 2.3 MiB
+2025-09-14T17:25:23.680071626Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2025-09-14T17:25:23.686690054Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2025-09-14T17:25:23.688652509Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2025-09-14T17:25:23.693165285Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2025-09-14T17:25:23.695099329Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2025-09-14T17:25:23.696579564Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2025-09-14T17:25:23.698312289Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2025-09-14T17:25:23.699612796Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2025-09-14T17:25:23.701243637Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2025-09-14T17:25:23.702576395Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2025-09-14T17:25:23.756998173Z FFMPEG playwright build v1011 downloaded to /opt/render/.cache/ms-playwright/ffmpeg-1011
+2025-09-14T17:25:23.757305096Z Downloading Chromium Headless Shell 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-headless-shell-linux.zip
+2025-09-14T17:25:23.9697323Z |                                                                                |   0% of 104.3 MiB
+2025-09-14T17:25:24.064882451Z |■■■■■■■■                                                                        |  10% of 104.3 MiB
+2025-09-14T17:25:24.117168375Z |■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
+2025-09-14T17:25:24.161866651Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
+2025-09-14T17:25:24.201953985Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
+2025-09-14T17:25:24.242247158Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
+2025-09-14T17:25:24.278459404Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
+2025-09-14T17:25:24.313089441Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
+2025-09-14T17:25:24.34938616Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
+2025-09-14T17:25:24.381909906Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
+2025-09-14T17:25:24.414296295Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
+2025-09-14T17:25:26.088602531Z Chromium Headless Shell 140.0.7339.16 (playwright build v1187) downloaded to /opt/render/.cache/ms-playwright/chromium_headless_shell-1187
+2025-09-14T17:25:26.505636308Z 
+2025-09-14T17:25:26.505662029Z added 1529 packages, and audited 1530 packages in 59s
+2025-09-14T17:25:26.505674529Z 
+2025-09-14T17:25:26.50567904Z 203 packages are looking for funding
+2025-09-14T17:25:26.5056828Z   run `npm fund` for details
+2025-09-14T17:25:26.572306279Z 
+2025-09-14T17:25:26.572348701Z 9 vulnerabilities (3 low, 1 moderate, 5 high)
+2025-09-14T17:25:26.572353441Z 
+2025-09-14T17:25:26.572357211Z To address issues that do not require attention, run:
+2025-09-14T17:25:26.572360311Z   npm audit fix
+2025-09-14T17:25:26.572362902Z 
+2025-09-14T17:25:26.572365431Z To address all issues possible, run:
+2025-09-14T17:25:26.572368872Z   npm audit fix --force
+2025-09-14T17:25:26.572371572Z 
+2025-09-14T17:25:26.572374262Z Some issues need review, and may require choosing
+2025-09-14T17:25:26.572377662Z a different dependency.
+2025-09-14T17:25:26.572380322Z 
+2025-09-14T17:25:26.572383702Z Run `npm audit` for details.
+2025-09-14T17:25:26.835812095Z 
+2025-09-14T17:25:26.835834226Z > medicos@0.1.0 build
+2025-09-14T17:25:26.835837276Z > next build
+2025-09-14T17:25:26.835839427Z 
+2025-09-14T17:25:26.933531767Z  ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+2025-09-14T17:25:27.405874331Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+2025-09-14T17:25:27.481872118Z    ▲ Next.js 15.2.4
+2025-09-14T17:25:27.503470228Z 
+2025-09-14T17:25:27.601281644Z    Creating an optimized production build ...
+2025-09-14T17:25:42.457548086Z  ⚠ Compiled with warnings
+2025-09-14T17:25:42.457568037Z 
+2025-09-14T17:25:42.458008126Z ./src/app/api/generate-paper-pdf/route.ts
+2025-09-14T17:25:42.458021787Z Critical dependency: the request of a dependency is an expression
+2025-09-14T17:25:42.458025977Z 
+2025-09-14T17:25:42.458030847Z Import trace for requested module:
+2025-09-14T17:25:42.458035107Z ./src/app/api/generate-paper-pdf/route.ts
+2025-09-14T17:25:42.458039237Z 
+2025-09-14T17:25:42.458043728Z ./src/app/api/generate-paper-pdf/route.ts
+2025-09-14T17:25:42.458047838Z Critical dependency: the request of a dependency is an expression
+2025-09-14T17:25:42.458051738Z 
+2025-09-14T17:25:42.458063979Z Import trace for requested module:
+2025-09-14T17:25:42.458066599Z ./src/app/api/generate-paper-pdf/route.ts
+2025-09-14T17:25:42.458068789Z 
+2025-09-14T17:25:42.458071259Z ./src/app/api/generate-solutions-pdf/route.ts
+2025-09-14T17:25:42.458073809Z Critical dependency: the request of a dependency is an expression
+2025-09-14T17:25:42.458076099Z 
+2025-09-14T17:25:42.458078369Z Import trace for requested module:
+2025-09-14T17:25:42.458080939Z ./src/app/api/generate-solutions-pdf/route.ts
+2025-09-14T17:25:42.458083319Z 
+2025-09-14T17:25:55.965335652Z  ✓ Compiled successfully
+2025-09-14T17:25:55.970432304Z    Linting and checking validity of types ...
+2025-09-14T17:26:05.28072803Z 
+2025-09-14T17:26:05.280761842Z ./src/app/admin/page.tsx
+2025-09-14T17:26:05.280768142Z 6:8  Warning: 'CollegeChart' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280772232Z 
+2025-09-14T17:26:05.280777502Z ./src/app/api/generate-paper-pdf/route.ts
+2025-09-14T17:26:05.280781803Z 6:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280785683Z 46:51  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280789793Z 60:62  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280793693Z 61:63  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280797483Z 264:123  Warning: 'after' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280802143Z 303:13  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280806584Z 342:7  Warning: 'filename' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280809994Z 353:16  Warning: 'resolveBundledChromiumPath' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280813784Z 685:21  Warning: 'originalText' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280817364Z 935:13  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280820784Z 967:43  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280824094Z 
+2025-09-14T17:26:05.280827554Z ./src/app/api/generate-solutions-pdf/route.ts
+2025-09-14T17:26:05.280831205Z 7:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280834575Z 29:51  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280837855Z 48:53  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280841295Z 49:54  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280844875Z 254:76  Warning: '_after' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280848455Z 572:13  Warning: 'processedOpt' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.280851955Z 700:45  Warning: Empty block statement.  no-empty
+2025-09-14T17:26:05.280855816Z 
+2025-09-14T17:26:05.280860406Z ./src/app/college/page.tsx
+2025-09-14T17:26:05.280864556Z 156:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280869006Z 167:6  Warning: React Hook useEffect has a missing dependency: 'colorPalette'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.280872876Z 
+2025-09-14T17:26:05.280876687Z ./src/app/college/teachers-list/page.tsx
+2025-09-14T17:26:05.280880217Z 23:10  Warning: 'isFilterModalOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280883777Z 30:10  Warning: 'departments' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280887377Z 38:10  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280900598Z 199:17  Warning: 'DepartmentMap' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280903048Z 306:7  Warning: 'handleFilterApply' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280905058Z 
+2025-09-14T17:26:05.280907108Z ./src/app/forgot-password/page.tsx
+2025-09-14T17:26:05.280909358Z 8:10  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280911288Z 
+2025-09-14T17:26:05.280913798Z ./src/app/layout.tsx
+2025-09-14T17:26:05.280916078Z 4:10  Warning: 'NavigationLoadingWrapper' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280918208Z 9:7  Warning: 'outfit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280920018Z 
+2025-09-14T17:26:05.280921978Z ./src/app/login/page.tsx
+2025-09-14T17:26:05.280924109Z 9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280926199Z 9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280928079Z 
+2025-09-14T17:26:05.280930119Z ./src/app/signup/page.tsx
+2025-09-14T17:26:05.280932239Z 9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280934349Z 9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280936679Z 9:35  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280938599Z 
+2025-09-14T17:26:05.280940569Z ./src/app/teacher/downloaded-papers/page.tsx
+2025-09-14T17:26:05.28094269Z 3:27  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280944619Z 
+2025-09-14T17:26:05.28094661Z ./src/app/teacher/page.tsx
+2025-09-14T17:26:05.2809487Z 8:10  Warning: 'activeTab' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28095098Z 10:9  Warning: 'handleTabChange' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28095286Z 
+2025-09-14T17:26:05.28095489Z ./src/components/CollegeChart.tsx
+2025-09-14T17:26:05.28095721Z 5:3  Warning: 'LineChart' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28095931Z 6:3  Warning: 'Line' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28096141Z 18:10  Warning: 'cn' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28096351Z 20:28  Warning: 'CollegeGrowthResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280965491Z 
+2025-09-14T17:26:05.280967611Z ./src/components/SubjectQuestionsChart.tsx
+2025-09-14T17:26:05.280969691Z 56:10  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280972491Z 73:9  Warning: 'start' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.280985291Z 153:6  Warning: React Hook useEffect has a missing dependency: 'fetchChartData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.280987772Z 
+2025-09-14T17:26:05.280989921Z ./src/components/TeacherList/AddTeacherForm.tsx
+2025-09-14T17:26:05.280992092Z 27:6  Warning: 'TeacherFormValues' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.280994302Z 30:9  Warning: 'params' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281000632Z 31:11  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281006312Z 31:17  Warning: 'userRole' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281008582Z 85:21  Warning: 'setIsLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281010542Z 
+2025-09-14T17:26:05.281012733Z ./src/components/TeacherList/FilterModal.tsx
+2025-09-14T17:26:05.281014853Z 2:17  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281017083Z 11:10  Warning: 'Label' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281019373Z 28:10  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281021263Z 
+2025-09-14T17:26:05.281023243Z ./src/components/TeacherList/Tabs.tsx
+2025-09-14T17:26:05.281025393Z 2:15  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281027363Z 
+2025-09-14T17:26:05.281029363Z ./src/components/UsageChart.tsx
+2025-09-14T17:26:05.281031643Z 19:26  Warning: 'UsageTrendsResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281034354Z 89:27  Warning: Assignments to the 'yAxisDomain' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281036503Z 95:26  Warning: Assignments to the 'yAxisTicks' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281038364Z 
+2025-09-14T17:26:05.281040354Z ./src/components/admin/add-question-form.tsx
+2025-09-14T17:26:05.281042534Z 43:7  Warning: 'ACCEPTED_IMAGE_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281044744Z 44:7  Warning: 'ACCEPTED_PDF_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281046834Z 266:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281049004Z 372:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.281051204Z 803:38  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281053084Z 
+2025-09-14T17:26:05.281055134Z ./src/components/admin/college-registration-form.tsx
+2025-09-14T17:26:05.281057224Z 15:10  Warning: 'uploadFile' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281059104Z 
+2025-09-14T17:26:05.281061105Z ./src/components/admin/edit-question-form.tsx
+2025-09-14T17:26:05.281063175Z 15:29  Warning: 'FormDescription' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281065305Z 41:7  Warning: 'MAX_FILE_SIZE' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281067395Z 265:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281069545Z 359:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.281071595Z 583:36  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281073505Z 
+2025-09-14T17:26:05.281075605Z ./src/components/admin/question-bank/question-bank.tsx
+2025-09-14T17:26:05.281083796Z 33:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281086386Z 34:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281090056Z 51:10  Warning: 'refreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281092506Z 51:24  Warning: 'setRefreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281095216Z 472:15  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+2025-09-14T17:26:05.281097116Z 
+2025-09-14T17:26:05.281099206Z ./src/components/admin/question-bank/question-list.tsx
+2025-09-14T17:26:05.281101376Z 119:9  Warning: 'getSolutionData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281129047Z 
+2025-09-14T17:26:05.281131368Z ./src/components/admin/subject-chapter-manager.tsx
+2025-09-14T17:26:05.281133618Z 11:10  Warning: 'useToast' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281145748Z 125:6  Warning: React Hook useEffect has missing dependencies: 'initialSubjects.length', 'initialTopics.length', and 'selectedSubjectId'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281148268Z 
+2025-09-14T17:26:05.281150548Z ./src/components/admin/university-card.tsx
+2025-09-14T17:26:05.281152809Z 24:10  Warning: 'isApiSuccess' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281154879Z 
+2025-09-14T17:26:05.281159719Z ./src/components/landing-page/Footer.tsx
+2025-09-14T17:26:05.281162019Z 25:35  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281163949Z 
+2025-09-14T17:26:05.281165929Z ./src/components/layout/command-menu.tsx
+2025-09-14T17:26:05.281167989Z 6:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281170049Z 9:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28117216Z 11:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281174769Z 12:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28117698Z 13:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28117904Z 
+2025-09-14T17:26:05.28118121Z ./src/components/layout/dashboard-layout.tsx
+2025-09-14T17:26:05.28118352Z 17:10  Warning: 'sidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28118611Z 17:23  Warning: 'setSidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28118807Z 
+2025-09-14T17:26:05.28119017Z ./src/components/layout/dashboard-navbar.tsx
+2025-09-14T17:26:05.28119229Z 4:10  Warning: 'Bell' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28119473Z 7:10  Warning: 'ThemeToggle' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28119687Z 17:10  Warning: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281199151Z 28:10  Warning: 'notificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281201701Z 28:29  Warning: 'setNotificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281203541Z 
+2025-09-14T17:26:05.281210441Z ./src/components/layout/dashboard-sidebar.tsx
+2025-09-14T17:26:05.281212801Z 9:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281214961Z 10:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281217191Z 11:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281219391Z 12:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281221592Z 13:3  Warning: 'LayoutDashboard' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281223732Z 14:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281225792Z 15:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281227852Z 16:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281229882Z 17:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281231772Z 
+2025-09-14T17:26:05.281233882Z ./src/components/layout/navigation-loading-wrapper.tsx
+2025-09-14T17:26:05.281238542Z 31:11  Warning: 'handleRouteChangeComplete' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281240512Z 
+2025-09-14T17:26:05.281242663Z ./src/components/table/table-title.tsx
+2025-09-14T17:26:05.281244813Z 2:10  Warning: 'Search' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281246673Z 
+2025-09-14T17:26:05.281248713Z ./src/components/table/teachers-table.tsx
+2025-09-14T17:26:05.281250933Z 5:45  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281253113Z 9:3  Warning: 'title' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281255183Z 12:3  Warning: 'columns' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281257273Z 15:3  Warning: 'onRefresh' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281259363Z 16:3  Warning: 'onFilter' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281262613Z 33:9  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281264644Z 
+2025-09-14T17:26:05.281266773Z ./src/components/teacher/question-paper-wizard.tsx
+2025-09-14T17:26:05.281268864Z 446:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281270764Z 
+2025-09-14T17:26:05.281272844Z ./src/components/teacher/steps/actions-step.tsx
+2025-09-14T17:26:05.281275074Z 5:20  Warning: 'Eye' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281277254Z 5:25  Warning: 'Edit' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281279354Z 14:31  Warning: 'formData' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281281204Z 
+2025-09-14T17:26:05.281283204Z ./src/components/teacher/steps/chapter-selection-step.tsx
+2025-09-14T17:26:05.281285384Z 13:10  Warning: 'Plus' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281294125Z 44:6  Warning: React Hook useEffect has a missing dependency: 'loadChapters'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281296585Z 
+2025-09-14T17:26:05.281298755Z ./src/components/teacher/steps/course-subject-step.tsx
+2025-09-14T17:26:05.281302125Z 3:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281307515Z 
+2025-09-14T17:26:05.281309946Z ./src/components/teacher/steps/multi-subject-config-step.tsx
+2025-09-14T17:26:05.281312386Z 49:10  Warning: 'loadingSubjects' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281315276Z 128:6  Warning: React Hook useEffect has a missing dependency: 'loadChaptersForSubject'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281317466Z 244:6  Warning: React Hook useEffect has a missing dependency: 'initializeSubjectConfig'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281319486Z 
+2025-09-14T17:26:05.281321716Z ./src/components/teacher/steps/question-title-description-step.tsx
+2025-09-14T17:26:05.281323786Z 4:10  Warning: 'OptionButton' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281325716Z 
+2025-09-14T17:26:05.281327886Z ./src/components/teacher/steps/topic-selection-step.tsx
+2025-09-14T17:26:05.281330096Z 51:6  Warning: React Hook useEffect has a missing dependency: 'loadTopics'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2025-09-14T17:26:05.281332047Z 
+2025-09-14T17:26:05.281334067Z ./src/components/teacher/user-profile.tsx
+2025-09-14T17:26:05.281336287Z 3:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281338487Z 5:10  Warning: 'Facebook' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281340607Z 5:20  Warning: 'Instagram' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281342617Z 5:31  Warning: 'Linkedin' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281344777Z 5:41  Warning: 'Pencil' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281346867Z 5:49  Warning: 'Twitter' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281348987Z 6:8  Warning: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281351337Z 32:9  Warning: 'handleEdit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281353327Z 
+2025-09-14T17:26:05.281355337Z ./src/components/ui/chemical-image-display.tsx
+2025-09-14T17:26:05.281357408Z 4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281359328Z 
+2025-09-14T17:26:05.281361798Z ./src/components/ui/sidebar.tsx
+2025-09-14T17:26:05.281363898Z 6:10  Warning: 'PanelLeftIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281365768Z 
+2025-09-14T17:26:05.281367848Z ./src/components/ui/text-with-images.tsx
+2025-09-14T17:26:05.281369988Z 4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281371868Z 
+2025-09-14T17:26:05.281373818Z ./src/components/ui/toaster.tsx
+2025-09-14T17:26:05.281375938Z 16:9  Warning: 'auth' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281377868Z 
+2025-09-14T17:26:05.281379909Z ./src/components/ui/use-toast.ts
+2025-09-14T17:26:05.281381989Z 14:7  Warning: 'toastEventTarget' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281384109Z 15:7  Warning: 'TOAST_ADD_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281386239Z 16:7  Warning: 'TOAST_REMOVE_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281391389Z 
+2025-09-14T17:26:05.281393559Z ./src/lib/api/questionPapers.ts
+2025-09-14T17:26:05.281395819Z 207:20  Warning: 'jsonError' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281397989Z 212:16  Warning: 'parseError' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281400039Z 260:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281401999Z 
+2025-09-14T17:26:05.281404059Z ./src/lib/api/questions.ts
+2025-09-14T17:26:05.28140709Z 4:7  Warning: 'API_BASE_URL' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28140905Z 
+2025-09-14T17:26:05.28141098Z ./src/lib/api/teachers.ts
+2025-09-14T17:26:05.28141306Z 1:10  Warning: 'api' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28141513Z 121:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.28141707Z 
+2025-09-14T17:26:05.28141941Z ./src/lib/auth.ts
+2025-09-14T17:26:05.281425391Z 21:27  Warning: React Hook "useAuth" is called in function "setUserRole" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".  react-hooks/rules-of-hooks
+2025-09-14T17:26:05.28142754Z 
+2025-09-14T17:26:05.281429571Z ./src/lib/constants/menuItems.ts
+2025-09-14T17:26:05.281431741Z 3:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281433901Z 4:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281436041Z 5:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281448841Z 6:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281451342Z 7:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281453432Z 8:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281455532Z 9:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281457742Z 10:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281459712Z 
+2025-09-14T17:26:05.281464292Z ./src/utils/htmlToImage.ts
+2025-09-14T17:26:05.281466512Z 8:10  Warning: 'JSDOM' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281468432Z 
+2025-09-14T17:26:05.281470442Z ./src/utils/imageUtils.ts
+2025-09-14T17:26:05.281472562Z 67:10  Warning: 'findMatchingImageKey' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281474613Z 226:11  Warning: 'imageSrc' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.281476653Z 
+2025-09-14T17:26:05.281478803Z ./src/utils/mathRenderer.ts
+2025-09-14T17:26:05.281481153Z 106:9  Warning: 'fallbackText' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.281483083Z 
+2025-09-14T17:26:05.281485143Z ./src/utils/pdfGenerator.ts
+2025-09-14T17:26:05.281487333Z 3:10  Warning: 'MathRenderer' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281489443Z 539:9  Warning: 'displayText' is never reassigned. Use 'const' instead.  prefer-const
+2025-09-14T17:26:05.281491343Z 
+2025-09-14T17:26:05.281493383Z ./src/utils/svgMathRenderer.ts
+2025-09-14T17:26:05.281495534Z 62:34  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281501154Z 62:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281503564Z 65:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281505794Z 68:39  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281508024Z 69:41  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281510184Z 148:33  Warning: 'expression' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281512324Z 148:53  Warning: 'options' is defined but never used.  @typescript-eslint/no-unused-vars
+2025-09-14T17:26:05.281514434Z 221:32  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281516655Z 221:64  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281518675Z 223:61  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281520745Z 227:27  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281522905Z 228:29  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+2025-09-14T17:26:05.281524805Z 
+2025-09-14T17:26:05.281527175Z info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+2025-09-14T17:26:08.477974378Z    Collecting page data ...
+2025-09-14T17:26:15.661544172Z    Generating static pages (0/23) ...
+2025-09-14T17:26:16.40121845Z Error: <Html> should not be imported outside of pages/_document.
+2025-09-14T17:26:16.401305133Z Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+2025-09-14T17:26:16.401311004Z     at y (.next/server/chunks/8548.js:6:1351)
+2025-09-14T17:26:16.401315894Z Error occurred prerendering page "/404". Read more: https://nextjs.org/docs/messages/prerender-error
+2025-09-14T17:26:16.401320314Z Error: <Html> should not be imported outside of pages/_document.
+2025-09-14T17:26:16.401324724Z Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+2025-09-14T17:26:16.401348795Z     at K (/opt/render/project/src/node_modules/next/dist/compiled/next-server/pages.runtime.prod.js:16:6526)
+2025-09-14T17:26:16.401353465Z     at y (/opt/render/project/src/.next/server/chunks/8548.js:6:1351)
+2025-09-14T17:26:16.401357996Z     at react-stack-bottom-frame (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:9251:18)
+2025-09-14T17:26:16.401362576Z     at renderWithHooks (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4898:19)
+2025-09-14T17:26:16.401367076Z     at renderElement (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5333:23)
+2025-09-14T17:26:16.401371186Z     at retryNode (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+2025-09-14T17:26:16.401375426Z     at renderNodeDestructive (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+2025-09-14T17:26:16.401379306Z     at renderElement (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5319:11)
+2025-09-14T17:26:16.401383057Z     at retryNode (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+2025-09-14T17:26:16.401387287Z     at renderNodeDestructive (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+2025-09-14T17:26:16.401391437Z Export encountered an error on /_error: /404, exiting the build.
+2025-09-14T17:26:16.445957156Z  ⨯ Next.js build worker exited with code: 1 and signal: null
+2025-09-14T17:26:16.562347441Z ==> Build failed 😞
+2025-09-14T17:26:16.562362262Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys

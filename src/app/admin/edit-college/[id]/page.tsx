@@ -9,9 +9,9 @@ import { useParams, useRouter } from 'next/navigation';
 const EditCollegePage: React.FC = () => {
   const [collegeData, setCollegeData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const params = useParams();
+  const params = useParams<{ id?: string }>();
   const router = useRouter();
-  const collegeId = params.id as string;
+  const collegeId = (params?.id as string | undefined) || '';
 
   useEffect(() => {
     const fetchCollege = async () => {

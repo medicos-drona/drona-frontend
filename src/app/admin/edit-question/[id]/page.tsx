@@ -8,9 +8,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { ApiQuestion } from '@/types/question';
 
 const EditQuestionPage: React.FC = () => {
-  const params = useParams();
+  const params = useParams<{ id?: string }>();
   const router = useRouter();
-  const questionId = params.id as string;
+  const questionId = (params?.id as string | undefined) || '';
   const [questionData, setQuestionData] = useState<ApiQuestion | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -16,11 +16,11 @@ export function NavigationLoadingWrapper({
   const [prevPathname, setPrevPathname] = useState("");
 
   useEffect(() => {
-    if (prevPathname && prevPathname !== pathname) {
+    if (prevPathname && prevPathname !== (pathname ?? "")) {
       // Route change completed
       setIsNavigating(false);
     }
-    setPrevPathname(pathname);
+    setPrevPathname(pathname ?? "");
   }, [pathname, prevPathname]);
 
   useEffect(() => {
