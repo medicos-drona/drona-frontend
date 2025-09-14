@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import fs from 'node:fs';
 
-// Switch to Playwright (Chromium)
-import { chromium } from 'playwright';
+// Removed Playwright import; using puppeteer-core with serverless Chromium providers
 
 // Puppeteer fallback for serverless (Vercel) with @sparticuz/chromium
 let puppeteer: any = null;
 let awsChromium: any = null;
+let awsLambdaChromium: any = null;
 try { puppeteer = require('puppeteer-core'); } catch {}
 try { awsChromium = require('@sparticuz/chromium'); } catch {}
+try { awsLambdaChromium = require('chrome-aws-lambda'); } catch {}
 
 function resolveBundledChromiumPath(): string | undefined {
   try {
@@ -631,9 +632,8 @@ export const POST = async (req: NextRequest) => {
     const launchOpts = await getLaunchOptions();
     console.log('[SOL-PDF] Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
 
-    const preferPlaywrightBundled = !!process.env.PLAYWRIGHT_BROWSERS_PATH;
-    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && !!awsChromium && !preferPlaywrightBundled;
-    console.log('[SOL-PDF] runtime choice', { usePuppeteerOnVercel, preferPlaywrightBundled, havePuppeteer: !!puppeteer, haveAwsChromium: !!awsChromium, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
+    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && (!!awsLambdaChromium || !!awsChromium);
+    console.log('[SOL-PDF] runtime choice', { usePuppeteerOnVercel, haveAwsLambda: !!awsLambdaChromium, haveAwsChromium: !!awsChromium });
     let browser: any = null;
     let context: any = null;
     let page: any = null;
@@ -656,20 +656,18 @@ export const POST = async (req: NextRequest) => {
         } as any);
         page = await browser.newPage();
       } else {
-        const bundledPath = resolveBundledChromiumPath();
-        console.log('[SOL-PDF] bundled chromium path resolution', { bundledPath, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
+        // Pure Puppeteer path on non-serverless (or when Playwright not desired)
+        const localExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH || findLocalChromeExecutable();
+        console.log('[SOL-PDF] Using local Puppeteer executable', { localExec });
+        if (!localExec) throw new Error('No local Chrome/Chromium executable found');
 
-        browser = await chromium.launch({
+        browser = await puppeteer.launch({
           headless: true,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          executablePath: (process.env.PLAYWRIGHT_BROWSERS_PATH ? bundledPath : undefined) || process.env.CHROMIUM_PATH || launchOpts.executablePath,
-        });
-
-        context = await browser.newContext({
-          viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
-        });
-
-        page = await context.newPage();
+          defaultViewport: { width: 1280, height: 800 },
+          executablePath: localExec,
+        } as any);
+        page = await browser.newPage();
       }
 
       console.log('Setting HTML content for solutions PDF...');
