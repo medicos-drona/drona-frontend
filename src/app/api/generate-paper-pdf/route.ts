@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import fs from 'node:fs';
 
+// Ensure Node.js runtime on Vercel, disable caching, and allow longer execution
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // seconds
+
 // Use puppeteer-core everywhere
 const puppeteer = require('puppeteer-core');
 let chromium: any;
@@ -10,16 +15,26 @@ try {
 } catch {}
 
 function findLocalChromeExecutable(): string | undefined {
-  const candidates = process.platform === 'win32'
+  const isWin = process.platform === 'win32';
+  const isMac = process.platform === 'darwin';
+  const pf = process.env['PROGRAMFILES'] || 'C:\\\u005c\u005cProgram Files';
+  const pfx86 = process.env['PROGRAMFILES(X86)'] || 'C:\\\u005c\u005cProgram Files (x86)';
+  const localAppData = process.env['LOCALAPPDATA'];
+
+  const candidates = isWin
     ? [
-        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-        'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
-        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+        `${pf}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${pfx86}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${pf}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        `${pfx86}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        ...(localAppData ? [
+          `${localAppData}\\Google\\Chrome\\Application\\chrome.exe`,
+          `${localAppData}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        ] : []),
       ]
-    : process.platform === 'darwin'
+    : isMac
     ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']
-    : ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
+    : ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
 
   for (const p of candidates) {
     try { if (fs.existsSync(p)) return p; } catch {}
@@ -28,30 +43,53 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  // 1) Env override
   const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
-  let executablePath: string | undefined = envPath && fs.existsSync(envPath) ? envPath : undefined;
+  const isVercel = !!process.env.VERCEL;
+  const isServerless = isVercel || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+  const isWindows = process.platform === 'win32';
 
-  // 2) Local Chrome/Edge
+  let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
+
   if (!executablePath) {
-    executablePath = findLocalChromeExecutable();
-  }
-
-  // 3) @sparticuz/chromium fallback (only if path exists)
-  if (!executablePath && chromium) {
-    try {
-      const fromChromium: any = typeof chromium.executablePath === 'function'
-        ? await chromium.executablePath()
-        : chromium.executablePath;
-      if (fromChromium && fs.existsSync(fromChromium)) {
-        executablePath = fromChromium;
+    if (isServerless) {
+      // Serverless/Vercel: use @sparticuz/chromium (never attempt local)
+      if (chromium) {
+        try {
+          executablePath = typeof chromium.executablePath === 'function'
+            ? await chromium.executablePath()
+            : chromium.executablePath;
+        } catch {}
       }
-    } catch {}
+    } else {
+      // Local dev: prefer locally installed Chrome/Edge only
+      executablePath = findLocalChromeExecutable();
+
+      // If still not found and user provided no env path, do NOT use sparticuz on Windows
+      // because it doesn't bundle Chromium for Windows. Ask user to set CHROME_EXECUTABLE_PATH.
+      if (!executablePath && !envPath) {
+        // As a last very cautious fallback on non-Windows, try sparticuz only if path is a real file
+        if (!isWindows && chromium) {
+          try {
+            const fromChromium: any = typeof chromium.executablePath === 'function'
+              ? await chromium.executablePath()
+              : chromium.executablePath;
+            if (fromChromium) {
+              try {
+                const stat = fs.statSync(fromChromium);
+                if (stat.isFile()) {
+                  executablePath = fromChromium;
+                }
+              } catch {}
+            }
+          } catch {}
+        }
+      }
+    }
   }
 
   const baseArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
   const args = chromium && chromium.args ? [...chromium.args, ...baseArgs] : baseArgs;
-  const headless: any = chromium && typeof chromium.headless !== 'undefined' ? chromium.headless : 'new';
+  const headless: any = isServerless ? true : 'new';
   const defaultViewport = chromium && chromium.defaultViewport ? chromium.defaultViewport : { width: 1280, height: 800 };
 
   return { executablePath, args, headless, defaultViewport } as any;
@@ -74,8 +112,6 @@ interface PdfGeneratorPayload {
   collegeLogoUrl?: string;
 }
 
-
-// Complete updated processTextForPDF function with image fixes
 function processTextForPDF(text: string): string {
   if (!text) return '';
 
@@ -95,6 +131,31 @@ function processTextForPDF(text: string): string {
     return createImageTag(base64Data);
   });
 
+  // Handle cases where base64 data appears on a new line after text
+  processedText = processedText.replace(/([^\n])\s*\n\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, character, base64Data) => {
+    return character + ' ' + createImageTag(base64Data);
+  });
+
+  // Handle cases where base64 data appears immediately after text without parentheses
+  processedText = processedText.replace(/(\?|\.|\s)\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, punctuation, base64Data) => {
+    return punctuation + createImageTag(base64Data);
+  });
+
+  // Handle cases where base64 appears at the end of a line without any punctuation
+  processedText = processedText.replace(/([a-zA-Z0-9])\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, character, base64Data) => {
+    return character + ' ' + createImageTag(base64Data);
+  });
+
+  // Handle cases where base64 appears at the very beginning of text
+  processedText = processedText.replace(/^(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, base64Data) => {
+    return createImageTag(base64Data);
+  });
+
+  // Handle cases where base64 appears on its own line
+  processedText = processedText.replace(/\n\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)\s*\n/g, (match, base64Data) => {
+    return '\n' + createImageTag(base64Data) + '\n';
+  });
+
   // Then handle any remaining standalone base64 data
   const base64Pattern = /data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g;
   const matches = processedText.match(base64Pattern);
@@ -108,6 +169,14 @@ function processTextForPDF(text: string): string {
         processedText = processedText.replace(base64Data, createImageTag(base64Data));
       }
     });
+  }
+
+  // Check if any base64 data remains in the text after processing
+  // If so, return empty string to indicate failure
+  const remainingBase64 = processedText.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g);
+  if (remainingBase64 && remainingBase64.length > 0) {
+    console.error('Base64 conversion failed. Remaining base64 data found:', remainingBase64.length);
+    return '';
   }
 
   // Process markdown tables - convert to HTML
@@ -334,7 +403,7 @@ export const POST = async (req: NextRequest) => {
   body { font-family: 'Times New Roman', serif; font-size: 10pt; line-height: 1.2; position: relative; }
   h1,h2,h3 { margin: 0; padding: 0; }
   hr { margin: 8px 0; border: none; border-top: 1px solid #000; }
-  
+
   /* Watermark */
   body::before {
     content: 'MEDICOS';
@@ -348,7 +417,7 @@ export const POST = async (req: NextRequest) => {
     z-index: 0;
     pointer-events: none;
   }
-  
+
   /* Header / Footer */
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .college { display: flex; align-items: center; gap: 6px; }
@@ -375,7 +444,7 @@ export const POST = async (req: NextRequest) => {
     column-rule: 1px solid #ccc;
     column-rule-style: solid;
   }
-  
+
   /* KEY FIX: Question container styling */
   .question {
     break-inside: avoid; /* Prevents question from breaking across columns */
@@ -615,7 +684,7 @@ ${subjectQuestions.map((q, questionIndex) => {
       // IMPORTANT: Apply processTextForPDF BEFORE LaTeX sanitization
       // This ensures base64 images are converted to img tags first
       processedQuestion = processTextForPDF(questionText);
-      
+
       // Then apply LaTeX sanitization
       processedQuestion = sanitizeLatexForPDF(processedQuestion);
 
@@ -786,7 +855,15 @@ ${subjectQuestions.map((q, questionIndex) => {
 </html>`;
 
     console.log('Setting page content...');
-    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    // Wait until KaTeX has rendered math (best-effort)
+    await page.waitForFunction(() => {
+      return Array.from(document.querySelectorAll('.katex')).length > 0;
+    }, { timeout: 3000 }).catch(() => {});
+
+    // Small extra delay to allow layout to settle in multi-column flow
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     console.log('Generating PDF...');
     const pdfBuffer = await page.pdf({
@@ -811,12 +888,12 @@ ${subjectQuestions.map((q, questionIndex) => {
       stack: error.stack,
       name: error.name
     });
-    
+
     return new NextResponse(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'PDF generation failed',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      }), 
+      }),
       { status: 500 }
     );
   }
