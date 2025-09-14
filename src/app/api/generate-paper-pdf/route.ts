@@ -44,23 +44,53 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  const envPath = process.env.CHROMIUM_PATH || process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM;
-  const isVercel = !!process.env.VERCEL;
-  const isServerless = isVercel || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-  console.log('[PDF] getLaunchOptions called', { isVercel, isServerless, envPathExists: !!envPath });
+  const isVercel = !!process.env.VERCEL || !!process.env.VERCEL_ENV;
+  let launchOptions: any = { headless: true };
 
-  let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
-  console.log('[PDF] initial executablePath from env', { executablePath });
+  if (isVercel) {
+    // Serverless: puppeteer-core with @sparticuz/chromium
+    chromium = (await import('@sparticuz/chromium')).default;
+    puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
 
-  if (!executablePath) {
-    executablePath = findLocalChromeExecutable();
-    console.log('[PDF] fallback findLocalChromeExecutable', { executablePath });
+    try { (chromium as any).setHeadlessMode?.(true); } catch {}
+    try { (chromium as any).setGraphicsMode?.(false); } catch {}
+
+    const executablePath = await chromium.executablePath(); // always resolves a real path
+    launchOptions = {
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport ?? { width: 1280, height: 800 },
+      executablePath,
+      headless: chromium.headless,
+    };
+  } else {
+    // Local: prefer full puppeteer, fallback to puppeteer-core
+    try {
+      const modName = 'puppeteer' as any;
+      const full = await (import(modName));
+      puppeteer = (full as any).default || (full as any);
+    } catch {
+      const core = await import('puppeteer-core');
+      puppeteer = (core as any).default || (core as any);
+    }
+
+    const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
+    const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
+
+    launchOptions = {
+      headless: true,
+      executablePath: localExec,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      defaultViewport: { width: 1280, height: 800 },
+    };
   }
 
-  const defaultViewport = { width: 1280, height: 800 };
-  console.log('[PDF] final launch options', { executablePath, defaultViewport });
+  console.log('[PDF] getLaunchOptions resolved', {
+    isVercel,
+    executablePath: launchOptions.executablePath,
+    args: launchOptions.args,
+  });
 
-  return { executablePath, defaultViewport } as any;
+  return launchOptions;
 }
 
 interface PdfGeneratorPayload {

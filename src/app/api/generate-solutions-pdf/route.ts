@@ -29,12 +29,54 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
-  const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-  let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
-  if (!executablePath) executablePath = findLocalChromeExecutable();
-  const defaultViewport = { width: 1280, height: 800 };
-  return { executablePath, defaultViewport } as any;
+  const isVercel = !!process.env.VERCEL || !!process.env.VERCEL_ENV;
+  let launchOptions: any = { headless: true };
+
+  if (isVercel) {
+    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium
+    chromium = (await import('@sparticuz/chromium')).default;
+    const core = await import('puppeteer-core');
+    puppeteer = (core as any).default || (core as any);
+
+    try { chromium.setHeadlessMode?.(true); } catch {}
+    try { chromium.setGraphicsMode?.(false); } catch {}
+
+    const executablePath = await chromium.executablePath();
+    launchOptions = {
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport ?? { width: 1280, height: 800 },
+      executablePath,
+      headless: chromium.headless,
+    };
+  } else {
+    // Local dev: prefer full puppeteer, fallback to puppeteer-core
+    try {
+      const modName = 'puppeteer' as any;
+      const full = await (import(modName));
+      puppeteer = (full as any).default || (full as any);
+    } catch {
+      const core = await import('puppeteer-core');
+      puppeteer = (core as any).default || (core as any);
+    }
+
+    const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
+    const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
+
+    launchOptions = {
+      headless: true,
+      executablePath: localExec,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      defaultViewport: { width: 1280, height: 800 },
+    };
+  }
+
+  console.log('[SOL-PDF] getLaunchOptions resolved', {
+    isVercel,
+    executablePath: launchOptions.executablePath,
+    args: launchOptions.args,
+  });
+
+  return launchOptions;
 }
 
 
@@ -599,44 +641,14 @@ export const POST = async (req: NextRequest) => {
     let page: any = null;
 
     try {
-      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-      if (!chromium || !puppeteer) {
-        chromium = (await import('@sparticuz/chromium')).default;
-        puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
-      }
-
-      if (isServerless) {
-        const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
-        process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
-        try { (chromium as any).setHeadlessMode?.(true); } catch {}
-        try { (chromium as any).setGraphicsMode?.(false); } catch {}
-      }
-
-      if (isServerless) {
-
-
-        const executablePath = await chromium.executablePath();
-        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
-        console.log('[SOL-PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
-        browser = await puppeteer.launch({
-          args: chromium.args,
-          executablePath,
-          headless: chromium.headless,
-        } as any);
-        page = await browser.newPage();
-      } else {
-        // Pure Puppeteer path on non-serverless
-        const localExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH || findLocalChromeExecutable();
-        console.log('[SOL-PDF] Using local Puppeteer executable', { localExec });
-        if (!localExec) throw new Error('No local Chrome/Chromium executable found');
-
-        browser = await puppeteer.launch({
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          executablePath: localExec,
-        } as any);
-        page = await browser.newPage();
-      }
+      const launchOptions = await getLaunchOptions();
+      console.log('[SOL-PDF] Launching Puppeteer with options:', {
+        executablePath: launchOptions.executablePath,
+        args: launchOptions.args,
+        headless: launchOptions.headless,
+      });
+      browser = await puppeteer.launch(launchOptions);
+      page = await browser.newPage();
 
 
       console.log('Setting HTML content for solutions PDF...');
