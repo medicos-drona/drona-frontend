@@ -7,12 +7,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // seconds
 
-// Use puppeteer-core everywhere
-const puppeteer = require('puppeteer-core');
-let chromium: any;
-try {
-  chromium = require('@sparticuz/chromium');
-} catch {}
+// Switch to Playwright (Chromium)
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 
 function findLocalChromeExecutable(): string | undefined {
   const isWin = process.platform === 'win32';
@@ -43,56 +39,19 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
-  const isVercel = !!process.env.VERCEL;
-  const isServerless = isVercel || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-  const isWindows = process.platform === 'win32';
+  const envPath = process.env.CHROMIUM_PATH || process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM;
+  const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
 
+  // In serverless, trust the env var if provided; locally, verify if it exists
   let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
 
+  // Fallbacks: try to find local Chrome/Edge for development
   if (!executablePath) {
-    if (isServerless) {
-      // Serverless/Vercel: use @sparticuz/chromium (never attempt local)
-      if (chromium) {
-        try {
-          executablePath = typeof chromium.executablePath === 'function'
-            ? await chromium.executablePath()
-            : chromium.executablePath;
-        } catch {}
-      }
-    } else {
-      // Local dev: prefer locally installed Chrome/Edge only
-      executablePath = findLocalChromeExecutable();
-
-      // If still not found and user provided no env path, do NOT use sparticuz on Windows
-      // because it doesn't bundle Chromium for Windows. Ask user to set CHROME_EXECUTABLE_PATH.
-      if (!executablePath && !envPath) {
-        // As a last very cautious fallback on non-Windows, try sparticuz only if path is a real file
-        if (!isWindows && chromium) {
-          try {
-            const fromChromium: any = typeof chromium.executablePath === 'function'
-              ? await chromium.executablePath()
-              : chromium.executablePath;
-            if (fromChromium) {
-              try {
-                const stat = fs.statSync(fromChromium);
-                if (stat.isFile()) {
-                  executablePath = fromChromium;
-                }
-              } catch {}
-            }
-          } catch {}
-        }
-      }
-    }
+    executablePath = findLocalChromeExecutable();
   }
 
-  const baseArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
-  const args = chromium && chromium.args ? [...chromium.args, ...baseArgs] : baseArgs;
-  const headless: any = isServerless ? true : 'new';
-  const defaultViewport = chromium && chromium.defaultViewport ? chromium.defaultViewport : { width: 1280, height: 800 };
-
-  return { executablePath, args, headless, defaultViewport } as any;
+  const defaultViewport = { width: 1280, height: 800 };
+  return { executablePath, defaultViewport } as any;
 }
 
 interface PdfGeneratorPayload {
@@ -171,12 +130,10 @@ function processTextForPDF(text: string): string {
     });
   }
 
-  // Check if any base64 data remains in the text after processing
-  // If so, return empty string to indicate failure
+  // Note: If any base64 remains after processing, we log but do not drop content
   const remainingBase64 = processedText.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g);
   if (remainingBase64 && remainingBase64.length > 0) {
-    console.error('Base64 conversion failed. Remaining base64 data found:', remainingBase64.length);
-    return '';
+    console.warn('Remaining base64 found after processing:', remainingBase64.length);
   }
 
   // Process markdown tables - convert to HTML
@@ -350,23 +307,27 @@ export const POST = async (req: NextRequest) => {
       return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });
     }
 
-    console.log('Launching browser...');
+    console.log('Launching browser with Playwright...');
     const launchOpts = await getLaunchOptions();
-    console.log('Resolved executablePath:', launchOpts.executablePath || '(none)');
-    if (!launchOpts.executablePath) {
-      console.error('No Chrome/Chromium executable found. Set CHROME_EXECUTABLE_PATH or install Chrome/Edge.');
-      return new NextResponse(JSON.stringify({ error: 'Chrome/Chromium executable not found. Please set CHROME_EXECUTABLE_PATH or install Chrome/Edge.' }), { status: 500 });
-    }
-    const browser = await puppeteer.launch({
-      args: launchOpts.args,
-      defaultViewport: launchOpts.defaultViewport,
-      executablePath: launchOpts.executablePath,
-      headless: launchOpts.headless,
-    } as any);
+    console.log('Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
 
+    let browser: Browser | null = null;
+    let context: BrowserContext | null = null;
+    let page: Page | null = null;
 
-    console.log('Browser launched successfully');
-    const page = await browser.newPage();
+    try {
+      browser = await chromium.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath, // env override if provided
+      });
+
+      context = await browser.newContext({
+        viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
+      });
+
+      page = await context.newPage();
+      console.log('Browser launched successfully');
 
     // Generate HTML (your existing HTML generation code continues here...)
     const html = `<!doctype html>
@@ -855,33 +816,51 @@ ${subjectQuestions.map((q, questionIndex) => {
 </html>`;
 
     console.log('Setting page content...');
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    if (!page) throw new Error('Playwright page not initialized');
+
+    await page.setContent(html, { waitUntil: 'networkidle' });
 
     // Wait until KaTeX has rendered math (best-effort)
-    await page.waitForFunction(() => {
-      return Array.from(document.querySelectorAll('.katex')).length > 0;
-    }, { timeout: 3000 }).catch(() => {});
+    try {
+      await page.waitForFunction(() => {
+        return Array.from(document.querySelectorAll('.katex')).length > 0;
+      }, { timeout: 3000 });
+    } catch {}
 
     // Small extra delay to allow layout to settle in multi-column flow
     await new Promise(resolve => setTimeout(resolve, 200));
 
-    console.log('Generating PDF...');
+    console.log('Generating PDF with Playwright...');
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
       margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
-    });
+    } as any);
 
-    await browser.close();
+    await browser?.close();
     console.log('PDF generated successfully, size:', pdfBuffer.length);
 
-    return new NextResponse(Buffer.from(pdfBuffer), {
+    const response = new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${payload.filename || 'question-paper.pdf'}"`,
       },
     });
+
+    return response;
+  } catch (browserError) {
+    console.error('Playwright browser launch/render failed:', {
+      message: (browserError as any)?.message,
+      stack: (browserError as any)?.stack,
+      name: (browserError as any)?.name
+    });
+    throw browserError;
+  } finally {
+    try { await context?.close(); } catch {}
+    try { await browser?.close(); } catch {}
+  }
+
   } catch (error: any) {
     console.error('PDF generation failed with detailed error:', {
       message: error.message,

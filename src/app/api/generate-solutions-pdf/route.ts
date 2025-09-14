@@ -2,12 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import fs from 'node:fs';
 
-// Use puppeteer-core everywhere
-const puppeteer = require('puppeteer-core');
-let chromium: any;
-try {
-  chromium = require('@sparticuz/chromium');
-} catch {}
+// Switch to Playwright (Chromium)
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 
 function findLocalChromeExecutable(): string | undefined {
   const candidates = process.platform === 'win32'
@@ -28,33 +24,18 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  // 1) Env override
-  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
-  let executablePath: string | undefined = envPath && fs.existsSync(envPath) ? envPath : undefined;
+  const envPath = process.env.CHROMIUM_PATH || process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM;
+  const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
 
-  // 2) Local Chrome/Edge
+  // In serverless, trust env var; locally, verify exists
+  let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
+
   if (!executablePath) {
     executablePath = findLocalChromeExecutable();
   }
 
-  // 3) @sparticuz/chromium fallback (only if path exists)
-  if (!executablePath && chromium) {
-    try {
-      const fromChromium: any = typeof chromium.executablePath === 'function'
-        ? await chromium.executablePath()
-        : chromium.executablePath;
-      if (fromChromium && fs.existsSync(fromChromium)) {
-        executablePath = fromChromium;
-      }
-    } catch {}
-  }
-
-  const baseArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
-  const args = chromium && chromium.args ? [...chromium.args, ...baseArgs] : baseArgs;
-  const headless: any = chromium && typeof chromium.headless !== 'undefined' ? chromium.headless : 'new';
-  const defaultViewport = chromium && chromium.defaultViewport ? chromium.defaultViewport : { width: 1280, height: 800 };
-
-  return { executablePath, args, headless, defaultViewport } as any;
+  const defaultViewport = { width: 1280, height: 800 };
+  return { executablePath, defaultViewport } as any;
 }
 
 interface SolutionsPdfPayload {
@@ -619,43 +600,64 @@ export const POST = async (req: NextRequest) => {
       console.error('No Chrome/Chromium executable found. Set CHROME_EXECUTABLE_PATH or install Chrome/Edge.');
       return new NextResponse(JSON.stringify({ error: 'Chrome/Chromium executable not found. Please set CHROME_EXECUTABLE_PATH or install Chrome/Edge.' }), { status: 500 });
     }
-    const browser = await puppeteer.launch({
-      args: launchOpts.args,
-      defaultViewport: launchOpts.defaultViewport,
-      executablePath: launchOpts.executablePath,
-      headless: launchOpts.headless,
-    } as any);
+    // Launch Playwright Chromium
+    let browser: Browser | null = null;
+    let context: BrowserContext | null = null;
+    let page: Page | null = null;
 
-    const page = await browser.newPage();
+    try {
+      browser = await chromium.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath,
+      });
 
-    console.log('Setting HTML content for solutions PDF...');
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+      context = await browser.newContext({
+        viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
+      });
 
-    // Wait until KaTeX has rendered math. Small delay to be safe.
-    await page.waitForFunction(() => {
-      return Array.from(document.querySelectorAll('.katex')).length > 0;
-    }, { timeout: 3000 }).catch(() => {});
+      page = await context.newPage();
 
-    // Extra small delay to ensure layout settles
-    await new Promise(resolve => setTimeout(resolve, 200));
+      console.log('Setting HTML content for solutions PDF...');
+      await page.setContent(html, { waitUntil: 'networkidle' });
 
-    console.log('Generating solutions PDF...');
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
-    });
+      // Wait until KaTeX has rendered math. Small delay to be safe.
+      await page.waitForFunction(() => {
+        return Array.from(document.querySelectorAll('.katex')).length > 0;
+      }, { timeout: 3000 }).catch(() => {});
 
-    await browser.close();
-    console.log('Solutions PDF generated successfully, size:', pdfBuffer.length, 'bytes');
+      // Extra small delay to ensure layout settles
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-    return new NextResponse(Buffer.from(pdfBuffer), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
-      },
-    });
+      console.log('Generating solutions PDF...');
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
+      } as any);
+
+      await browser.close();
+      console.log('Solutions PDF generated successfully, size:', pdfBuffer.length, 'bytes');
+
+      return new NextResponse(Buffer.from(pdfBuffer), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${filename}"`,
+        },
+      });
+    } catch (browserError) {
+      console.error('Playwright solutions PDF generation failed:', {
+        message: (browserError as any)?.message,
+        stack: (browserError as any)?.stack,
+        name: (browserError as any)?.name
+      });
+      throw browserError;
+    } finally {
+      try { await context?.close(); } catch {}
+      try { await browser?.close(); } catch {}
+    }
+
   } catch (error: any) {
     console.error('Solutions PDF generation failed:', error);
     return new NextResponse(JSON.stringify({ error: 'Solutions PDF generation failed' }), { status: 500 });
