@@ -3,7 +3,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 
 // Switch to Playwright (Chromium)
-import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
+import { chromium } from 'playwright';
+
+// Puppeteer fallback for serverless (Vercel) with @sparticuz/chromium
+let puppeteer: any = null;
+let awsChromium: any = null;
+try { puppeteer = require('puppeteer-core'); } catch {}
+try { awsChromium = require('@sparticuz/chromium'); } catch {}
+
+function resolveBundledChromiumPath(): string | undefined {
+  try {
+    const base = require('node:path').join(process.cwd(), 'node_modules', 'playwright-core', '.local-browsers');
+    console.log('[SOL-PDF] resolveBundledChromiumPath base', { base });
+    if (!fs.existsSync(base)) {
+      console.warn('[SOL-PDF] bundled browsers base does not exist');
+      return undefined;
+    }
+    const dirs = fs.readdirSync(base, { withFileTypes: true }).filter((d: any) => d.isDirectory()).map((d: any) => d.name);
+    console.log('[SOL-PDF] bundled browsers found', { dirs });
+    const preferred = dirs.find((d: string) => d.startsWith('chromium_headless_shell')) || dirs.find((d: string) => d.startsWith('chromium'));
+    if (!preferred) {
+      console.warn('[SOL-PDF] no chromium directory found under .local-browsers');
+      return undefined;
+    }
+    const headlessPath = require('node:path').join(base, preferred, 'chrome-linux', 'headless_shell');
+    const chromePath = require('node:path').join(base, preferred, 'chrome-linux', 'chrome');
+    if (fs.existsSync(headlessPath)) return headlessPath;
+    if (fs.existsSync(chromePath)) return chromePath;
+    console.warn('[SOL-PDF] neither headless_shell nor chrome exists in chromium dir');
+    return undefined;
+  } catch (e) {
+    console.warn('[SOL-PDF] resolveBundledChromiumPath error', e);
+    return undefined;
+  }
+}
 
 function findLocalChromeExecutable(): string | undefined {
   const candidates = process.platform === 'win32'
@@ -96,7 +129,7 @@ function processTextForPDF(text: string): string {
       // if the base64 data is already inside an img tag
       const imgTagStart = processedText.indexOf(`<img`);
       let alreadyInImgTag = false;
-      
+
       if (imgTagStart !== -1) {
         // Look for img tags that contain this base64 data
         const imgTagRegex = /<img[^>]*>/gi;
@@ -349,11 +382,11 @@ export const POST = async (req: NextRequest) => {
 
       // Use continuous question numbering across all subjects
       const questionNumber = idx + 1;
-      
+
       const heading = isNewSubject
         ? `<div class="subject-heading">Subject: ${q.subject}</div>`
         : '';
-      
+
       // Find the correct option letter for the answer
       const answerIndex = q.options.findIndex(opt => opt === q.answer);
       const answerLetter = answerIndex !== -1 ? String.fromCharCode(97 + answerIndex) : q.answer;
@@ -593,30 +626,51 @@ export const POST = async (req: NextRequest) => {
 </body>
 </html>`;
 
-    console.log('Launching Puppeteer for solutions PDF generation...');
+    console.log('[SOL-PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
+    console.log('Launching Playwright for solutions PDF generation...');
     const launchOpts = await getLaunchOptions();
-    console.log('Resolved executablePath:', launchOpts.executablePath || '(none)');
-    if (!launchOpts.executablePath) {
-      console.error('No Chrome/Chromium executable found. Set CHROME_EXECUTABLE_PATH or install Chrome/Edge.');
-      return new NextResponse(JSON.stringify({ error: 'Chrome/Chromium executable not found. Please set CHROME_EXECUTABLE_PATH or install Chrome/Edge.' }), { status: 500 });
-    }
-    // Launch Playwright Chromium
-    let browser: Browser | null = null;
-    let context: BrowserContext | null = null;
-    let page: Page | null = null;
+    console.log('[SOL-PDF] Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
+
+    const preferPlaywrightBundled = !!process.env.PLAYWRIGHT_BROWSERS_PATH;
+    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && !!awsChromium && !preferPlaywrightBundled;
+    console.log('[SOL-PDF] runtime choice', { usePuppeteerOnVercel, preferPlaywrightBundled, havePuppeteer: !!puppeteer, haveAwsChromium: !!awsChromium, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
+    let browser: any = null;
+    let context: any = null;
+    let page: any = null;
 
     try {
-      browser = await chromium.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath,
-      });
+      if (usePuppeteerOnVercel) {
+        console.log('[SOL-PDF] Using puppeteer-core + @sparticuz/chromium fallback');
+        const chromiumExec = typeof awsChromium.executablePath === 'function'
+          ? await awsChromium.executablePath()
+          : awsChromium.executablePath;
+        const chromiumArgs = Array.isArray(awsChromium.args) ? awsChromium.args : [];
+        console.log('[SOL-PDF] awsChromium resolved', { chromiumExec, hasArgs: chromiumArgs.length > 0, headless: awsChromium.headless });
+        if (!chromiumExec) throw new Error('awsChromium.executablePath not resolved');
 
-      context = await browser.newContext({
-        viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
-      });
+        browser = await puppeteer.launch({
+          headless: typeof awsChromium.headless !== 'undefined' ? awsChromium.headless : true,
+          args: [...chromiumArgs, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+          defaultViewport: awsChromium.defaultViewport || { width: 1280, height: 800 },
+          executablePath: chromiumExec,
+        } as any);
+        page = await browser.newPage();
+      } else {
+        const bundledPath = resolveBundledChromiumPath();
+        console.log('[SOL-PDF] bundled chromium path resolution', { bundledPath, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
 
-      page = await context.newPage();
+        browser = await chromium.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+          executablePath: (process.env.PLAYWRIGHT_BROWSERS_PATH ? bundledPath : undefined) || process.env.CHROMIUM_PATH || launchOpts.executablePath,
+        });
+
+        context = await browser.newContext({
+          viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
+        });
+
+        page = await context.newPage();
+      }
 
       console.log('Setting HTML content for solutions PDF...');
       await page.setContent(html, { waitUntil: 'networkidle' });

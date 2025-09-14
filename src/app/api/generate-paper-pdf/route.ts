@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import fs from 'node:fs';
+import path from 'node:path';
+
 
 // Ensure Node.js runtime on Vercel, disable caching, and allow longer execution
 export const runtime = 'nodejs';
@@ -60,6 +62,7 @@ async function getLaunchOptions() {
 
   const defaultViewport = { width: 1280, height: 800 };
   console.log('[PDF] final launch options', { executablePath, defaultViewport });
+
   return { executablePath, defaultViewport } as any;
 }
 
@@ -315,6 +318,33 @@ export const POST = async (req: NextRequest) => {
       console.error('No valid questions found');
       return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });
     }
+      function resolveBundledChromiumPath(): string | undefined {
+        try {
+          const base = require('node:path').join(process.cwd(), 'node_modules', 'playwright-core', '.local-browsers');
+          console.log('[PDF] resolveBundledChromiumPath base', { base });
+          if (!fs.existsSync(base)) {
+            console.warn('[PDF] bundled browsers base does not exist');
+            return undefined;
+          }
+          const dirs = fs.readdirSync(base, { withFileTypes: true }).filter((d: any) => d.isDirectory()).map((d: any) => d.name);
+          console.log('[PDF] bundled browsers found', { dirs });
+          const preferred = dirs.find((d: string) => d.startsWith('chromium_headless_shell')) || dirs.find((d: string) => d.startsWith('chromium'));
+          if (!preferred) {
+            console.warn('[PDF] no chromium directory found under .local-browsers');
+            return undefined;
+          }
+          const headlessPath = require('node:path').join(base, preferred, 'chrome-linux', 'headless_shell');
+          const chromePath = require('node:path').join(base, preferred, 'chrome-linux', 'chrome');
+          if (fs.existsSync(headlessPath)) return headlessPath;
+          if (fs.existsSync(chromePath)) return chromePath;
+          console.warn('[PDF] neither headless_shell nor chrome exists in chromium dir');
+          return undefined;
+        } catch (e) {
+          console.warn('[PDF] resolveBundledChromiumPath error', e);
+          return undefined;
+        }
+      }
+
 
     console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
@@ -337,7 +367,6 @@ export const POST = async (req: NextRequest) => {
     try {
       if (usePuppeteerOnVercel) {
         console.log('[PDF] Using puppeteer-core + @sparticuz/chromium fallback');
-        // Resolve chromium executable and args from @sparticuz/chromium
         const chromiumExec = typeof awsChromium.executablePath === 'function'
           ? await awsChromium.executablePath()
           : awsChromium.executablePath;
@@ -353,10 +382,14 @@ export const POST = async (req: NextRequest) => {
         } as any);
         page = await browser.newPage();
       } else {
+        // Prefer bundled Playwright Chromium when PLAYWRIGHT_BROWSERS_PATH is set
+        const bundledPath = resolveBundledChromiumPath();
+        console.log('[PDF] bundled chromium path resolution', { bundledPath, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
+
         browser = await chromium.launch({
           headless: true,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath, // env override if provided
+          executablePath: (process.env.PLAYWRIGHT_BROWSERS_PATH ? bundledPath : undefined) || process.env.CHROMIUM_PATH || launchOpts.executablePath,
         });
 
         context = await browser.newContext({
