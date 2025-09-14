@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // seconds
 
 // Switch to Playwright (Chromium)
-import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
+import { chromium } from 'playwright';
+
+// Puppeteer fallback for serverless (Vercel) with @sparticuz/chromium
+let puppeteer: any = null;
+let awsChromium: any = null;
+try { puppeteer = require('puppeteer-core'); } catch {}
+try { awsChromium = require('@sparticuz/chromium'); } catch {}
 
 function findLocalChromeExecutable(): string | undefined {
   const isWin = process.platform === 'win32';
@@ -316,22 +322,48 @@ export const POST = async (req: NextRequest) => {
     const launchOpts = await getLaunchOptions();
     console.log('Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
 
-    let browser: Browser | null = null;
-    let context: BrowserContext | null = null;
-    let page: Page | null = null;
+    // Serverless fallback decision
+    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && !!awsChromium;
+    console.log('[PDF] runtime choice', { usePuppeteerOnVercel, havePuppeteer: !!puppeteer, haveAwsChromium: !!awsChromium });
+
+    // Use 'any' to allow both Playwright and Puppeteer types
+    let browser: any = null;
+    let context: any = null;
+    let page: any = null;
+
+      console.log('[PDF] Attempting browser launch', { usePuppeteerOnVercel, execPathEnv: process.env.CHROMIUM_PATH });
 
     try {
-      browser = await chromium.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath, // env override if provided
-      });
+      if (usePuppeteerOnVercel) {
+        console.log('[PDF] Using puppeteer-core + @sparticuz/chromium fallback');
+        // Resolve chromium executable and args from @sparticuz/chromium
+        const chromiumExec = typeof awsChromium.executablePath === 'function'
+          ? await awsChromium.executablePath()
+          : awsChromium.executablePath;
+        const chromiumArgs = Array.isArray(awsChromium.args) ? awsChromium.args : [];
+        console.log('[PDF] awsChromium resolved', { chromiumExec, hasArgs: chromiumArgs.length > 0, headless: awsChromium.headless });
+        if (!chromiumExec) throw new Error('awsChromium.executablePath not resolved');
 
-      context = await browser.newContext({
-        viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
-      });
+        browser = await puppeteer.launch({
+          headless: typeof awsChromium.headless !== 'undefined' ? awsChromium.headless : true,
+          args: [...chromiumArgs, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+          defaultViewport: awsChromium.defaultViewport || { width: 1280, height: 800 },
+          executablePath: chromiumExec,
+        } as any);
+        page = await browser.newPage();
+      } else {
+        browser = await chromium.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+          executablePath: process.env.CHROMIUM_PATH || launchOpts.executablePath, // env override if provided
+        });
 
-      page = await context.newPage();
+        context = await browser.newContext({
+          viewport: launchOpts.defaultViewport || { width: 1280, height: 800 },
+        });
+
+        page = await context.newPage();
+      }
       console.log('Browser launched successfully');
 
     // Generate HTML (your existing HTML generation code continues here...)
