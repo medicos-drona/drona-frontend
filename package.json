@@ -29,6 +29,7 @@
     "@radix-ui/react-toast": "^1.2.11",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@sparticuz/chromium": "^121.0.0",
+    "@sparticuz/chromium-min": "^138.0.2",
     "@tanstack/react-query": "^5.71.5",
     "@tanstack/react-query-devtools": "^5.71.5",
     "@types/jsdom": "^21.1.7",
@@ -68,6 +69,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "ignore-loader": "^0.1.2",
+    "puppeteer": "^24.20.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

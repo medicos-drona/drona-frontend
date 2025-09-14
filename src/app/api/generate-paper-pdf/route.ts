@@ -13,6 +13,9 @@ export const maxDuration = 60; // seconds
 
 // Dynamic imports (per Vercel guidance)
 let chromium: any;
+// Remote Chromium pack URL for @sparticuz/chromium-min (can override via env)
+const REMOTE_CHROMIUM_PACK = process.env.CHROMIUM_REMOTE_PACK_URL || 'https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar';
+
 let puppeteer: any;
 
 
@@ -395,30 +398,36 @@ export const POST = async (req: NextRequest) => {
     let page: any = null;
 
     try {
-      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-      if (isServerless) {
-        try { (chromium as any).setHeadlessMode?.(true); } catch {}
-        try { (chromium as any).setGraphicsMode?.(false); } catch {}
+      const isProd = !!process.env.VERCEL || process.env.NEXT_PUBLIC_VERCEL_ENVIRONMENT === 'production';
+      let launchOptions: any;
 
-        const executablePath = await chromium.executablePath();
-        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
-        console.log('[PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
-        browser = await puppeteer.launch({
+      if (isProd) {
+        const chromiumModName = '@sparticuz/chromium-min' as any;
+        chromium = (await (import(chromiumModName))).default;
+        const core = await import('puppeteer-core');
+        puppeteer = (core as any).default || (core as any);
+        const executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK);
+        launchOptions = {
           args: chromium.args,
           executablePath,
-          headless: chromium.headless,
-        } as any);
+          headless: true,
+        };
+        console.log('[PDF] Puppeteer options (serverless):', { executablePath, args: launchOptions.args });
       } else {
+        const modName = 'puppeteer' as any;
+        const full = await (import(modName));
+        puppeteer = (full as any).default || (full as any);
         const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
         const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
-        console.log('[PDF] launching local puppeteer', { localExec });
-        if (!localExec) throw new Error('No local Chrome/Chromium executable found');
-        browser = await puppeteer.launch({
+        launchOptions = {
           headless: true,
-          executablePath: localExec,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        } as any);
+          ...(localExec ? { executablePath: localExec } : {}),
+        };
+        console.log('[PDF] Puppeteer options (local):', { executablePath: launchOptions.executablePath, args: launchOptions.args });
       }
+
+      browser = await puppeteer.launch(launchOptions);
       page = await browser.newPage();
       console.log('[PDF] Browser launched successfully');
 

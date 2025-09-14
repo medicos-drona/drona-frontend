@@ -10,6 +10,9 @@ import path from 'node:path';
 let chromium: any;
 let puppeteer: any;
 
+// Remote Chromium pack URL for @sparticuz/chromium-min (can override via env)
+const REMOTE_CHROMIUM_PACK = process.env.CHROMIUM_REMOTE_PACK_URL || 'https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar';
+
 function findLocalChromeExecutable(): string | undefined {
   const candidates = process.platform === 'win32'
     ? [
@@ -33,20 +36,21 @@ async function getLaunchOptions() {
   let launchOptions: any = { headless: true };
 
   if (isVercel) {
-    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium
-    chromium = (await import('@sparticuz/chromium')).default;
+    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium-min with remote pack
+    const chromiumModName = '@sparticuz/chromium-min' as any;
+    chromium = (await (import(chromiumModName))).default;
     const core = await import('puppeteer-core');
     puppeteer = (core as any).default || (core as any);
 
     try { chromium.setHeadlessMode?.(true); } catch {}
     try { chromium.setGraphicsMode?.(false); } catch {}
 
-    const executablePath = await chromium.executablePath();
+    const executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK);
     launchOptions = {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport ?? { width: 1280, height: 800 },
       executablePath,
-      headless: chromium.headless,
+      headless: true,
     };
   } else {
     // Local dev: prefer full puppeteer, fallback to puppeteer-core
