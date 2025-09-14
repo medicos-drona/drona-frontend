@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import fs from 'node:fs';
 import path from 'node:path';
+
 
 // Ensure Node.js runtime on Vercel, disable caching, and allow longer execution
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // seconds
 
-import puppeteer from 'puppeteer-core';
+// Dynamic imports (per Vercel guidance)
+let chromium: any;
+let puppeteer: any;
+
+
 
 function findLocalChromeExecutable(): string | undefined {
   const isWin = process.platform === 'win32';
@@ -339,23 +345,41 @@ export const POST = async (req: NextRequest) => {
 
     console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
-    console.log('[PDF] Launching browser for PDF generation...');
+    console.log('[PDF] Launching Chromium for PDF generation...');
+    const launchOpts = await getLaunchOptions();
+    console.log('Resolved executablePath:', launchOpts.executablePath || '(serverless)');
 
-    const isVercel = !!process.env.VERCEL;
+    // Use puppeteer-core with @sparticuz/chromium on serverless; local Chrome/Edge otherwise
     let browser: any = null;
+      if (!chromium || !puppeteer) {
+        chromium = (await import('@sparticuz/chromium')).default;
+        puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
+        // Ensure chromium libs are resolvable at runtime (fixes libnss3.so errors)
+        const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
+        process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
+
+      }
+
     let page: any = null;
 
     try {
-      if (isVercel) {
-        const token = process.env.BROWSERLESS_API_KEY;
-        if (!token) throw new Error('BROWSERLESS_API_KEY is not set');
-        const browserWSEndpoint = `wss://chrome.browserless.io?token=${token}`;
-        console.log('[PDF] Connecting to Browserless via WebSocket');
-        browser = await puppeteer.connect({ browserWSEndpoint });
+      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+      if (isServerless) {
+        try { (chromium as any).setHeadlessMode?.(true); } catch {}
+        try { (chromium as any).setGraphicsMode?.(false); } catch {}
+
+        const executablePath = await chromium.executablePath();
+        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
+        console.log('[PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
+        browser = await puppeteer.launch({
+          args: chromium.args,
+          executablePath,
+          headless: chromium.headless,
+        } as any);
       } else {
         const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
         const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
-        console.log('[PDF] launching local Chrome/Chromium', { localExec });
+        console.log('[PDF] launching local puppeteer', { localExec });
         if (!localExec) throw new Error('No local Chrome/Chromium executable found');
         browser = await puppeteer.launch({
           headless: true,
@@ -364,7 +388,7 @@ export const POST = async (req: NextRequest) => {
         } as any);
       }
       page = await browser.newPage();
-      console.log('[PDF] Browser ready');
+      console.log('[PDF] Browser launched successfully');
 
     // Generate HTML (your existing HTML generation code continues here...)
     const html = `<!doctype html>

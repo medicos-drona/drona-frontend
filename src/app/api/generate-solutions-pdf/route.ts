@@ -6,7 +6,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import puppeteer from 'puppeteer-core';
+// Dynamic imports per Vercel guidance
+let chromium: any;
+let puppeteer: any;
 
 function findLocalChromeExecutable(): string | undefined {
   const candidates = process.platform === 'win32'
@@ -597,26 +599,45 @@ export const POST = async (req: NextRequest) => {
     let page: any = null;
 
     try {
-      const isVercel = !!process.env.VERCEL;
+      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+      if (!chromium || !puppeteer) {
+        chromium = (await import('@sparticuz/chromium')).default;
+        puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
+      }
 
-      if (isVercel) {
-        const token = process.env.BROWSERLESS_API_KEY;
-        if (!token) throw new Error('BROWSERLESS_API_KEY is not set');
-        const browserWSEndpoint = `wss://chrome.browserless.io?token=${token}`;
-        console.log('[SOL-PDF] Connecting to Browserless via WebSocket');
-        browser = await puppeteer.connect({ browserWSEndpoint });
+      if (isServerless) {
+        const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
+        process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
+        try { (chromium as any).setHeadlessMode?.(true); } catch {}
+        try { (chromium as any).setGraphicsMode?.(false); } catch {}
+      }
+
+      if (isServerless) {
+
+
+        const executablePath = await chromium.executablePath();
+        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
+        console.log('[SOL-PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
+        browser = await puppeteer.launch({
+          args: chromium.args,
+          executablePath,
+          headless: chromium.headless,
+        } as any);
+        page = await browser.newPage();
       } else {
-        // Local Chrome/Edge
+        // Pure Puppeteer path on non-serverless
         const localExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH || findLocalChromeExecutable();
-        console.log('[SOL-PDF] launching local Chrome/Chromium', { localExec });
+        console.log('[SOL-PDF] Using local Puppeteer executable', { localExec });
         if (!localExec) throw new Error('No local Chrome/Chromium executable found');
+
         browser = await puppeteer.launch({
           headless: true,
-          executablePath: localExec,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+          executablePath: localExec,
         } as any);
+        page = await browser.newPage();
       }
-      page = await browser.newPage();
+
 
       console.log('Setting HTML content for solutions PDF...');
       await page.setContent(html, { waitUntil: 'networkidle2' });
