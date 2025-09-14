@@ -40,17 +40,20 @@ function findLocalChromeExecutable(): string | undefined {
 
 async function getLaunchOptions() {
   const envPath = process.env.CHROMIUM_PATH || process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM;
-  const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+  const isVercel = !!process.env.VERCEL;
+  const isServerless = isVercel || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+  console.log('[PDF] getLaunchOptions called', { isVercel, isServerless, envPathExists: !!envPath });
 
-  // In serverless, trust the env var if provided; locally, verify if it exists
   let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
+  console.log('[PDF] initial executablePath from env', { executablePath });
 
-  // Fallbacks: try to find local Chrome/Edge for development
   if (!executablePath) {
     executablePath = findLocalChromeExecutable();
+    console.log('[PDF] fallback findLocalChromeExecutable', { executablePath });
   }
 
   const defaultViewport = { width: 1280, height: 800 };
+  console.log('[PDF] final launch options', { executablePath, defaultViewport });
   return { executablePath, defaultViewport } as any;
 }
 
@@ -306,6 +309,8 @@ export const POST = async (req: NextRequest) => {
       console.error('No valid questions found');
       return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });
     }
+
+    console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
     console.log('Launching browser with Playwright...');
     const launchOpts = await getLaunchOptions();
