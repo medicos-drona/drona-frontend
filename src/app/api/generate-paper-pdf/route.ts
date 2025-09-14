@@ -323,8 +323,9 @@ export const POST = async (req: NextRequest) => {
     console.log('Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
 
     // Serverless fallback decision
-    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && !!awsChromium;
-    console.log('[PDF] runtime choice', { usePuppeteerOnVercel, havePuppeteer: !!puppeteer, haveAwsChromium: !!awsChromium });
+    const preferPlaywrightBundled = !!process.env.PLAYWRIGHT_BROWSERS_PATH;
+    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && !!awsChromium && !preferPlaywrightBundled;
+    console.log('[PDF] runtime choice', { usePuppeteerOnVercel, preferPlaywrightBundled, havePuppeteer: !!puppeteer, haveAwsChromium: !!awsChromium, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
 
     // Use 'any' to allow both Playwright and Puppeteer types
     let browser: any = null;
