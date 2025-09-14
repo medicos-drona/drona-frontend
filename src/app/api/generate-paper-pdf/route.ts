@@ -9,15 +9,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // seconds
 
-// Removed Playwright import; using puppeteer-core with serverless Chromium providers
-
-// Puppeteer fallback for serverless (Vercel) with @sparticuz/chromium
-let puppeteer: any = null;
-let awsChromium: any = null;
-try { puppeteer = require('puppeteer-core'); } catch {}
-try { awsChromium = require('@sparticuz/chromium'); } catch {}
-let awsLambdaChromium: any = null;
-try { awsLambdaChromium = require('chrome-aws-lambda'); } catch {}
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 function findLocalChromeExecutable(): string | undefined {
   const isWin = process.platform === 'win32';
@@ -349,65 +342,38 @@ export const POST = async (req: NextRequest) => {
 
     console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
-    console.log('Launching browser with Playwright...');
+    console.log('[PDF] Launching Chromium for PDF generation...');
     const launchOpts = await getLaunchOptions();
     console.log('Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
 
-    // Serverless fallback decision
-    const preferPlaywrightBundled = !!process.env.PLAYWRIGHT_BROWSERS_PATH;
-    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && (!!awsLambdaChromium || !!awsChromium) && !preferPlaywrightBundled;
-    console.log('[PDF] runtime choice', { usePuppeteerOnVercel, preferPlaywrightBundled, havePuppeteer: !!puppeteer, haveAwsLambda: !!awsLambdaChromium, haveAwsChromium: !!awsChromium, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH });
-
-    // Use 'any' to allow both Playwright and Puppeteer types
+    // Use puppeteer-core with @sparticuz/chromium on serverless; local Chrome/Edge otherwise
     let browser: any = null;
-    let context: any = null;
     let page: any = null;
 
-      console.log('[PDF] Attempting browser launch', { usePuppeteerOnVercel, execPathEnv: process.env.CHROMIUM_PATH });
-
     try {
-      if (usePuppeteerOnVercel) {
-        console.log('[PDF] Using puppeteer-core fallback via chrome-aws-lambda if available');
-        let chromiumExec: string | undefined;
-        let chromiumArgs: string[] = [];
-        let headless: any = true;
-
-        if (awsLambdaChromium) {
-          chromiumExec = await awsLambdaChromium.executablePath;
-          chromiumArgs = awsLambdaChromium.args || [];
-          headless = typeof awsLambdaChromium.headless !== 'undefined' ? awsLambdaChromium.headless : true;
-          console.log('[PDF] chrome-aws-lambda resolved', { chromiumExec, hasArgs: chromiumArgs.length > 0, headless });
-        } else if (awsChromium) {
-          chromiumExec = typeof awsChromium.executablePath === 'function' ? await awsChromium.executablePath() : awsChromium.executablePath;
-          chromiumArgs = Array.isArray(awsChromium.args) ? awsChromium.args : [];
-          headless = typeof awsChromium.headless !== 'undefined' ? awsChromium.headless : true;
-          console.log('[PDF] @sparticuz/chromium resolved', { chromiumExec, hasArgs: chromiumArgs.length > 0, headless });
-        }
-
-        if (!chromiumExec) throw new Error('No serverless chromium executable resolved');
-
+      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+      if (isServerless) {
+        const executablePath = await chromium.executablePath();
+        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
+        console.log('[PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
         browser = await puppeteer.launch({
-          headless,
-          args: [...chromiumArgs, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          defaultViewport: { width: 1280, height: 800 },
-          executablePath: chromiumExec,
+          args: chromium.args,
+          executablePath,
+          headless: chromium.headless,
         } as any);
-        page = await browser.newPage();
       } else {
-        // Pure Puppeteer path on non-serverless (or when Playwright not desired)
-        const localExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH || findLocalChromeExecutable();
-        console.log('[PDF] Using local Puppeteer executable', { localExec });
+        const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
+        const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
+        console.log('[PDF] launching local puppeteer', { localExec });
         if (!localExec) throw new Error('No local Chrome/Chromium executable found');
-
         browser = await puppeteer.launch({
           headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          defaultViewport: { width: 1280, height: 800 },
           executablePath: localExec,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
         } as any);
-        page = await browser.newPage();
       }
-      console.log('Browser launched successfully');
+      page = await browser.newPage();
+      console.log('[PDF] Browser launched successfully');
 
     // Generate HTML (your existing HTML generation code continues here...)
     const html = `<!doctype html>
@@ -937,7 +903,6 @@ ${subjectQuestions.map((q, questionIndex) => {
     });
     throw browserError;
   } finally {
-    try { await context?.close(); } catch {}
     try { await browser?.close(); } catch {}
   }
 

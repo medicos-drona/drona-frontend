@@ -1,43 +1,11 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 import { NextRequest, NextResponse } from 'next/server';
-
 import fs from 'node:fs';
-
-// Removed Playwright import; using puppeteer-core with serverless Chromium providers
-
-// Puppeteer fallback for serverless (Vercel) with @sparticuz/chromium
-let puppeteer: any = null;
-let awsChromium: any = null;
-let awsLambdaChromium: any = null;
-try { puppeteer = require('puppeteer-core'); } catch {}
-try { awsChromium = require('@sparticuz/chromium'); } catch {}
-try { awsLambdaChromium = require('chrome-aws-lambda'); } catch {}
-
-function resolveBundledChromiumPath(): string | undefined {
-  try {
-    const base = require('node:path').join(process.cwd(), 'node_modules', 'playwright-core', '.local-browsers');
-    console.log('[SOL-PDF] resolveBundledChromiumPath base', { base });
-    if (!fs.existsSync(base)) {
-      console.warn('[SOL-PDF] bundled browsers base does not exist');
-      return undefined;
-    }
-    const dirs = fs.readdirSync(base, { withFileTypes: true }).filter((d: any) => d.isDirectory()).map((d: any) => d.name);
-    console.log('[SOL-PDF] bundled browsers found', { dirs });
-    const preferred = dirs.find((d: string) => d.startsWith('chromium_headless_shell')) || dirs.find((d: string) => d.startsWith('chromium'));
-    if (!preferred) {
-      console.warn('[SOL-PDF] no chromium directory found under .local-browsers');
-      return undefined;
-    }
-    const headlessPath = require('node:path').join(base, preferred, 'chrome-linux', 'headless_shell');
-    const chromePath = require('node:path').join(base, preferred, 'chrome-linux', 'chrome');
-    if (fs.existsSync(headlessPath)) return headlessPath;
-    if (fs.existsSync(chromePath)) return chromePath;
-    console.warn('[SOL-PDF] neither headless_shell nor chrome exists in chromium dir');
-    return undefined;
-  } catch (e) {
-    console.warn('[SOL-PDF] resolveBundledChromiumPath error', e);
-    return undefined;
-  }
-}
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 function findLocalChromeExecutable(): string | undefined {
   const candidates = process.platform === 'win32'
@@ -58,19 +26,14 @@ function findLocalChromeExecutable(): string | undefined {
 }
 
 async function getLaunchOptions() {
-  const envPath = process.env.CHROMIUM_PATH || process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM;
+  const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
   const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
-
-  // In serverless, trust env var; locally, verify exists
   let executablePath: string | undefined = isServerless ? envPath : (envPath && fs.existsSync(envPath) ? envPath : undefined);
-
-  if (!executablePath) {
-    executablePath = findLocalChromeExecutable();
-  }
-
+  if (!executablePath) executablePath = findLocalChromeExecutable();
   const defaultViewport = { width: 1280, height: 800 };
   return { executablePath, defaultViewport } as any;
 }
+
 
 interface SolutionsPdfPayload {
   title: string;
@@ -627,36 +590,25 @@ export const POST = async (req: NextRequest) => {
 </body>
 </html>`;
 
-    console.log('[SOL-PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
-    console.log('Launching Playwright for solutions PDF generation...');
-    const launchOpts = await getLaunchOptions();
-    console.log('[SOL-PDF] Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
+    console.log('[SOL-PDF] env', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
-    const usePuppeteerOnVercel = !!process.env.VERCEL && !!puppeteer && (!!awsLambdaChromium || !!awsChromium);
-    console.log('[SOL-PDF] runtime choice', { usePuppeteerOnVercel, haveAwsLambda: !!awsLambdaChromium, haveAwsChromium: !!awsChromium });
     let browser: any = null;
-    let context: any = null;
     let page: any = null;
 
     try {
-      if (usePuppeteerOnVercel) {
-        console.log('[SOL-PDF] Using puppeteer-core + @sparticuz/chromium fallback');
-        const chromiumExec = typeof awsChromium.executablePath === 'function'
-          ? await awsChromium.executablePath()
-          : awsChromium.executablePath;
-        const chromiumArgs = Array.isArray(awsChromium.args) ? awsChromium.args : [];
-        console.log('[SOL-PDF] awsChromium resolved', { chromiumExec, hasArgs: chromiumArgs.length > 0, headless: awsChromium.headless });
-        if (!chromiumExec) throw new Error('awsChromium.executablePath not resolved');
-
+      const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
+      if (isServerless) {
+        const executablePath = await chromium.executablePath();
+        if (!executablePath) throw new Error('chromium.executablePath() returned empty');
+        console.log('[SOL-PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
         browser = await puppeteer.launch({
-          headless: typeof awsChromium.headless !== 'undefined' ? awsChromium.headless : true,
-          args: [...chromiumArgs, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          defaultViewport: awsChromium.defaultViewport || { width: 1280, height: 800 },
-          executablePath: chromiumExec,
+          args: chromium.args,
+          executablePath,
+          headless: chromium.headless,
         } as any);
         page = await browser.newPage();
       } else {
-        // Pure Puppeteer path on non-serverless (or when Playwright not desired)
+        // Pure Puppeteer path on non-serverless
         const localExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH || findLocalChromeExecutable();
         console.log('[SOL-PDF] Using local Puppeteer executable', { localExec });
         if (!localExec) throw new Error('No local Chrome/Chromium executable found');
@@ -664,11 +616,11 @@ export const POST = async (req: NextRequest) => {
         browser = await puppeteer.launch({
           headless: true,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          defaultViewport: { width: 1280, height: 800 },
           executablePath: localExec,
         } as any);
         page = await browser.newPage();
       }
+
 
       console.log('Setting HTML content for solutions PDF...');
       await page.setContent(html, { waitUntil: 'networkidle' });
@@ -706,7 +658,6 @@ export const POST = async (req: NextRequest) => {
       });
       throw browserError;
     } finally {
-      try { await context?.close(); } catch {}
       try { await browser?.close(); } catch {}
     }
 
