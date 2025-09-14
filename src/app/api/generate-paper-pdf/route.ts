@@ -1,3 +1,5 @@
+//route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 
 import fs from 'node:fs';
@@ -373,6 +375,10 @@ export const POST = async (req: NextRequest) => {
       }
 
 
+    // FIX: Ensure chromium libs are resolvable at runtime (fixes libnss3.so errors)
+    const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
+    process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
+
     console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
     console.log('[PDF] Launching Chromium for PDF generation...');
@@ -384,10 +390,6 @@ export const POST = async (req: NextRequest) => {
       if (!chromium || !puppeteer) {
         chromium = (await import('@sparticuz/chromium')).default;
         puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
-        // Ensure chromium libs are resolvable at runtime (fixes libnss3.so errors)
-        const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
-        process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
-
       }
 
     let page: any = null;
