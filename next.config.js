@@ -11,6 +11,17 @@ const nextConfig = {
   },
   // Ensure Puppeteer works on Vercel by not bundling these server-side packages
   serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+  // Ensure chromium binary and libs are included in the trace for the API routes
+  outputFileTracingIncludes: {
+    'app/api/generate-paper-pdf/route': [
+      'node_modules/@sparticuz/chromium/bin/**',
+      'node_modules/@sparticuz/chromium/lib/**',
+    ],
+    'app/api/generate-solutions-pdf/route': [
+      'node_modules/@sparticuz/chromium/bin/**',
+      'node_modules/@sparticuz/chromium/lib/**',
+    ],
+  },
 };
 
 module.exports = nextConfig;

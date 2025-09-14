@@ -9,8 +9,11 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // seconds
 
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
+// Dynamic imports (per Vercel guidance)
+let chromium: any;
+let puppeteer: any;
+
+
 
 function findLocalChromeExecutable(): string | undefined {
   const isWin = process.platform === 'win32';
@@ -344,15 +347,27 @@ export const POST = async (req: NextRequest) => {
 
     console.log('[PDF] Launching Chromium for PDF generation...');
     const launchOpts = await getLaunchOptions();
-    console.log('Resolved executablePath:', launchOpts.executablePath || '(default from Playwright)');
+    console.log('Resolved executablePath:', launchOpts.executablePath || '(serverless)');
 
     // Use puppeteer-core with @sparticuz/chromium on serverless; local Chrome/Edge otherwise
     let browser: any = null;
+      if (!chromium || !puppeteer) {
+        chromium = (await import('@sparticuz/chromium')).default;
+        puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
+        // Ensure chromium libs are resolvable at runtime (fixes libnss3.so errors)
+        const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
+        process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH, libPath].filter(Boolean).join(':');
+
+      }
+
     let page: any = null;
 
     try {
       const isServerless = !!process.env.VERCEL || !!process.env.AWS_REGION || !!process.env.LAMBDA_TASK_ROOT;
       if (isServerless) {
+        try { (chromium as any).setHeadlessMode?.(true); } catch {}
+        try { (chromium as any).setGraphicsMode?.(false); } catch {}
+
         const executablePath = await chromium.executablePath();
         if (!executablePath) throw new Error('chromium.executablePath() returned empty');
         console.log('[PDF] launching puppeteer with @sparticuz/chromium', { executablePath });
@@ -862,7 +877,7 @@ ${subjectQuestions.map((q, questionIndex) => {
 </html>`;
 
     console.log('Setting page content...');
-    if (!page) throw new Error('Playwright page not initialized');
+    if (!page) throw new Error('Puppeteer page not initialized');
 
     await page.setContent(html, { waitUntil: 'networkidle2' });
 
@@ -876,7 +891,7 @@ ${subjectQuestions.map((q, questionIndex) => {
     // Small extra delay to allow layout to settle in multi-column flow
     await new Promise(resolve => setTimeout(resolve, 200));
 
-    console.log('Generating PDF with Playwright...');
+    console.log('Generating PDF...');
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -896,7 +911,7 @@ ${subjectQuestions.map((q, questionIndex) => {
 
     return response;
   } catch (browserError) {
-    console.error('Playwright browser launch/render failed:', {
+    console.error('Browser launch/render failed:', {
       message: (browserError as any)?.message,
       stack: (browserError as any)?.stack,
       name: (browserError as any)?.name
