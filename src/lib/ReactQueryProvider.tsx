@@ -1,10 +1,20 @@
 "use client"
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
-
 import { ReactNode } from 'react';
+import dynamic from 'next/dynamic'
+
+// Dynamically import ReactQueryDevtools only in development
+const ReactQueryDevtools = dynamic(
+  () => import('@tanstack/react-query-devtools').then((mod) => ({
+    default: mod.ReactQueryDevtools
+  })),
+  {
+    ssr: false,
+    loading: () => null
+  }
+)
 
 export default function ReactQueryProvider({ children }: { children: ReactNode }) {
   // This ensures that data is not shared between different users and requests
@@ -20,7 +30,7 @@ export default function ReactQueryProvider({ children }: { children: ReactNode }
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   )
 }
