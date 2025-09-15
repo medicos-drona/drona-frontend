@@ -6,11 +6,13 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --only=production && npm cache clean --force
 
+# Build stage with dev dependencies
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
+RUN npm ci && npm cache clean --force
 COPY . .
 
 # Environment variables for build time
@@ -38,25 +40,18 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abcdef1234567890
 ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-ABCDEFGHIJ
 ENV NEXT_PUBLIC_API_URL=https://api.medicosprep.in/api
 
-# Install Playwright dependencies for PDF generation
-RUN npm run postinstall
-
 # Build the application
 RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
 
-# Install necessary packages for Puppeteer/Chromium
+# Install only essential packages for Puppeteer/Chromium
 RUN apk add --no-cache \
     chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
     ca-certificates \
-    ttf-freefont \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -65,10 +60,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built application
+# Copy built application and production dependencies
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # Runtime environment variables
@@ -87,21 +82,6 @@ ENV NEXT_PUBLIC_API_URL=""
 # Puppeteer/Chromium Configuration
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ENV CHROME_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV CHROMIUM_PATH=/usr/bin/chromium-browser
-ENV GOOGLE_CHROME_SHIM=/usr/bin/chromium-browser
-
-# Chromium remote pack URL (optional override)
-ENV CHROMIUM_REMOTE_PACK_URL=""
-
-# Browserless API Key (for external browser service if needed)
-ENV BROWSERLESS_API_KEY=""
-
-# Vercel-specific environment variables (if deploying to Vercel-compatible platform)
-ENV VERCEL=""
-ENV VERCEL_ENV=""
-
-# Library path for Chromium dependencies
-ENV LD_LIBRARY_PATH="/usr/lib:/lib"
 
 # Set proper permissions
 RUN chown -R nextjs:nodejs /app
