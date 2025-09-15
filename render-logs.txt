@@ -1,397 +1,2384 @@
-2025-09-14T17:22:14.971811155Z ==> Cloning from https://github.com/medicos-drona/drona-frontend
-2025-09-14T17:22:16.146512506Z ==> Checking out commit adcecfdb72c84f4394135c1f51267e73c663abe5 in branch main
-2025-09-14T17:24:25.640280963Z ==> Using Node.js version 22.16.0 (default)
-2025-09-14T17:24:25.665644267Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
-2025-09-14T17:24:27.825320051Z ==> Running build command 'npm install; npm run build'...
-2025-09-14T17:25:18.621644082Z 
-2025-09-14T17:25:18.621672174Z > medicos@0.1.0 postinstall
-2025-09-14T17:25:18.621679784Z > playwright install chromium
-2025-09-14T17:25:18.621684834Z 
-2025-09-14T17:25:19.215461432Z Downloading Chromium 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-linux.zip
-2025-09-14T17:25:19.450433106Z |                                                                                |   0% of 173.7 MiB
-2025-09-14T17:25:19.580908034Z |■■■■■■■■                                                                        |  10% of 173.7 MiB
-2025-09-14T17:25:19.650357756Z |■■■■■■■■■■■■■■■■                                                                |  20% of 173.7 MiB
-2025-09-14T17:25:19.71823891Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.7 MiB
-2025-09-14T17:25:19.78075237Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.7 MiB
-2025-09-14T17:25:19.84071788Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.7 MiB
-2025-09-14T17:25:19.902686946Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.7 MiB
-2025-09-14T17:25:19.983258672Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.7 MiB
-2025-09-14T17:25:20.050357612Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.7 MiB
-2025-09-14T17:25:20.106530176Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.7 MiB
-2025-09-14T17:25:20.17348648Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.7 MiB
-2025-09-14T17:25:23.455721683Z Chromium 140.0.7339.16 (playwright build v1187) downloaded to /opt/render/.cache/ms-playwright/chromium-1187
-2025-09-14T17:25:23.456069979Z Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
-2025-09-14T17:25:23.659053721Z |                                                                                |   0% of 2.3 MiB
-2025-09-14T17:25:23.680071626Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
-2025-09-14T17:25:23.686690054Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
-2025-09-14T17:25:23.688652509Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
-2025-09-14T17:25:23.693165285Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
-2025-09-14T17:25:23.695099329Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
-2025-09-14T17:25:23.696579564Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
-2025-09-14T17:25:23.698312289Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
-2025-09-14T17:25:23.699612796Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
-2025-09-14T17:25:23.701243637Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
-2025-09-14T17:25:23.702576395Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
-2025-09-14T17:25:23.756998173Z FFMPEG playwright build v1011 downloaded to /opt/render/.cache/ms-playwright/ffmpeg-1011
-2025-09-14T17:25:23.757305096Z Downloading Chromium Headless Shell 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-headless-shell-linux.zip
-2025-09-14T17:25:23.9697323Z |                                                                                |   0% of 104.3 MiB
-2025-09-14T17:25:24.064882451Z |■■■■■■■■                                                                        |  10% of 104.3 MiB
-2025-09-14T17:25:24.117168375Z |■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
-2025-09-14T17:25:24.161866651Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
-2025-09-14T17:25:24.201953985Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
-2025-09-14T17:25:24.242247158Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
-2025-09-14T17:25:24.278459404Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
-2025-09-14T17:25:24.313089441Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
-2025-09-14T17:25:24.34938616Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
-2025-09-14T17:25:24.381909906Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
-2025-09-14T17:25:24.414296295Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
-2025-09-14T17:25:26.088602531Z Chromium Headless Shell 140.0.7339.16 (playwright build v1187) downloaded to /opt/render/.cache/ms-playwright/chromium_headless_shell-1187
-2025-09-14T17:25:26.505636308Z 
-2025-09-14T17:25:26.505662029Z added 1529 packages, and audited 1530 packages in 59s
-2025-09-14T17:25:26.505674529Z 
-2025-09-14T17:25:26.50567904Z 203 packages are looking for funding
-2025-09-14T17:25:26.5056828Z   run `npm fund` for details
-2025-09-14T17:25:26.572306279Z 
-2025-09-14T17:25:26.572348701Z 9 vulnerabilities (3 low, 1 moderate, 5 high)
-2025-09-14T17:25:26.572353441Z 
-2025-09-14T17:25:26.572357211Z To address issues that do not require attention, run:
-2025-09-14T17:25:26.572360311Z   npm audit fix
-2025-09-14T17:25:26.572362902Z 
-2025-09-14T17:25:26.572365431Z To address all issues possible, run:
-2025-09-14T17:25:26.572368872Z   npm audit fix --force
-2025-09-14T17:25:26.572371572Z 
-2025-09-14T17:25:26.572374262Z Some issues need review, and may require choosing
-2025-09-14T17:25:26.572377662Z a different dependency.
-2025-09-14T17:25:26.572380322Z 
-2025-09-14T17:25:26.572383702Z Run `npm audit` for details.
-2025-09-14T17:25:26.835812095Z 
-2025-09-14T17:25:26.835834226Z > medicos@0.1.0 build
-2025-09-14T17:25:26.835837276Z > next build
-2025-09-14T17:25:26.835839427Z 
-2025-09-14T17:25:26.933531767Z  ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
-2025-09-14T17:25:27.405874331Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
-2025-09-14T17:25:27.481872118Z    ▲ Next.js 15.2.4
-2025-09-14T17:25:27.503470228Z 
-2025-09-14T17:25:27.601281644Z    Creating an optimized production build ...
-2025-09-14T17:25:42.457548086Z  ⚠ Compiled with warnings
-2025-09-14T17:25:42.457568037Z 
-2025-09-14T17:25:42.458008126Z ./src/app/api/generate-paper-pdf/route.ts
-2025-09-14T17:25:42.458021787Z Critical dependency: the request of a dependency is an expression
-2025-09-14T17:25:42.458025977Z 
-2025-09-14T17:25:42.458030847Z Import trace for requested module:
-2025-09-14T17:25:42.458035107Z ./src/app/api/generate-paper-pdf/route.ts
-2025-09-14T17:25:42.458039237Z 
-2025-09-14T17:25:42.458043728Z ./src/app/api/generate-paper-pdf/route.ts
-2025-09-14T17:25:42.458047838Z Critical dependency: the request of a dependency is an expression
-2025-09-14T17:25:42.458051738Z 
-2025-09-14T17:25:42.458063979Z Import trace for requested module:
-2025-09-14T17:25:42.458066599Z ./src/app/api/generate-paper-pdf/route.ts
-2025-09-14T17:25:42.458068789Z 
-2025-09-14T17:25:42.458071259Z ./src/app/api/generate-solutions-pdf/route.ts
-2025-09-14T17:25:42.458073809Z Critical dependency: the request of a dependency is an expression
-2025-09-14T17:25:42.458076099Z 
-2025-09-14T17:25:42.458078369Z Import trace for requested module:
-2025-09-14T17:25:42.458080939Z ./src/app/api/generate-solutions-pdf/route.ts
-2025-09-14T17:25:42.458083319Z 
-2025-09-14T17:25:55.965335652Z  ✓ Compiled successfully
-2025-09-14T17:25:55.970432304Z    Linting and checking validity of types ...
-2025-09-14T17:26:05.28072803Z 
-2025-09-14T17:26:05.280761842Z ./src/app/admin/page.tsx
-2025-09-14T17:26:05.280768142Z 6:8  Warning: 'CollegeChart' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280772232Z 
-2025-09-14T17:26:05.280777502Z ./src/app/api/generate-paper-pdf/route.ts
-2025-09-14T17:26:05.280781803Z 6:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280785683Z 46:51  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280789793Z 60:62  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280793693Z 61:63  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280797483Z 264:123  Warning: 'after' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280802143Z 303:13  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280806584Z 342:7  Warning: 'filename' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280809994Z 353:16  Warning: 'resolveBundledChromiumPath' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280813784Z 685:21  Warning: 'originalText' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280817364Z 935:13  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280820784Z 967:43  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280824094Z 
-2025-09-14T17:26:05.280827554Z ./src/app/api/generate-solutions-pdf/route.ts
-2025-09-14T17:26:05.280831205Z 7:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280834575Z 29:51  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280837855Z 48:53  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280841295Z 49:54  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280844875Z 254:76  Warning: '_after' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280848455Z 572:13  Warning: 'processedOpt' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.280851955Z 700:45  Warning: Empty block statement.  no-empty
-2025-09-14T17:26:05.280855816Z 
-2025-09-14T17:26:05.280860406Z ./src/app/college/page.tsx
-2025-09-14T17:26:05.280864556Z 156:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280869006Z 167:6  Warning: React Hook useEffect has a missing dependency: 'colorPalette'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.280872876Z 
-2025-09-14T17:26:05.280876687Z ./src/app/college/teachers-list/page.tsx
-2025-09-14T17:26:05.280880217Z 23:10  Warning: 'isFilterModalOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280883777Z 30:10  Warning: 'departments' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280887377Z 38:10  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280900598Z 199:17  Warning: 'DepartmentMap' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280903048Z 306:7  Warning: 'handleFilterApply' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280905058Z 
-2025-09-14T17:26:05.280907108Z ./src/app/forgot-password/page.tsx
-2025-09-14T17:26:05.280909358Z 8:10  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280911288Z 
-2025-09-14T17:26:05.280913798Z ./src/app/layout.tsx
-2025-09-14T17:26:05.280916078Z 4:10  Warning: 'NavigationLoadingWrapper' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280918208Z 9:7  Warning: 'outfit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280920018Z 
-2025-09-14T17:26:05.280921978Z ./src/app/login/page.tsx
-2025-09-14T17:26:05.280924109Z 9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280926199Z 9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280928079Z 
-2025-09-14T17:26:05.280930119Z ./src/app/signup/page.tsx
-2025-09-14T17:26:05.280932239Z 9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280934349Z 9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280936679Z 9:35  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280938599Z 
-2025-09-14T17:26:05.280940569Z ./src/app/teacher/downloaded-papers/page.tsx
-2025-09-14T17:26:05.28094269Z 3:27  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280944619Z 
-2025-09-14T17:26:05.28094661Z ./src/app/teacher/page.tsx
-2025-09-14T17:26:05.2809487Z 8:10  Warning: 'activeTab' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28095098Z 10:9  Warning: 'handleTabChange' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28095286Z 
-2025-09-14T17:26:05.28095489Z ./src/components/CollegeChart.tsx
-2025-09-14T17:26:05.28095721Z 5:3  Warning: 'LineChart' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28095931Z 6:3  Warning: 'Line' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28096141Z 18:10  Warning: 'cn' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28096351Z 20:28  Warning: 'CollegeGrowthResponse' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280965491Z 
-2025-09-14T17:26:05.280967611Z ./src/components/SubjectQuestionsChart.tsx
-2025-09-14T17:26:05.280969691Z 56:10  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280972491Z 73:9  Warning: 'start' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.280985291Z 153:6  Warning: React Hook useEffect has a missing dependency: 'fetchChartData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.280987772Z 
-2025-09-14T17:26:05.280989921Z ./src/components/TeacherList/AddTeacherForm.tsx
-2025-09-14T17:26:05.280992092Z 27:6  Warning: 'TeacherFormValues' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.280994302Z 30:9  Warning: 'params' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281000632Z 31:11  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281006312Z 31:17  Warning: 'userRole' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281008582Z 85:21  Warning: 'setIsLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281010542Z 
-2025-09-14T17:26:05.281012733Z ./src/components/TeacherList/FilterModal.tsx
-2025-09-14T17:26:05.281014853Z 2:17  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281017083Z 11:10  Warning: 'Label' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281019373Z 28:10  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281021263Z 
-2025-09-14T17:26:05.281023243Z ./src/components/TeacherList/Tabs.tsx
-2025-09-14T17:26:05.281025393Z 2:15  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281027363Z 
-2025-09-14T17:26:05.281029363Z ./src/components/UsageChart.tsx
-2025-09-14T17:26:05.281031643Z 19:26  Warning: 'UsageTrendsResponse' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281034354Z 89:27  Warning: Assignments to the 'yAxisDomain' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281036503Z 95:26  Warning: Assignments to the 'yAxisTicks' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281038364Z 
-2025-09-14T17:26:05.281040354Z ./src/components/admin/add-question-form.tsx
-2025-09-14T17:26:05.281042534Z 43:7  Warning: 'ACCEPTED_IMAGE_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281044744Z 44:7  Warning: 'ACCEPTED_PDF_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281046834Z 266:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281049004Z 372:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.281051204Z 803:38  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281053084Z 
-2025-09-14T17:26:05.281055134Z ./src/components/admin/college-registration-form.tsx
-2025-09-14T17:26:05.281057224Z 15:10  Warning: 'uploadFile' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281059104Z 
-2025-09-14T17:26:05.281061105Z ./src/components/admin/edit-question-form.tsx
-2025-09-14T17:26:05.281063175Z 15:29  Warning: 'FormDescription' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281065305Z 41:7  Warning: 'MAX_FILE_SIZE' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281067395Z 265:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281069545Z 359:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.281071595Z 583:36  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281073505Z 
-2025-09-14T17:26:05.281075605Z ./src/components/admin/question-bank/question-bank.tsx
-2025-09-14T17:26:05.281083796Z 33:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281086386Z 34:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281090056Z 51:10  Warning: 'refreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281092506Z 51:24  Warning: 'setRefreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281095216Z 472:15  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
-2025-09-14T17:26:05.281097116Z 
-2025-09-14T17:26:05.281099206Z ./src/components/admin/question-bank/question-list.tsx
-2025-09-14T17:26:05.281101376Z 119:9  Warning: 'getSolutionData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281129047Z 
-2025-09-14T17:26:05.281131368Z ./src/components/admin/subject-chapter-manager.tsx
-2025-09-14T17:26:05.281133618Z 11:10  Warning: 'useToast' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281145748Z 125:6  Warning: React Hook useEffect has missing dependencies: 'initialSubjects.length', 'initialTopics.length', and 'selectedSubjectId'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281148268Z 
-2025-09-14T17:26:05.281150548Z ./src/components/admin/university-card.tsx
-2025-09-14T17:26:05.281152809Z 24:10  Warning: 'isApiSuccess' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281154879Z 
-2025-09-14T17:26:05.281159719Z ./src/components/landing-page/Footer.tsx
-2025-09-14T17:26:05.281162019Z 25:35  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281163949Z 
-2025-09-14T17:26:05.281165929Z ./src/components/layout/command-menu.tsx
-2025-09-14T17:26:05.281167989Z 6:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281170049Z 9:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28117216Z 11:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281174769Z 12:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28117698Z 13:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28117904Z 
-2025-09-14T17:26:05.28118121Z ./src/components/layout/dashboard-layout.tsx
-2025-09-14T17:26:05.28118352Z 17:10  Warning: 'sidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28118611Z 17:23  Warning: 'setSidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28118807Z 
-2025-09-14T17:26:05.28119017Z ./src/components/layout/dashboard-navbar.tsx
-2025-09-14T17:26:05.28119229Z 4:10  Warning: 'Bell' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28119473Z 7:10  Warning: 'ThemeToggle' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28119687Z 17:10  Warning: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281199151Z 28:10  Warning: 'notificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281201701Z 28:29  Warning: 'setNotificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281203541Z 
-2025-09-14T17:26:05.281210441Z ./src/components/layout/dashboard-sidebar.tsx
-2025-09-14T17:26:05.281212801Z 9:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281214961Z 10:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281217191Z 11:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281219391Z 12:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281221592Z 13:3  Warning: 'LayoutDashboard' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281223732Z 14:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281225792Z 15:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281227852Z 16:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281229882Z 17:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281231772Z 
-2025-09-14T17:26:05.281233882Z ./src/components/layout/navigation-loading-wrapper.tsx
-2025-09-14T17:26:05.281238542Z 31:11  Warning: 'handleRouteChangeComplete' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281240512Z 
-2025-09-14T17:26:05.281242663Z ./src/components/table/table-title.tsx
-2025-09-14T17:26:05.281244813Z 2:10  Warning: 'Search' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281246673Z 
-2025-09-14T17:26:05.281248713Z ./src/components/table/teachers-table.tsx
-2025-09-14T17:26:05.281250933Z 5:45  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281253113Z 9:3  Warning: 'title' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281255183Z 12:3  Warning: 'columns' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281257273Z 15:3  Warning: 'onRefresh' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281259363Z 16:3  Warning: 'onFilter' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281262613Z 33:9  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281264644Z 
-2025-09-14T17:26:05.281266773Z ./src/components/teacher/question-paper-wizard.tsx
-2025-09-14T17:26:05.281268864Z 446:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281270764Z 
-2025-09-14T17:26:05.281272844Z ./src/components/teacher/steps/actions-step.tsx
-2025-09-14T17:26:05.281275074Z 5:20  Warning: 'Eye' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281277254Z 5:25  Warning: 'Edit' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281279354Z 14:31  Warning: 'formData' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281281204Z 
-2025-09-14T17:26:05.281283204Z ./src/components/teacher/steps/chapter-selection-step.tsx
-2025-09-14T17:26:05.281285384Z 13:10  Warning: 'Plus' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281294125Z 44:6  Warning: React Hook useEffect has a missing dependency: 'loadChapters'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281296585Z 
-2025-09-14T17:26:05.281298755Z ./src/components/teacher/steps/course-subject-step.tsx
-2025-09-14T17:26:05.281302125Z 3:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281307515Z 
-2025-09-14T17:26:05.281309946Z ./src/components/teacher/steps/multi-subject-config-step.tsx
-2025-09-14T17:26:05.281312386Z 49:10  Warning: 'loadingSubjects' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281315276Z 128:6  Warning: React Hook useEffect has a missing dependency: 'loadChaptersForSubject'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281317466Z 244:6  Warning: React Hook useEffect has a missing dependency: 'initializeSubjectConfig'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281319486Z 
-2025-09-14T17:26:05.281321716Z ./src/components/teacher/steps/question-title-description-step.tsx
-2025-09-14T17:26:05.281323786Z 4:10  Warning: 'OptionButton' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281325716Z 
-2025-09-14T17:26:05.281327886Z ./src/components/teacher/steps/topic-selection-step.tsx
-2025-09-14T17:26:05.281330096Z 51:6  Warning: React Hook useEffect has a missing dependency: 'loadTopics'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-2025-09-14T17:26:05.281332047Z 
-2025-09-14T17:26:05.281334067Z ./src/components/teacher/user-profile.tsx
-2025-09-14T17:26:05.281336287Z 3:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281338487Z 5:10  Warning: 'Facebook' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281340607Z 5:20  Warning: 'Instagram' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281342617Z 5:31  Warning: 'Linkedin' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281344777Z 5:41  Warning: 'Pencil' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281346867Z 5:49  Warning: 'Twitter' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281348987Z 6:8  Warning: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281351337Z 32:9  Warning: 'handleEdit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281353327Z 
-2025-09-14T17:26:05.281355337Z ./src/components/ui/chemical-image-display.tsx
-2025-09-14T17:26:05.281357408Z 4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281359328Z 
-2025-09-14T17:26:05.281361798Z ./src/components/ui/sidebar.tsx
-2025-09-14T17:26:05.281363898Z 6:10  Warning: 'PanelLeftIcon' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281365768Z 
-2025-09-14T17:26:05.281367848Z ./src/components/ui/text-with-images.tsx
-2025-09-14T17:26:05.281369988Z 4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281371868Z 
-2025-09-14T17:26:05.281373818Z ./src/components/ui/toaster.tsx
-2025-09-14T17:26:05.281375938Z 16:9  Warning: 'auth' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281377868Z 
-2025-09-14T17:26:05.281379909Z ./src/components/ui/use-toast.ts
-2025-09-14T17:26:05.281381989Z 14:7  Warning: 'toastEventTarget' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281384109Z 15:7  Warning: 'TOAST_ADD_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281386239Z 16:7  Warning: 'TOAST_REMOVE_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281391389Z 
-2025-09-14T17:26:05.281393559Z ./src/lib/api/questionPapers.ts
-2025-09-14T17:26:05.281395819Z 207:20  Warning: 'jsonError' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281397989Z 212:16  Warning: 'parseError' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281400039Z 260:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281401999Z 
-2025-09-14T17:26:05.281404059Z ./src/lib/api/questions.ts
-2025-09-14T17:26:05.28140709Z 4:7  Warning: 'API_BASE_URL' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28140905Z 
-2025-09-14T17:26:05.28141098Z ./src/lib/api/teachers.ts
-2025-09-14T17:26:05.28141306Z 1:10  Warning: 'api' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28141513Z 121:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.28141707Z 
-2025-09-14T17:26:05.28141941Z ./src/lib/auth.ts
-2025-09-14T17:26:05.281425391Z 21:27  Warning: React Hook "useAuth" is called in function "setUserRole" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".  react-hooks/rules-of-hooks
-2025-09-14T17:26:05.28142754Z 
-2025-09-14T17:26:05.281429571Z ./src/lib/constants/menuItems.ts
-2025-09-14T17:26:05.281431741Z 3:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281433901Z 4:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281436041Z 5:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281448841Z 6:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281451342Z 7:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281453432Z 8:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281455532Z 9:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281457742Z 10:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281459712Z 
-2025-09-14T17:26:05.281464292Z ./src/utils/htmlToImage.ts
-2025-09-14T17:26:05.281466512Z 8:10  Warning: 'JSDOM' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281468432Z 
-2025-09-14T17:26:05.281470442Z ./src/utils/imageUtils.ts
-2025-09-14T17:26:05.281472562Z 67:10  Warning: 'findMatchingImageKey' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281474613Z 226:11  Warning: 'imageSrc' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.281476653Z 
-2025-09-14T17:26:05.281478803Z ./src/utils/mathRenderer.ts
-2025-09-14T17:26:05.281481153Z 106:9  Warning: 'fallbackText' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.281483083Z 
-2025-09-14T17:26:05.281485143Z ./src/utils/pdfGenerator.ts
-2025-09-14T17:26:05.281487333Z 3:10  Warning: 'MathRenderer' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281489443Z 539:9  Warning: 'displayText' is never reassigned. Use 'const' instead.  prefer-const
-2025-09-14T17:26:05.281491343Z 
-2025-09-14T17:26:05.281493383Z ./src/utils/svgMathRenderer.ts
-2025-09-14T17:26:05.281495534Z 62:34  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281501154Z 62:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281503564Z 65:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281505794Z 68:39  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281508024Z 69:41  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281510184Z 148:33  Warning: 'expression' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281512324Z 148:53  Warning: 'options' is defined but never used.  @typescript-eslint/no-unused-vars
-2025-09-14T17:26:05.281514434Z 221:32  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281516655Z 221:64  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281518675Z 223:61  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281520745Z 227:27  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281522905Z 228:29  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
-2025-09-14T17:26:05.281524805Z 
-2025-09-14T17:26:05.281527175Z info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
-2025-09-14T17:26:08.477974378Z    Collecting page data ...
-2025-09-14T17:26:15.661544172Z    Generating static pages (0/23) ...
-2025-09-14T17:26:16.40121845Z Error: <Html> should not be imported outside of pages/_document.
-2025-09-14T17:26:16.401305133Z Read more: https://nextjs.org/docs/messages/no-document-import-in-page
-2025-09-14T17:26:16.401311004Z     at y (.next/server/chunks/8548.js:6:1351)
-2025-09-14T17:26:16.401315894Z Error occurred prerendering page "/404". Read more: https://nextjs.org/docs/messages/prerender-error
-2025-09-14T17:26:16.401320314Z Error: <Html> should not be imported outside of pages/_document.
-2025-09-14T17:26:16.401324724Z Read more: https://nextjs.org/docs/messages/no-document-import-in-page
-2025-09-14T17:26:16.401348795Z     at K (/opt/render/project/src/node_modules/next/dist/compiled/next-server/pages.runtime.prod.js:16:6526)
-2025-09-14T17:26:16.401353465Z     at y (/opt/render/project/src/.next/server/chunks/8548.js:6:1351)
-2025-09-14T17:26:16.401357996Z     at react-stack-bottom-frame (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:9251:18)
-2025-09-14T17:26:16.401362576Z     at renderWithHooks (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4898:19)
-2025-09-14T17:26:16.401367076Z     at renderElement (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5333:23)
-2025-09-14T17:26:16.401371186Z     at retryNode (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
-2025-09-14T17:26:16.401375426Z     at renderNodeDestructive (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
-2025-09-14T17:26:16.401379306Z     at renderElement (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5319:11)
-2025-09-14T17:26:16.401383057Z     at retryNode (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
-2025-09-14T17:26:16.401387287Z     at renderNodeDestructive (/opt/render/project/src/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
-2025-09-14T17:26:16.401391437Z Export encountered an error on /_error: /404, exiting the build.
-2025-09-14T17:26:16.445957156Z  ⨯ Next.js build worker exited with code: 1 and signal: null
-2025-09-14T17:26:16.562347441Z ==> Build failed 😞
-2025-09-14T17:26:16.562362262Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2025-09-14T17:57:45.704631705Z [inf]  Selecting previously unselected package libgdk-pixbuf-2.0-0:amd64.
+
+2025-09-14T17:57:45.705885128Z [inf]  Preparing to unpack .../039-libgdk-pixbuf-2.0-0_2.42.10+dfsg-1+deb12u2_amd64.deb ...
+
+2025-09-14T17:57:45.707629817Z [inf]  Unpacking libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:57:45.733112464Z [inf]  Selecting previously unselected package gtk-update-icon-cache.
+
+2025-09-14T17:57:45.734411031Z [inf]  Preparing to unpack .../040-gtk-update-icon-cache_3.24.38-2~deb12u3_amd64.deb ...
+
+2025-09-14T17:57:45.735886671Z [inf]  Unpacking gtk-update-icon-cache (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:57:45.761648015Z [inf]  Selecting previously unselected package adwaita-icon-theme.
+
+2025-09-14T17:57:45.76284591Z [inf]  Preparing to unpack .../041-adwaita-icon-theme_43-1_all.deb ...
+
+2025-09-14T17:57:45.764054876Z [inf]  Unpacking adwaita-icon-theme (43-1) ...
+
+2025-09-14T17:57:46.246306471Z [inf]  Selecting previously unselected package alsa-topology-conf.
+
+2025-09-14T17:57:46.249188965Z [inf]  Preparing to unpack .../042-alsa-topology-conf_1.2.5.1-2_all.deb ...
+
+2025-09-14T17:57:46.250709314Z [inf]  Unpacking alsa-topology-conf (1.2.5.1-2) ...
+
+2025-09-14T17:57:46.26711388Z [inf]  Selecting previously unselected package libasound2-data.
+
+2025-09-14T17:57:46.268764143Z [inf]  Preparing to unpack .../043-libasound2-data_1.2.8-1_all.deb ...
+
+2025-09-14T17:57:46.270056468Z [inf]  Unpacking libasound2-data (1.2.8-1) ...
+
+2025-09-14T17:57:46.290906393Z [inf]  Selecting previously unselected package libasound2:amd64.
+
+2025-09-14T17:57:46.292539442Z [inf]  Preparing to unpack .../044-libasound2_1.2.8-1+b1_amd64.deb ...
+
+2025-09-14T17:57:46.294104101Z [inf]  Unpacking libasound2:amd64 (1.2.8-1+b1) ...
+
+2025-09-14T17:57:46.33238472Z [inf]  Selecting previously unselected package alsa-ucm-conf.
+
+2025-09-14T17:57:46.334008242Z [inf]  Preparing to unpack .../045-alsa-ucm-conf_1.2.8-1_all.deb ...
+
+2025-09-14T17:57:46.335454452Z [inf]  Unpacking alsa-ucm-conf (1.2.8-1) ...
+
+2025-09-14T17:57:46.384851788Z [inf]  Selecting previously unselected package at-spi2-common.
+
+2025-09-14T17:57:46.386618691Z [inf]  Preparing to unpack .../046-at-spi2-common_2.46.0-5_all.deb ...
+
+2025-09-14T17:57:46.387965709Z [inf]  Unpacking at-spi2-common (2.46.0-5) ...
+
+2025-09-14T17:57:46.419195581Z [inf]  Selecting previously unselected package libxau6:amd64.
+
+2025-09-14T17:57:46.4209875Z [inf]  Preparing to unpack .../047-libxau6_1%3a1.0.9-1_amd64.deb ...
+
+2025-09-14T17:57:46.422517858Z [inf]  Unpacking libxau6:amd64 (1:1.0.9-1) ...
+
+2025-09-14T17:57:46.439392698Z [inf]  Selecting previously unselected package libbsd0:amd64.
+
+2025-09-14T17:57:46.441089269Z [inf]  Preparing to unpack .../048-libbsd0_0.11.7-2_amd64.deb ...
+
+2025-09-14T17:57:46.442565706Z [inf]  Unpacking libbsd0:amd64 (0.11.7-2) ...
+
+2025-09-14T17:57:46.464780146Z [inf]  Selecting previously unselected package libxdmcp6:amd64.
+
+2025-09-14T17:57:46.466471513Z [inf]  Preparing to unpack .../049-libxdmcp6_1%3a1.1.2-3_amd64.deb ...
+
+2025-09-14T17:57:46.468161785Z [inf]  Unpacking libxdmcp6:amd64 (1:1.1.2-3) ...
+
+2025-09-14T17:57:46.48505758Z [inf]  Selecting previously unselected package libxcb1:amd64.
+
+2025-09-14T17:57:46.486880794Z [inf]  Preparing to unpack .../050-libxcb1_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:46.48840544Z [inf]  Unpacking libxcb1:amd64 (1.15-1) ...
+
+2025-09-14T17:57:46.50745859Z [inf]  Selecting previously unselected package libx11-data.
+
+2025-09-14T17:57:46.509069117Z [inf]  Preparing to unpack .../051-libx11-data_2%3a1.8.4-2+deb12u2_all.deb ...
+
+2025-09-14T17:57:46.510355349Z [inf]  Unpacking libx11-data (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:57:46.622976762Z [inf]  Selecting previously unselected package libx11-6:amd64.
+
+2025-09-14T17:57:46.624956808Z [inf]  Preparing to unpack .../052-libx11-6_2%3a1.8.4-2+deb12u2_amd64.deb ...
+
+2025-09-14T17:57:46.627865346Z [inf]  Unpacking libx11-6:amd64 (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:57:46.685589335Z [inf]  Selecting previously unselected package libxext6:amd64.
+
+2025-09-14T17:57:46.687372382Z [inf]  Preparing to unpack .../053-libxext6_2%3a1.3.4-1+b1_amd64.deb ...
+
+2025-09-14T17:57:46.688766443Z [inf]  Unpacking libxext6:amd64 (2:1.3.4-1+b1) ...
+
+2025-09-14T17:57:46.706024615Z [inf]  Selecting previously unselected package libxi6:amd64.
+
+2025-09-14T17:57:46.7077596Z [inf]  Preparing to unpack .../054-libxi6_2%3a1.8-1+b1_amd64.deb ...
+
+2025-09-14T17:57:46.70906335Z [inf]  Unpacking libxi6:amd64 (2:1.8-1+b1) ...
+
+2025-09-14T17:57:46.727907444Z [inf]  Selecting previously unselected package libatspi2.0-0:amd64.
+
+2025-09-14T17:57:46.7293783Z [inf]  Preparing to unpack .../055-libatspi2.0-0_2.46.0-5_amd64.deb ...
+
+2025-09-14T17:57:46.73056036Z [inf]  Unpacking libatspi2.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:57:46.750774032Z [inf]  Selecting previously unselected package x11-common.
+
+2025-09-14T17:57:46.752267006Z [inf]  Preparing to unpack .../056-x11-common_1%3a7.7+23_all.deb ...
+
+2025-09-14T17:57:46.75361862Z [inf]  Unpacking x11-common (1:7.7+23) ...
+
+2025-09-14T17:57:46.77623415Z [inf]  Selecting previously unselected package libxtst6:amd64.
+
+2025-09-14T17:57:46.777701418Z [inf]  Preparing to unpack .../057-libxtst6_2%3a1.2.3-1.1_amd64.deb ...
+
+2025-09-14T17:57:46.778895559Z [inf]  Unpacking libxtst6:amd64 (2:1.2.3-1.1) ...
+
+2025-09-14T17:57:46.801893868Z [inf]  Selecting previously unselected package dbus-user-session.
+
+2025-09-14T17:57:46.803499141Z [inf]  Preparing to unpack .../058-dbus-user-session_1.14.10-1~deb12u1_amd64.deb ...
+
+2025-09-14T17:57:46.80551775Z [inf]  Unpacking dbus-user-session (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:46.825681655Z [inf]  Selecting previously unselected package libdconf1:amd64.
+
+2025-09-14T17:57:46.827365729Z [inf]  Preparing to unpack .../059-libdconf1_0.40.0-4_amd64.deb ...
+
+2025-09-14T17:57:46.828799677Z [inf]  Unpacking libdconf1:amd64 (0.40.0-4) ...
+
+2025-09-14T17:57:46.844951274Z [inf]  Selecting previously unselected package dconf-service.
+
+2025-09-14T17:57:46.846579277Z [inf]  Preparing to unpack .../060-dconf-service_0.40.0-4_amd64.deb ...
+
+2025-09-14T17:57:46.847892224Z [inf]  Unpacking dconf-service (0.40.0-4) ...
+
+2025-09-14T17:57:46.863596336Z [inf]  Selecting previously unselected package dconf-gsettings-backend:amd64.
+
+2025-09-14T17:57:46.865160895Z [inf]  Preparing to unpack .../061-dconf-gsettings-backend_0.40.0-4_amd64.deb ...
+
+2025-09-14T17:57:46.866422706Z [inf]  Unpacking dconf-gsettings-backend:amd64 (0.40.0-4) ...
+
+2025-09-14T17:57:46.884847346Z [inf]  Selecting previously unselected package gsettings-desktop-schemas.
+
+2025-09-14T17:57:46.88631867Z [inf]  Preparing to unpack .../062-gsettings-desktop-schemas_43.0-1_all.deb ...
+
+2025-09-14T17:57:46.887674079Z [inf]  Unpacking gsettings-desktop-schemas (43.0-1) ...
+
+2025-09-14T17:57:46.948422063Z [inf]  Selecting previously unselected package at-spi2-core.
+
+2025-09-14T17:57:46.950153936Z [inf]  Preparing to unpack .../063-at-spi2-core_2.46.0-5_amd64.deb ...
+
+2025-09-14T17:57:46.951514771Z [inf]  Unpacking at-spi2-core (2.46.0-5) ...
+
+2025-09-14T17:57:46.973118281Z [inf]  Selecting previously unselected package libisl23:amd64.
+
+2025-09-14T17:57:46.97481223Z [inf]  Preparing to unpack .../064-libisl23_0.25-1.1_amd64.deb ...
+
+2025-09-14T17:57:46.976265251Z [inf]  Unpacking libisl23:amd64 (0.25-1.1) ...
+
+2025-09-14T17:57:47.037800292Z [inf]  Selecting previously unselected package libmpfr6:amd64.
+
+2025-09-14T17:57:47.039500944Z [inf]  Preparing to unpack .../065-libmpfr6_4.2.0-1_amd64.deb ...
+
+2025-09-14T17:57:47.041007227Z [inf]  Unpacking libmpfr6:amd64 (4.2.0-1) ...
+
+2025-09-14T17:57:47.08407687Z [inf]  Selecting previously unselected package libmpc3:amd64.
+
+2025-09-14T17:57:47.085774248Z [inf]  Preparing to unpack .../066-libmpc3_1.3.1-1_amd64.deb ...
+
+2025-09-14T17:57:47.087211314Z [inf]  Unpacking libmpc3:amd64 (1.3.1-1) ...
+
+2025-09-14T17:57:47.104575534Z [inf]  Selecting previously unselected package cpp-12.
+
+2025-09-14T17:57:47.106248459Z [inf]  Preparing to unpack .../067-cpp-12_12.2.0-14+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:47.107587792Z [inf]  Unpacking cpp-12 (12.2.0-14+deb12u1) ...
+
+2025-09-14T17:57:47.653146365Z [inf]  Selecting previously unselected package cpp.
+
+2025-09-14T17:57:47.655585976Z [inf]  Preparing to unpack .../068-cpp_4%3a12.2.0-3_amd64.deb ...
+
+2025-09-14T17:57:47.657173828Z [inf]  Unpacking cpp (4:12.2.0-3) ...
+
+2025-09-14T17:57:47.673710613Z [inf]  Selecting previously unselected package libbrotli1:amd64.
+
+2025-09-14T17:57:47.675510493Z [inf]  Preparing to unpack .../069-libbrotli1_1.0.9-2+b6_amd64.deb ...
+
+2025-09-14T17:57:47.676873459Z [inf]  Unpacking libbrotli1:amd64 (1.0.9-2+b6) ...
+
+2025-09-14T17:57:47.711312088Z [inf]  Selecting previously unselected package libfreetype6:amd64.
+
+2025-09-14T17:57:47.712989377Z [inf]  Preparing to unpack .../070-libfreetype6_2.12.1+dfsg-5+deb12u4_amd64.deb ...
+
+2025-09-14T17:57:47.714425066Z [inf]  Unpacking libfreetype6:amd64 (2.12.1+dfsg-5+deb12u4) ...
+
+2025-09-14T17:57:47.755005948Z [inf]  Selecting previously unselected package fonts-liberation.
+
+2025-09-14T17:57:47.756788835Z [inf]  Preparing to unpack .../071-fonts-liberation_1%3a1.07.4-11_all.deb ...
+
+2025-09-14T17:57:47.758093396Z [inf]  Unpacking fonts-liberation (1:1.07.4-11) ...
+
+2025-09-14T17:57:47.830078568Z [inf]  Selecting previously unselected package fontconfig-config.
+
+2025-09-14T17:57:47.831862546Z [inf]  Preparing to unpack .../072-fontconfig-config_2.14.1-4_amd64.deb ...
+
+2025-09-14T17:57:47.921047661Z [inf]  Unpacking fontconfig-config (2.14.1-4) ...
+
+2025-09-14T17:57:47.948043222Z [inf]  Selecting previously unselected package libfontconfig1:amd64.
+
+2025-09-14T17:57:47.949950999Z [inf]  Preparing to unpack .../073-libfontconfig1_2.14.1-4_amd64.deb ...
+
+2025-09-14T17:57:47.951254038Z [inf]  Unpacking libfontconfig1:amd64 (2.14.1-4) ...
+
+2025-09-14T17:57:47.976711161Z [inf]  Selecting previously unselected package fontconfig.
+
+2025-09-14T17:57:47.978634358Z [inf]  Preparing to unpack .../074-fontconfig_2.14.1-4_amd64.deb ...
+
+2025-09-14T17:57:47.979870844Z [inf]  Unpacking fontconfig (2.14.1-4) ...
+
+2025-09-14T17:57:48.008815925Z [inf]  Selecting previously unselected package libdbus-glib-1-2:amd64.
+
+2025-09-14T17:57:48.010532125Z [inf]  Preparing to unpack .../075-libdbus-glib-1-2_0.112-3_amd64.deb ...
+
+2025-09-14T17:57:48.011896256Z [inf]  Unpacking libdbus-glib-1-2:amd64 (0.112-3) ...
+
+2025-09-14T17:57:48.032877343Z [inf]  Selecting previously unselected package gconf2-common.
+
+2025-09-14T17:57:48.03552516Z [inf]  Preparing to unpack .../076-gconf2-common_3.2.6-8_all.deb ...
+
+2025-09-14T17:57:48.038064485Z [inf]  Unpacking gconf2-common (3.2.6-8) ...
+
+2025-09-14T17:57:48.113337184Z [inf]  Selecting previously unselected package libgconf-2-4:amd64.
+
+2025-09-14T17:57:48.115307087Z [inf]  Preparing to unpack .../077-libgconf-2-4_3.2.6-8_amd64.deb ...
+
+2025-09-14T17:57:48.116838632Z [inf]  Unpacking libgconf-2-4:amd64 (3.2.6-8) ...
+
+2025-09-14T17:57:48.147949013Z [inf]  Selecting previously unselected package libsasl2-modules-db:amd64.
+
+2025-09-14T17:57:48.149749641Z [inf]  Preparing to unpack .../078-libsasl2-modules-db_2.1.28+dfsg-10_amd64.deb ...
+
+2025-09-14T17:57:48.15123508Z [inf]  Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:48.16800285Z [inf]  Selecting previously unselected package libsasl2-2:amd64.
+
+2025-09-14T17:57:48.169581233Z [inf]  Preparing to unpack .../079-libsasl2-2_2.1.28+dfsg-10_amd64.deb ...
+
+2025-09-14T17:57:48.170945787Z [inf]  Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:48.193703753Z [inf]  Selecting previously unselected package libldap-2.5-0:amd64.
+
+2025-09-14T17:57:48.195906783Z [inf]  Preparing to unpack .../080-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+
+2025-09-14T17:57:48.197425936Z [inf]  Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+
+2025-09-14T17:57:48.240261181Z [inf]  Selecting previously unselected package gconf-service.
+
+2025-09-14T17:57:48.242669934Z [inf]  Preparing to unpack .../081-gconf-service_3.2.6-8_amd64.deb ...
+
+2025-09-14T17:57:48.244555103Z [inf]  Unpacking gconf-service (3.2.6-8) ...
+
+2025-09-14T17:57:48.277146272Z [inf]  Selecting previously unselected package libatk1.0-0:amd64.
+
+2025-09-14T17:57:48.279671782Z [inf]  Preparing to unpack .../082-libatk1.0-0_2.46.0-5_amd64.deb ...
+
+2025-09-14T17:57:48.282060545Z [inf]  Unpacking libatk1.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:57:48.312445083Z [inf]  Selecting previously unselected package libatk-bridge2.0-0:amd64.
+
+2025-09-14T17:57:48.314972855Z [inf]  Preparing to unpack .../083-libatk-bridge2.0-0_2.46.0-5_amd64.deb ...
+
+2025-09-14T17:57:48.316558484Z [inf]  Unpacking libatk-bridge2.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:57:48.339884285Z [inf]  Selecting previously unselected package libauthen-sasl-perl.
+
+2025-09-14T17:57:48.341737076Z [inf]  Preparing to unpack .../084-libauthen-sasl-perl_2.1600-3_all.deb ...
+
+2025-09-14T17:57:48.343131194Z [inf]  Unpacking libauthen-sasl-perl (2.1600-3) ...
+
+2025-09-14T17:57:48.364998635Z [inf]  Selecting previously unselected package libavahi-common-data:amd64.
+
+2025-09-14T17:57:48.366858688Z [inf]  Preparing to unpack .../085-libavahi-common-data_0.8-10+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:48.368508966Z [inf]  Unpacking libavahi-common-data:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:57:48.408263327Z [inf]  Selecting previously unselected package libavahi-common3:amd64.
+
+2025-09-14T17:57:48.410194691Z [inf]  Preparing to unpack .../086-libavahi-common3_0.8-10+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:48.412512675Z [inf]  Unpacking libavahi-common3:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:57:48.434861691Z [inf]  Selecting previously unselected package libavahi-client3:amd64.
+
+2025-09-14T17:57:48.436868529Z [inf]  Preparing to unpack .../087-libavahi-client3_0.8-10+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:48.438295218Z [inf]  Unpacking libavahi-client3:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:57:48.461312013Z [inf]  Selecting previously unselected package libgtk2.0-common.
+
+2025-09-14T17:57:48.463672191Z [inf]  Preparing to unpack .../088-libgtk2.0-common_2.24.33-2+deb12u1_all.deb ...
+
+2025-09-14T17:57:48.465394378Z [inf]  Unpacking libgtk2.0-common (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:48.688296759Z [inf]  Selecting previously unselected package libpixman-1-0:amd64.
+
+2025-09-14T17:57:48.690053743Z [inf]  Preparing to unpack .../089-libpixman-1-0_0.42.2-1_amd64.deb ...
+
+2025-09-14T17:57:48.691717685Z [inf]  Unpacking libpixman-1-0:amd64 (0.42.2-1) ...
+
+2025-09-14T17:57:48.728123667Z [inf]  Selecting previously unselected package libxcb-render0:amd64.
+
+2025-09-14T17:57:48.729914513Z [inf]  Preparing to unpack .../090-libxcb-render0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:48.731441858Z [inf]  Unpacking libxcb-render0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:48.759606673Z [inf]  Selecting previously unselected package libxcb-shm0:amd64.
+
+2025-09-14T17:57:48.761686681Z [inf]  Preparing to unpack .../091-libxcb-shm0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:48.763973661Z [inf]  Unpacking libxcb-shm0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:48.801550616Z [inf]  Selecting previously unselected package libxrender1:amd64.
+
+2025-09-14T17:57:48.803576691Z [inf]  Preparing to unpack .../092-libxrender1_1%3a0.9.10-1.1_amd64.deb ...
+
+2025-09-14T17:57:48.81091924Z [inf]  Unpacking libxrender1:amd64 (1:0.9.10-1.1) ...
+
+2025-09-14T17:57:48.866957087Z [inf]  Selecting previously unselected package libcairo2:amd64.
+
+2025-09-14T17:57:48.869818722Z [inf]  Preparing to unpack .../093-libcairo2_1.16.0-7_amd64.deb ...
+
+2025-09-14T17:57:48.874272272Z [inf]  Unpacking libcairo2:amd64 (1.16.0-7) ...
+
+2025-09-14T17:57:48.989400808Z [inf]  Selecting previously unselected package libkrb5support0:amd64.
+
+2025-09-14T17:57:48.991978155Z [inf]  Preparing to unpack .../094-libkrb5support0_1.20.1-2+deb12u4_amd64.deb ...
+
+2025-09-14T17:57:48.995153856Z [inf]  Unpacking libkrb5support0:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:49.054112008Z [inf]  Selecting previously unselected package libk5crypto3:amd64.
+
+2025-09-14T17:57:49.05650643Z [inf]  Preparing to unpack .../095-libk5crypto3_1.20.1-2+deb12u4_amd64.deb ...
+
+2025-09-14T17:57:49.061396144Z [inf]  Unpacking libk5crypto3:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:49.10659655Z [inf]  Selecting previously unselected package libkeyutils1:amd64.
+
+2025-09-14T17:57:49.10855916Z [inf]  Preparing to unpack .../096-libkeyutils1_1.6.3-2_amd64.deb ...
+
+2025-09-14T17:57:49.112587872Z [inf]  Unpacking libkeyutils1:amd64 (1.6.3-2) ...
+
+2025-09-14T17:57:49.148300391Z [inf]  Selecting previously unselected package libkrb5-3:amd64.
+
+2025-09-14T17:57:49.150058547Z [inf]  Preparing to unpack .../097-libkrb5-3_1.20.1-2+deb12u4_amd64.deb ...
+
+2025-09-14T17:57:49.156063906Z [inf]  Unpacking libkrb5-3:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:49.238711715Z [inf]  Selecting previously unselected package libgssapi-krb5-2:amd64.
+
+2025-09-14T17:57:49.241172748Z [inf]  Preparing to unpack .../098-libgssapi-krb5-2_1.20.1-2+deb12u4_amd64.deb ...
+
+2025-09-14T17:57:49.246591563Z [inf]  Unpacking libgssapi-krb5-2:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:49.289340416Z [inf]  Selecting previously unselected package libcups2:amd64.
+
+2025-09-14T17:57:49.291202773Z [inf]  Preparing to unpack .../099-libcups2_2.4.2-3+deb12u9_amd64.deb ...
+
+2025-09-14T17:57:49.294253399Z [inf]  Unpacking libcups2:amd64 (2.4.2-3+deb12u9) ...
+
+2025-09-14T17:57:49.359788092Z [inf]  Selecting previously unselected package libfribidi0:amd64.
+
+2025-09-14T17:57:49.362266661Z [inf]  Preparing to unpack .../100-libfribidi0_1.0.8-2.1_amd64.deb ...
+
+2025-09-14T17:57:49.367800363Z [inf]  Unpacking libfribidi0:amd64 (1.0.8-2.1) ...
+
+2025-09-14T17:57:49.415405138Z [inf]  Selecting previously unselected package libgraphite2-3:amd64.
+
+2025-09-14T17:57:49.41838289Z [inf]  Preparing to unpack .../101-libgraphite2-3_1.3.14-1_amd64.deb ...
+
+2025-09-14T17:57:49.42547832Z [inf]  Unpacking libgraphite2-3:amd64 (1.3.14-1) ...
+
+2025-09-14T17:57:49.466065899Z [inf]  Selecting previously unselected package libharfbuzz0b:amd64.
+
+2025-09-14T17:57:49.468001169Z [inf]  Preparing to unpack .../102-libharfbuzz0b_6.0.0+dfsg-3_amd64.deb ...
+
+2025-09-14T17:57:49.471793023Z [inf]  Unpacking libharfbuzz0b:amd64 (6.0.0+dfsg-3) ...
+
+2025-09-14T17:57:49.544111209Z [inf]  Selecting previously unselected package libthai-data.
+
+2025-09-14T17:57:49.545892075Z [inf]  Preparing to unpack .../103-libthai-data_0.1.29-1_all.deb ...
+
+2025-09-14T17:57:49.550657952Z [inf]  Unpacking libthai-data (0.1.29-1) ...
+
+2025-09-14T17:57:49.598082754Z [inf]  Selecting previously unselected package libdatrie1:amd64.
+
+2025-09-14T17:57:49.600578847Z [inf]  Preparing to unpack .../104-libdatrie1_0.2.13-2+b1_amd64.deb ...
+
+2025-09-14T17:57:49.603336097Z [inf]  Unpacking libdatrie1:amd64 (0.2.13-2+b1) ...
+
+2025-09-14T17:57:49.630124846Z [inf]  Selecting previously unselected package libthai0:amd64.
+
+2025-09-14T17:57:49.632472502Z [inf]  Preparing to unpack .../105-libthai0_0.1.29-1_amd64.deb ...
+
+2025-09-14T17:57:49.635266045Z [inf]  Unpacking libthai0:amd64 (0.1.29-1) ...
+
+2025-09-14T17:57:49.66642449Z [inf]  Selecting previously unselected package libpango-1.0-0:amd64.
+
+2025-09-14T17:57:49.668606944Z [inf]  Preparing to unpack .../106-libpango-1.0-0_1.50.12+ds-1_amd64.deb ...
+
+2025-09-14T17:57:49.671739038Z [inf]  Unpacking libpango-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:57:49.725440342Z [inf]  Selecting previously unselected package libpangoft2-1.0-0:amd64.
+
+2025-09-14T17:57:49.727493813Z [inf]  Preparing to unpack .../107-libpangoft2-1.0-0_1.50.12+ds-1_amd64.deb ...
+
+2025-09-14T17:57:49.731766693Z [inf]  Unpacking libpangoft2-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:57:49.792105878Z [inf]  Selecting previously unselected package libpangocairo-1.0-0:amd64.
+
+2025-09-14T17:57:49.794211761Z [inf]  Preparing to unpack .../108-libpangocairo-1.0-0_1.50.12+ds-1_amd64.deb ...
+
+2025-09-14T17:57:49.798768991Z [inf]  Unpacking libpangocairo-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:57:49.838006979Z [inf]  Selecting previously unselected package libxcomposite1:amd64.
+
+2025-09-14T17:57:49.840591797Z [inf]  Preparing to unpack .../109-libxcomposite1_1%3a0.4.5-1_amd64.deb ...
+
+2025-09-14T17:57:49.844988895Z [inf]  Unpacking libxcomposite1:amd64 (1:0.4.5-1) ...
+
+2025-09-14T17:57:49.872111328Z [inf]  Selecting previously unselected package libxfixes3:amd64.
+
+2025-09-14T17:57:49.874005779Z [inf]  Preparing to unpack .../110-libxfixes3_1%3a6.0.0-2_amd64.deb ...
+
+2025-09-14T17:57:49.877691604Z [inf]  Unpacking libxfixes3:amd64 (1:6.0.0-2) ...
+
+2025-09-14T17:57:49.9034797Z [inf]  Selecting previously unselected package libxcursor1:amd64.
+
+2025-09-14T17:57:49.906132936Z [inf]  Preparing to unpack .../111-libxcursor1_1%3a1.2.1-1_amd64.deb ...
+
+2025-09-14T17:57:49.909157945Z [inf]  Unpacking libxcursor1:amd64 (1:1.2.1-1) ...
+
+2025-09-14T17:57:49.938163632Z [inf]  Selecting previously unselected package libxdamage1:amd64.
+
+2025-09-14T17:57:49.940810301Z [inf]  Preparing to unpack .../112-libxdamage1_1%3a1.1.6-1_amd64.deb ...
+
+2025-09-14T17:57:49.94359575Z [inf]  Unpacking libxdamage1:amd64 (1:1.1.6-1) ...
+
+2025-09-14T17:57:49.9711631Z [inf]  Selecting previously unselected package libxinerama1:amd64.
+
+2025-09-14T17:57:49.973098035Z [inf]  Preparing to unpack .../113-libxinerama1_2%3a1.1.4-3_amd64.deb ...
+
+2025-09-14T17:57:49.975615607Z [inf]  Unpacking libxinerama1:amd64 (2:1.1.4-3) ...
+
+2025-09-14T17:57:50.000849186Z [inf]  Selecting previously unselected package libxrandr2:amd64.
+
+2025-09-14T17:57:50.002701131Z [inf]  Preparing to unpack .../114-libxrandr2_2%3a1.5.2-2+b1_amd64.deb ...
+
+2025-09-14T17:57:50.005055806Z [inf]  Unpacking libxrandr2:amd64 (2:1.5.2-2+b1) ...
+
+2025-09-14T17:57:50.03438916Z [inf]  Selecting previously unselected package libgtk2.0-0:amd64.
+
+2025-09-14T17:57:50.036242026Z [inf]  Preparing to unpack .../115-libgtk2.0-0_2.24.33-2+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:50.038843486Z [inf]  Unpacking libgtk2.0-0:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:50.201070224Z [inf]  Selecting previously unselected package libayatana-indicator7:amd64.
+
+2025-09-14T17:57:50.202915775Z [inf]  Preparing to unpack .../116-libayatana-indicator7_0.9.3-1_amd64.deb ...
+
+2025-09-14T17:57:50.206140012Z [inf]  Unpacking libayatana-indicator7:amd64 (0.9.3-1) ...
+
+2025-09-14T17:57:50.235959926Z [inf]  Selecting previously unselected package libdbusmenu-glib4:amd64.
+
+2025-09-14T17:57:50.237932305Z [inf]  Preparing to unpack .../117-libdbusmenu-glib4_18.10.20180917~bzr492+repack1-3_amd64.deb ...
+
+2025-09-14T17:57:50.240817129Z [inf]  Unpacking libdbusmenu-glib4:amd64 (18.10.20180917~bzr492+repack1-3) ...
+
+2025-09-14T17:57:50.270411877Z [inf]  Selecting previously unselected package libdbusmenu-gtk4:amd64.
+
+2025-09-14T17:57:50.272247215Z [inf]  Preparing to unpack .../118-libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-3_amd64.deb ...
+
+2025-09-14T17:57:50.275274255Z [inf]  Unpacking libdbusmenu-gtk4:amd64 (18.10.20180917~bzr492+repack1-3) ...
+
+2025-09-14T17:57:50.301734603Z [inf]  Selecting previously unselected package libayatana-appindicator1.
+
+2025-09-14T17:57:50.303647971Z [inf]  Preparing to unpack .../119-libayatana-appindicator1_0.5.92-1_amd64.deb ...
+
+2025-09-14T17:57:50.306173078Z [inf]  Unpacking libayatana-appindicator1 (0.5.92-1) ...
+
+2025-09-14T17:57:50.336167844Z [inf]  Selecting previously unselected package libcairo-gobject2:amd64.
+
+2025-09-14T17:57:50.33867407Z [inf]  Preparing to unpack .../120-libcairo-gobject2_1.16.0-7_amd64.deb ...
+
+2025-09-14T17:57:50.341112673Z [inf]  Unpacking libcairo-gobject2:amd64 (1.16.0-7) ...
+
+2025-09-14T17:57:50.371501339Z [inf]  Selecting previously unselected package libclone-perl:amd64.
+
+2025-09-14T17:57:50.37329143Z [inf]  Preparing to unpack .../121-libclone-perl_0.46-1_amd64.deb ...
+
+2025-09-14T17:57:50.375866903Z [inf]  Unpacking libclone-perl:amd64 (0.46-1) ...
+
+2025-09-14T17:57:50.404795737Z [inf]  Selecting previously unselected package liblcms2-2:amd64.
+
+2025-09-14T17:57:50.406713641Z [inf]  Preparing to unpack .../122-liblcms2-2_2.14-2_amd64.deb ...
+
+2025-09-14T17:57:50.410216373Z [inf]  Unpacking liblcms2-2:amd64 (2.14-2) ...
+
+2025-09-14T17:57:50.461802962Z [inf]  Selecting previously unselected package libcolord2:amd64.
+
+2025-09-14T17:57:50.464501421Z [inf]  Preparing to unpack .../123-libcolord2_1.4.6-2.2_amd64.deb ...
+
+2025-09-14T17:57:50.469710843Z [inf]  Unpacking libcolord2:amd64 (1.4.6-2.2) ...
+
+2025-09-14T17:57:50.51942022Z [inf]  Selecting previously unselected package libdata-dump-perl.
+
+2025-09-14T17:57:50.521673012Z [inf]  Preparing to unpack .../124-libdata-dump-perl_1.25-1_all.deb ...
+
+2025-09-14T17:57:50.529691372Z [inf]  Unpacking libdata-dump-perl (1.25-1) ...
+
+2025-09-14T17:57:50.562694631Z [inf]  Selecting previously unselected package libdrm-common.
+
+2025-09-14T17:57:50.564613129Z [inf]  Preparing to unpack .../125-libdrm-common_2.4.114-1_all.deb ...
+
+2025-09-14T17:57:50.568506212Z [inf]  Unpacking libdrm-common (2.4.114-1) ...
+
+2025-09-14T17:57:50.607434318Z [inf]  Selecting previously unselected package libdrm2:amd64.
+
+2025-09-14T17:57:50.610068216Z [inf]  Preparing to unpack .../126-libdrm2_2.4.114-1+b1_amd64.deb ...
+
+2025-09-14T17:57:50.613252108Z [inf]  Unpacking libdrm2:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:57:50.644096075Z [inf]  Selecting previously unselected package libdrm-amdgpu1:amd64.
+
+2025-09-14T17:57:50.646061703Z [inf]  Preparing to unpack .../127-libdrm-amdgpu1_2.4.114-1+b1_amd64.deb ...
+
+2025-09-14T17:57:50.650764163Z [inf]  Unpacking libdrm-amdgpu1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:57:50.694091527Z [inf]  Selecting previously unselected package libpciaccess0:amd64.
+
+2025-09-14T17:57:50.696177421Z [inf]  Preparing to unpack .../128-libpciaccess0_0.17-2_amd64.deb ...
+
+2025-09-14T17:57:50.699008422Z [inf]  Unpacking libpciaccess0:amd64 (0.17-2) ...
+
+2025-09-14T17:57:50.734014625Z [inf]  Selecting previously unselected package libdrm-intel1:amd64.
+
+2025-09-14T17:57:50.735859536Z [inf]  Preparing to unpack .../129-libdrm-intel1_2.4.114-1+b1_amd64.deb ...
+
+2025-09-14T17:57:50.738675043Z [inf]  Unpacking libdrm-intel1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:57:50.772729833Z [inf]  Selecting previously unselected package libdrm-nouveau2:amd64.
+
+2025-09-14T17:57:50.774797841Z [inf]  Preparing to unpack .../130-libdrm-nouveau2_2.4.114-1+b1_amd64.deb ...
+
+2025-09-14T17:57:50.778630739Z [inf]  Unpacking libdrm-nouveau2:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:57:50.813574408Z [inf]  Selecting previously unselected package libdrm-radeon1:amd64.
+
+2025-09-14T17:57:50.815376923Z [inf]  Preparing to unpack .../131-libdrm-radeon1_2.4.114-1+b1_amd64.deb ...
+
+2025-09-14T17:57:50.818362646Z [inf]  Unpacking libdrm-radeon1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:57:50.848443257Z [inf]  Selecting previously unselected package libedit2:amd64.
+
+2025-09-14T17:57:50.851094034Z [inf]  Preparing to unpack .../132-libedit2_3.1-20221030-2_amd64.deb ...
+
+2025-09-14T17:57:50.853319151Z [inf]  Unpacking libedit2:amd64 (3.1-20221030-2) ...
+
+2025-09-14T17:57:50.888472666Z [inf]  Selecting previously unselected package libwayland-server0:amd64.
+
+2025-09-14T17:57:50.890374508Z [inf]  Preparing to unpack .../133-libwayland-server0_1.21.0-1_amd64.deb ...
+
+2025-09-14T17:57:50.895327326Z [inf]  Unpacking libwayland-server0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:50.935996342Z [inf]  Selecting previously unselected package libgbm1:amd64.
+
+2025-09-14T17:57:50.938563573Z [inf]  Preparing to unpack .../134-libgbm1_22.3.6-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:50.943652413Z [inf]  Unpacking libgbm1:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:50.97726563Z [inf]  Selecting previously unselected package libglapi-mesa:amd64.
+
+2025-09-14T17:57:50.979050959Z [inf]  Preparing to unpack .../135-libglapi-mesa_22.3.6-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:50.982821788Z [inf]  Unpacking libglapi-mesa:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:51.021917664Z [inf]  Selecting previously unselected package libwayland-client0:amd64.
+
+2025-09-14T17:57:51.023629769Z [inf]  Preparing to unpack .../136-libwayland-client0_1.21.0-1_amd64.deb ...
+
+2025-09-14T17:57:51.027739981Z [inf]  Unpacking libwayland-client0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:51.05468718Z [inf]  Selecting previously unselected package libx11-xcb1:amd64.
+
+2025-09-14T17:57:51.056408356Z [inf]  Preparing to unpack .../137-libx11-xcb1_2%3a1.8.4-2+deb12u2_amd64.deb ...
+
+2025-09-14T17:57:51.058415744Z [inf]  Unpacking libx11-xcb1:amd64 (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:57:51.086261034Z [inf]  Selecting previously unselected package libxcb-dri2-0:amd64.
+
+2025-09-14T17:57:51.088115621Z [inf]  Preparing to unpack .../138-libxcb-dri2-0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.090844481Z [inf]  Unpacking libxcb-dri2-0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.117270133Z [inf]  Selecting previously unselected package libxcb-dri3-0:amd64.
+
+2025-09-14T17:57:51.119073548Z [inf]  Preparing to unpack .../139-libxcb-dri3-0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.121336688Z [inf]  Unpacking libxcb-dri3-0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.14966931Z [inf]  Selecting previously unselected package libxcb-present0:amd64.
+
+2025-09-14T17:57:51.151850162Z [inf]  Preparing to unpack .../140-libxcb-present0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.153797799Z [inf]  Unpacking libxcb-present0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.183758533Z [inf]  Selecting previously unselected package libxcb-randr0:amd64.
+
+2025-09-14T17:57:51.185792326Z [inf]  Preparing to unpack .../141-libxcb-randr0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.188658948Z [inf]  Unpacking libxcb-randr0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.219088385Z [inf]  Selecting previously unselected package libxcb-sync1:amd64.
+
+2025-09-14T17:57:51.2209404Z [inf]  Preparing to unpack .../142-libxcb-sync1_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.22313832Z [inf]  Unpacking libxcb-sync1:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.248396245Z [inf]  Selecting previously unselected package libxcb-xfixes0:amd64.
+
+2025-09-14T17:57:51.250900808Z [inf]  Preparing to unpack .../143-libxcb-xfixes0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.2531551Z [inf]  Unpacking libxcb-xfixes0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.281855972Z [inf]  Selecting previously unselected package libxshmfence1:amd64.
+
+2025-09-14T17:57:51.283715974Z [inf]  Preparing to unpack .../144-libxshmfence1_1.3-1_amd64.deb ...
+
+2025-09-14T17:57:51.285176102Z [inf]  Unpacking libxshmfence1:amd64 (1.3-1) ...
+
+2025-09-14T17:57:51.304876631Z [inf]  Selecting previously unselected package libegl-mesa0:amd64.
+
+2025-09-14T17:57:51.306781023Z [inf]  Preparing to unpack .../145-libegl-mesa0_22.3.6-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:51.308229962Z [inf]  Unpacking libegl-mesa0:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:51.337851077Z [inf]  Selecting previously unselected package libelf1:amd64.
+
+2025-09-14T17:57:51.340450794Z [inf]  Preparing to unpack .../146-libelf1_0.188-2.1_amd64.deb ...
+
+2025-09-14T17:57:51.341958707Z [inf]  Unpacking libelf1:amd64 (0.188-2.1) ...
+
+2025-09-14T17:57:51.371485346Z [inf]  Selecting previously unselected package libencode-locale-perl.
+
+2025-09-14T17:57:51.37334728Z [inf]  Preparing to unpack .../147-libencode-locale-perl_1.05-3_all.deb ...
+
+2025-09-14T17:57:51.374668536Z [inf]  Unpacking libencode-locale-perl (1.05-3) ...
+
+2025-09-14T17:57:51.39580496Z [inf]  Selecting previously unselected package libepoxy0:amd64.
+
+2025-09-14T17:57:51.397672298Z [inf]  Preparing to unpack .../148-libepoxy0_1.5.10-1_amd64.deb ...
+
+2025-09-14T17:57:51.39944477Z [inf]  Unpacking libepoxy0:amd64 (1.5.10-1) ...
+
+2025-09-14T17:57:51.431175684Z [inf]  Selecting previously unselected package libipc-system-simple-perl.
+
+2025-09-14T17:57:51.4330101Z [inf]  Preparing to unpack .../149-libipc-system-simple-perl_1.30-2_all.deb ...
+
+2025-09-14T17:57:51.434707179Z [inf]  Unpacking libipc-system-simple-perl (1.30-2) ...
+
+2025-09-14T17:57:51.45051707Z [inf]  Selecting previously unselected package libfile-basedir-perl.
+
+2025-09-14T17:57:51.45230493Z [inf]  Preparing to unpack .../150-libfile-basedir-perl_0.09-2_all.deb ...
+
+2025-09-14T17:57:51.453640554Z [inf]  Unpacking libfile-basedir-perl (0.09-2) ...
+
+2025-09-14T17:57:51.467886739Z [inf]  Selecting previously unselected package libregexp-ipv6-perl.
+
+2025-09-14T17:57:51.469626018Z [inf]  Preparing to unpack .../151-libregexp-ipv6-perl_0.03-3_all.deb ...
+
+2025-09-14T17:57:51.470912163Z [inf]  Unpacking libregexp-ipv6-perl (0.03-3) ...
+
+2025-09-14T17:57:51.485607943Z [inf]  Selecting previously unselected package liburi-perl.
+
+2025-09-14T17:57:51.487296178Z [inf]  Preparing to unpack .../152-liburi-perl_5.17-1_all.deb ...
+
+2025-09-14T17:57:51.489164482Z [inf]  Unpacking liburi-perl (5.17-1) ...
+
+2025-09-14T17:57:51.514483711Z [inf]  Selecting previously unselected package libfile-desktopentry-perl.
+
+2025-09-14T17:57:51.51626193Z [inf]  Preparing to unpack .../153-libfile-desktopentry-perl_0.22-3_all.deb ...
+
+2025-09-14T17:57:51.519467323Z [inf]  Unpacking libfile-desktopentry-perl (0.22-3) ...
+
+2025-09-14T17:57:51.536786198Z [inf]  Selecting previously unselected package libtimedate-perl.
+
+2025-09-14T17:57:51.538467136Z [inf]  Preparing to unpack .../154-libtimedate-perl_2.3300-2_all.deb ...
+
+2025-09-14T17:57:51.540578085Z [inf]  Unpacking libtimedate-perl (2.3300-2) ...
+
+2025-09-14T17:57:51.563390722Z [inf]  Selecting previously unselected package libhttp-date-perl.
+
+2025-09-14T17:57:51.56517293Z [inf]  Preparing to unpack .../155-libhttp-date-perl_6.05-2_all.deb ...
+
+2025-09-14T17:57:51.567082173Z [inf]  Unpacking libhttp-date-perl (6.05-2) ...
+
+2025-09-14T17:57:51.584905331Z [inf]  Selecting previously unselected package libfile-listing-perl.
+
+2025-09-14T17:57:51.586706925Z [inf]  Preparing to unpack .../156-libfile-listing-perl_6.15-1_all.deb ...
+
+2025-09-14T17:57:51.588832614Z [inf]  Unpacking libfile-listing-perl (6.15-1) ...
+
+2025-09-14T17:57:51.609219417Z [inf]  Selecting previously unselected package libfile-mimeinfo-perl.
+
+2025-09-14T17:57:51.61105169Z [inf]  Preparing to unpack .../157-libfile-mimeinfo-perl_0.33-1_all.deb ...
+
+2025-09-14T17:57:51.613351349Z [inf]  Unpacking libfile-mimeinfo-perl (0.33-1) ...
+
+2025-09-14T17:57:51.633440913Z [inf]  Selecting previously unselected package libfont-afm-perl.
+
+2025-09-14T17:57:51.635291742Z [inf]  Preparing to unpack .../158-libfont-afm-perl_1.20-4_all.deb ...
+
+2025-09-14T17:57:51.637370881Z [inf]  Unpacking libfont-afm-perl (1.20-4) ...
+
+2025-09-14T17:57:51.65849806Z [inf]  Selecting previously unselected package libfontenc1:amd64.
+
+2025-09-14T17:57:51.660400692Z [inf]  Preparing to unpack .../159-libfontenc1_1%3a1.1.4-1_amd64.deb ...
+
+2025-09-14T17:57:51.662475506Z [inf]  Unpacking libfontenc1:amd64 (1:1.1.4-1) ...
+
+2025-09-14T17:57:51.683037623Z [inf]  Selecting previously unselected package libgail18:amd64.
+
+2025-09-14T17:57:51.684896357Z [inf]  Preparing to unpack .../160-libgail18_2.24.33-2+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:51.686522524Z [inf]  Unpacking libgail18:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:51.704019918Z [inf]  Selecting previously unselected package libgail-common:amd64.
+
+2025-09-14T17:57:51.705926991Z [inf]  Preparing to unpack .../161-libgail-common_2.24.33-2+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:51.709304161Z [inf]  Unpacking libgail-common:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:51.741423286Z [inf]  Selecting previously unselected package libgdk-pixbuf-xlib-2.0-0:amd64.
+
+2025-09-14T17:57:51.743320432Z [inf]  Preparing to unpack .../162-libgdk-pixbuf-xlib-2.0-0_2.40.2-2_amd64.deb ...
+
+2025-09-14T17:57:51.745117041Z [inf]  Unpacking libgdk-pixbuf-xlib-2.0-0:amd64 (2.40.2-2) ...
+
+2025-09-14T17:57:51.766686242Z [inf]  Selecting previously unselected package libgdk-pixbuf2.0-0:amd64.
+
+2025-09-14T17:57:51.768525878Z [inf]  Preparing to unpack .../163-libgdk-pixbuf2.0-0_2.40.2-2_amd64.deb ...
+
+2025-09-14T17:57:51.770785554Z [inf]  Unpacking libgdk-pixbuf2.0-0:amd64 (2.40.2-2) ...
+
+2025-09-14T17:57:51.790943385Z [inf]  Selecting previously unselected package libgdk-pixbuf2.0-bin.
+
+2025-09-14T17:57:51.792809851Z [inf]  Preparing to unpack .../164-libgdk-pixbuf2.0-bin_2.42.10+dfsg-1+deb12u2_amd64.deb ...
+
+2025-09-14T17:57:51.79940425Z [inf]  Unpacking libgdk-pixbuf2.0-bin (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:57:51.838089312Z [inf]  Selecting previously unselected package libglvnd0:amd64.
+
+2025-09-14T17:57:51.839955654Z [inf]  Preparing to unpack .../165-libglvnd0_1.6.0-1_amd64.deb ...
+
+2025-09-14T17:57:51.843648743Z [inf]  Unpacking libglvnd0:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:51.941260242Z [inf]  Selecting previously unselected package libxcb-glx0:amd64.
+
+2025-09-14T17:57:51.943153745Z [inf]  Preparing to unpack .../166-libxcb-glx0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:51.956151886Z [inf]  Unpacking libxcb-glx0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:51.984826202Z [inf]  Selecting previously unselected package libxxf86vm1:amd64.
+
+2025-09-14T17:57:51.986652543Z [inf]  Preparing to unpack .../167-libxxf86vm1_1%3a1.1.4-1+b2_amd64.deb ...
+
+2025-09-14T17:57:51.989761789Z [inf]  Unpacking libxxf86vm1:amd64 (1:1.1.4-1+b2) ...
+
+2025-09-14T17:57:52.012581526Z [inf]  Selecting previously unselected package libz3-4:amd64.
+
+2025-09-14T17:57:52.014487384Z [inf]  Preparing to unpack .../168-libz3-4_4.8.12-3.1_amd64.deb ...
+
+2025-09-14T17:57:52.016768903Z [inf]  Unpacking libz3-4:amd64 (4.8.12-3.1) ...
+
+2025-09-14T17:57:52.553572221Z [inf]  Selecting previously unselected package libllvm15:amd64.
+
+2025-09-14T17:57:52.555337198Z [inf]  Preparing to unpack .../169-libllvm15_1%3a15.0.6-4+b1_amd64.deb ...
+
+2025-09-14T17:57:52.557460277Z [inf]  Unpacking libllvm15:amd64 (1:15.0.6-4+b1) ...
+
+2025-09-14T17:57:53.259587844Z [inf]  Selecting previously unselected package libsensors-config.
+
+2025-09-14T17:57:53.261396924Z [inf]  Preparing to unpack .../170-libsensors-config_1%3a3.6.0-7.1_all.deb ...
+
+2025-09-14T17:57:53.262921553Z [inf]  Unpacking libsensors-config (1:3.6.0-7.1) ...
+
+2025-09-14T17:57:53.280282245Z [inf]  Selecting previously unselected package libsensors5:amd64.
+
+2025-09-14T17:57:53.282149846Z [inf]  Preparing to unpack .../171-libsensors5_1%3a3.6.0-7.1_amd64.deb ...
+
+2025-09-14T17:57:53.300176619Z [inf]  Unpacking libsensors5:amd64 (1:3.6.0-7.1) ...
+
+2025-09-14T17:57:53.319140399Z [inf]  Selecting previously unselected package libgl1-mesa-dri:amd64.
+
+2025-09-14T17:57:53.320803785Z [inf]  Preparing to unpack .../172-libgl1-mesa-dri_22.3.6-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:53.325469964Z [inf]  Unpacking libgl1-mesa-dri:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:53.804120201Z [inf]  Selecting previously unselected package libglx-mesa0:amd64.
+
+2025-09-14T17:57:53.806002144Z [inf]  Preparing to unpack .../173-libglx-mesa0_22.3.6-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:53.807371472Z [inf]  Unpacking libglx-mesa0:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:53.873804659Z [inf]  Selecting previously unselected package libglx0:amd64.
+
+2025-09-14T17:57:53.875564348Z [inf]  Preparing to unpack .../174-libglx0_1.6.0-1_amd64.deb ...
+
+2025-09-14T17:57:53.878070105Z [inf]  Unpacking libglx0:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:53.908301816Z [inf]  Selecting previously unselected package libgl1:amd64.
+
+2025-09-14T17:57:53.910087358Z [inf]  Preparing to unpack .../175-libgl1_1.6.0-1_amd64.deb ...
+
+2025-09-14T17:57:53.911574867Z [inf]  Unpacking libgl1:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:53.933637294Z [inf]  Selecting previously unselected package libgles2:amd64.
+
+2025-09-14T17:57:53.935370817Z [inf]  Preparing to unpack .../176-libgles2_1.6.0-1_amd64.deb ...
+
+2025-09-14T17:57:53.937214802Z [inf]  Unpacking libgles2:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:53.952464597Z [inf]  Selecting previously unselected package libglib2.0-data.
+
+2025-09-14T17:57:53.953991062Z [inf]  Preparing to unpack .../177-libglib2.0-data_2.74.6-2+deb12u7_all.deb ...
+
+2025-09-14T17:57:53.955376574Z [inf]  Unpacking libglib2.0-data (2.74.6-2+deb12u7) ...
+
+2025-09-14T17:57:54.059059155Z [inf]  Selecting previously unselected package libgpm2:amd64.
+
+2025-09-14T17:57:54.060953788Z [inf]  Preparing to unpack .../178-libgpm2_1.20.7-10+b1_amd64.deb ...
+
+2025-09-14T17:57:54.062254101Z [inf]  Unpacking libgpm2:amd64 (1.20.7-10+b1) ...
+
+2025-09-14T17:57:54.078613562Z [inf]  Selecting previously unselected package libwayland-cursor0:amd64.
+
+2025-09-14T17:57:54.080365092Z [inf]  Preparing to unpack .../179-libwayland-cursor0_1.21.0-1_amd64.deb ...
+
+2025-09-14T17:57:54.081830564Z [inf]  Unpacking libwayland-cursor0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:54.09851339Z [inf]  Selecting previously unselected package libwayland-egl1:amd64.
+
+2025-09-14T17:57:54.100204989Z [inf]  Preparing to unpack .../180-libwayland-egl1_1.21.0-1_amd64.deb ...
+
+2025-09-14T17:57:54.101887714Z [inf]  Unpacking libwayland-egl1:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:54.116571534Z [inf]  Selecting previously unselected package xkb-data.
+
+2025-09-14T17:57:54.118203186Z [inf]  Preparing to unpack .../181-xkb-data_2.35.1-1_all.deb ...
+
+2025-09-14T17:57:54.119655793Z [inf]  Unpacking xkb-data (2.35.1-1) ...
+
+2025-09-14T17:57:54.201588935Z [inf]  Selecting previously unselected package libxkbcommon0:amd64.
+
+2025-09-14T17:57:54.203506255Z [inf]  Preparing to unpack .../182-libxkbcommon0_1.5.0-1_amd64.deb ...
+
+2025-09-14T17:57:54.20509328Z [inf]  Unpacking libxkbcommon0:amd64 (1.5.0-1) ...
+
+2025-09-14T17:57:54.228361705Z [inf]  Selecting previously unselected package libgtk-3-common.
+
+2025-09-14T17:57:54.230128079Z [inf]  Preparing to unpack .../183-libgtk-3-common_3.24.38-2~deb12u3_all.deb ...
+
+2025-09-14T17:57:54.231408226Z [inf]  Unpacking libgtk-3-common (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:57:54.508515595Z [inf]  Selecting previously unselected package libgtk-3-0:amd64.
+
+2025-09-14T17:57:54.510410261Z [inf]  Preparing to unpack .../184-libgtk-3-0_3.24.38-2~deb12u3_amd64.deb ...
+
+2025-09-14T17:57:54.51459375Z [inf]  Unpacking libgtk-3-0:amd64 (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:57:54.709009394Z [inf]  Selecting previously unselected package libgtk-3-bin.
+
+2025-09-14T17:57:54.710780976Z [inf]  Preparing to unpack .../185-libgtk-3-bin_3.24.38-2~deb12u3_amd64.deb ...
+
+2025-09-14T17:57:54.711966495Z [inf]  Unpacking libgtk-3-bin (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:57:54.730890117Z [inf]  Selecting previously unselected package libgtk2.0-bin.
+
+2025-09-14T17:57:54.732515286Z [inf]  Preparing to unpack .../186-libgtk2.0-bin_2.24.33-2+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:54.735089554Z [inf]  Unpacking libgtk2.0-bin (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:54.751434784Z [inf]  Selecting previously unselected package libhtml-tagset-perl.
+
+2025-09-14T17:57:54.753127972Z [inf]  Preparing to unpack .../187-libhtml-tagset-perl_3.20-6_all.deb ...
+
+2025-09-14T17:57:54.754392237Z [inf]  Unpacking libhtml-tagset-perl (3.20-6) ...
+
+2025-09-14T17:57:54.768944108Z [inf]  Selecting previously unselected package libhtml-parser-perl:amd64.
+
+2025-09-14T17:57:54.770465959Z [inf]  Preparing to unpack .../188-libhtml-parser-perl_3.81-1_amd64.deb ...
+
+2025-09-14T17:57:54.771646526Z [inf]  Unpacking libhtml-parser-perl:amd64 (3.81-1) ...
+
+2025-09-14T17:57:54.79202812Z [inf]  Selecting previously unselected package libio-html-perl.
+
+2025-09-14T17:57:54.793440661Z [inf]  Preparing to unpack .../189-libio-html-perl_1.004-3_all.deb ...
+
+2025-09-14T17:57:54.794622847Z [inf]  Unpacking libio-html-perl (1.004-3) ...
+
+2025-09-14T17:57:54.810921592Z [inf]  Selecting previously unselected package liblwp-mediatypes-perl.
+
+2025-09-14T17:57:54.812633419Z [inf]  Preparing to unpack .../190-liblwp-mediatypes-perl_6.04-2_all.deb ...
+
+2025-09-14T17:57:54.813806384Z [inf]  Unpacking liblwp-mediatypes-perl (6.04-2) ...
+
+2025-09-14T17:57:54.828918451Z [inf]  Selecting previously unselected package libhttp-message-perl.
+
+2025-09-14T17:57:54.830544796Z [inf]  Preparing to unpack .../191-libhttp-message-perl_6.44-1_all.deb ...
+
+2025-09-14T17:57:54.831595537Z [inf]  Unpacking libhttp-message-perl (6.44-1) ...
+
+2025-09-14T17:57:54.851267682Z [inf]  Selecting previously unselected package libhtml-form-perl.
+
+2025-09-14T17:57:54.852834728Z [inf]  Preparing to unpack .../192-libhtml-form-perl_6.11-1_all.deb ...
+
+2025-09-14T17:57:54.854050184Z [inf]  Unpacking libhtml-form-perl (6.11-1) ...
+
+2025-09-14T17:57:54.871310435Z [inf]  Selecting previously unselected package libhtml-tree-perl.
+
+2025-09-14T17:57:54.872752454Z [inf]  Preparing to unpack .../193-libhtml-tree-perl_5.07-3_all.deb ...
+
+2025-09-14T17:57:54.874185449Z [inf]  Unpacking libhtml-tree-perl (5.07-3) ...
+
+2025-09-14T17:57:54.901165319Z [inf]  Selecting previously unselected package libhtml-format-perl.
+
+2025-09-14T17:57:54.902537471Z [inf]  Preparing to unpack .../194-libhtml-format-perl_2.16-2_all.deb ...
+
+2025-09-14T17:57:54.903642968Z [inf]  Unpacking libhtml-format-perl (2.16-2) ...
+
+2025-09-14T17:57:54.919893095Z [inf]  Selecting previously unselected package libhttp-cookies-perl.
+
+2025-09-14T17:57:54.921224653Z [inf]  Preparing to unpack .../195-libhttp-cookies-perl_6.10-1_all.deb ...
+
+2025-09-14T17:57:54.922296746Z [inf]  Unpacking libhttp-cookies-perl (6.10-1) ...
+
+2025-09-14T17:57:54.937170679Z [inf]  Selecting previously unselected package libhttp-daemon-perl.
+
+2025-09-14T17:57:54.938587966Z [inf]  Preparing to unpack .../196-libhttp-daemon-perl_6.16-1_all.deb ...
+
+2025-09-14T17:57:54.939771695Z [inf]  Unpacking libhttp-daemon-perl (6.16-1) ...
+
+2025-09-14T17:57:54.954581221Z [inf]  Selecting previously unselected package libhttp-negotiate-perl.
+
+2025-09-14T17:57:54.955933483Z [inf]  Preparing to unpack .../197-libhttp-negotiate-perl_6.01-2_all.deb ...
+
+2025-09-14T17:57:54.957339742Z [inf]  Unpacking libhttp-negotiate-perl (6.01-2) ...
+
+2025-09-14T17:57:54.972106527Z [inf]  Selecting previously unselected package libice6:amd64.
+
+2025-09-14T17:57:54.973410161Z [inf]  Preparing to unpack .../198-libice6_2%3a1.0.10-1_amd64.deb ...
+
+2025-09-14T17:57:54.974680155Z [inf]  Unpacking libice6:amd64 (2:1.0.10-1) ...
+
+2025-09-14T17:57:54.992848216Z [inf]  Selecting previously unselected package perl-openssl-defaults:amd64.
+
+2025-09-14T17:57:54.994226272Z [inf]  Preparing to unpack .../199-perl-openssl-defaults_7+b1_amd64.deb ...
+
+2025-09-14T17:57:54.99519898Z [inf]  Unpacking perl-openssl-defaults:amd64 (7+b1) ...
+
+2025-09-14T17:57:55.008942108Z [inf]  Selecting previously unselected package libnet-ssleay-perl:amd64.
+
+2025-09-14T17:57:55.010344268Z [inf]  Preparing to unpack .../200-libnet-ssleay-perl_1.92-2+b1_amd64.deb ...
+
+2025-09-14T17:57:55.011600504Z [inf]  Unpacking libnet-ssleay-perl:amd64 (1.92-2+b1) ...
+
+2025-09-14T17:57:55.046623533Z [inf]  Selecting previously unselected package libio-socket-ssl-perl.
+
+2025-09-14T17:57:55.048516086Z [inf]  Preparing to unpack .../201-libio-socket-ssl-perl_2.081-2_all.deb ...
+
+2025-09-14T17:57:55.049653074Z [inf]  Unpacking libio-socket-ssl-perl (2.081-2) ...
+
+2025-09-14T17:57:55.078805781Z [inf]  Selecting previously unselected package libio-stringy-perl.
+
+2025-09-14T17:57:55.080710368Z [inf]  Preparing to unpack .../202-libio-stringy-perl_2.111-3_all.deb ...
+
+2025-09-14T17:57:55.081831351Z [inf]  Unpacking libio-stringy-perl (2.111-3) ...
+
+2025-09-14T17:57:55.106969191Z [inf]  Selecting previously unselected package libldap-common.
+
+2025-09-14T17:57:55.109613522Z [inf]  Preparing to unpack .../203-libldap-common_2.5.13+dfsg-5_all.deb ...
+
+2025-09-14T17:57:55.111275691Z [inf]  Unpacking libldap-common (2.5.13+dfsg-5) ...
+
+2025-09-14T17:57:55.128596391Z [inf]  Selecting previously unselected package libnet-http-perl.
+
+2025-09-14T17:57:55.131318605Z [inf]  Preparing to unpack .../204-libnet-http-perl_6.22-1_all.deb ...
+
+2025-09-14T17:57:55.133075253Z [inf]  Unpacking libnet-http-perl (6.22-1) ...
+
+2025-09-14T17:57:55.155145733Z [inf]  Selecting previously unselected package libtry-tiny-perl.
+
+2025-09-14T17:57:55.157729638Z [inf]  Preparing to unpack .../205-libtry-tiny-perl_0.31-2_all.deb ...
+
+2025-09-14T17:57:55.159158346Z [inf]  Unpacking libtry-tiny-perl (0.31-2) ...
+
+2025-09-14T17:57:55.18174382Z [inf]  Selecting previously unselected package libwww-robotrules-perl.
+
+2025-09-14T17:57:55.184277724Z [inf]  Preparing to unpack .../206-libwww-robotrules-perl_6.02-1_all.deb ...
+
+2025-09-14T17:57:55.186129005Z [inf]  Unpacking libwww-robotrules-perl (6.02-1) ...
+
+2025-09-14T17:57:55.207293014Z [inf]  Selecting previously unselected package libwww-perl.
+
+2025-09-14T17:57:55.20994888Z [inf]  Preparing to unpack .../207-libwww-perl_6.68-1_all.deb ...
+
+2025-09-14T17:57:55.21281011Z [inf]  Unpacking libwww-perl (6.68-1) ...
+
+2025-09-14T17:57:55.251789563Z [inf]  Selecting previously unselected package liblwp-protocol-https-perl.
+
+2025-09-14T17:57:55.254803468Z [inf]  Preparing to unpack .../208-liblwp-protocol-https-perl_6.10-1_all.deb ...
+2025-09-14T17:57:55.254919526Z [inf]  
+
+2025-09-14T17:57:55.256438285Z [inf]  Unpacking liblwp-protocol-https-perl (6.10-1) ...
+
+2025-09-14T17:57:55.278876458Z [inf]  Selecting previously unselected package libnet-smtp-ssl-perl.
+
+2025-09-14T17:57:55.28166417Z [inf]  Preparing to unpack .../209-libnet-smtp-ssl-perl_1.04-2_all.deb ...
+
+2025-09-14T17:57:55.282938947Z [inf]  Unpacking libnet-smtp-ssl-perl (1.04-2) ...
+
+2025-09-14T17:57:55.301018627Z [inf]  Selecting previously unselected package libmailtools-perl.
+
+2025-09-14T17:57:55.303669734Z [inf]  Preparing to unpack .../210-libmailtools-perl_2.21-2_all.deb ...
+
+2025-09-14T17:57:55.304943296Z [inf]  Unpacking libmailtools-perl (2.21-2) ...
+
+2025-09-14T17:57:55.331615538Z [inf]  Selecting previously unselected package libxml-parser-perl.
+
+2025-09-14T17:57:55.334402737Z [inf]  Preparing to unpack .../211-libxml-parser-perl_2.46-4_amd64.deb ...
+
+2025-09-14T17:57:55.335701499Z [inf]  Unpacking libxml-parser-perl (2.46-4) ...
+
+2025-09-14T17:57:55.369697044Z [inf]  Selecting previously unselected package libxml-twig-perl.
+
+2025-09-14T17:57:55.372323527Z [inf]  Preparing to unpack .../212-libxml-twig-perl_1%3a3.52-2_all.deb ...
+
+2025-09-14T17:57:55.373648787Z [inf]  Unpacking libxml-twig-perl (1:3.52-2) ...
+
+2025-09-14T17:57:55.403052986Z [inf]  Selecting previously unselected package libnet-dbus-perl.
+
+2025-09-14T17:57:55.405868612Z [inf]  Preparing to unpack .../213-libnet-dbus-perl_1.2.0-2_amd64.deb ...
+
+2025-09-14T17:57:55.407311001Z [inf]  Unpacking libnet-dbus-perl (1.2.0-2) ...
+
+2025-09-14T17:57:55.435904055Z [inf]  Selecting previously unselected package libnspr4:amd64.
+
+2025-09-14T17:57:55.438757638Z [inf]  Preparing to unpack .../214-libnspr4_2%3a4.35-1_amd64.deb ...
+
+2025-09-14T17:57:55.440248684Z [inf]  Unpacking libnspr4:amd64 (2:4.35-1) ...
+
+2025-09-14T17:57:55.466249095Z [inf]  Selecting previously unselected package libsqlite3-0:amd64.
+
+2025-09-14T17:57:55.469113864Z [inf]  Preparing to unpack .../215-libsqlite3-0_3.40.1-2+deb12u2_amd64.deb ...
+
+2025-09-14T17:57:55.470493844Z [inf]  Unpacking libsqlite3-0:amd64 (3.40.1-2+deb12u2) ...
+
+2025-09-14T17:57:55.532121834Z [inf]  Selecting previously unselected package libnss3:amd64.
+
+2025-09-14T17:57:55.534986095Z [inf]  Preparing to unpack .../216-libnss3_2%3a3.87.1-1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:55.536287567Z [inf]  Unpacking libnss3:amd64 (2:3.87.1-1+deb12u1) ...
+
+2025-09-14T17:57:55.644429883Z [inf]  Selecting previously unselected package librsvg2-2:amd64.
+
+2025-09-14T17:57:55.647248455Z [inf]  Preparing to unpack .../217-librsvg2-2_2.54.7+dfsg-1~deb12u1_amd64.deb ...
+
+2025-09-14T17:57:55.648843536Z [inf]  Unpacking librsvg2-2:amd64 (2.54.7+dfsg-1~deb12u1) ...
+
+2025-09-14T17:57:55.84316643Z [inf]  Selecting previously unselected package librsvg2-common:amd64.
+
+2025-09-14T17:57:55.844920631Z [inf]  Preparing to unpack .../218-librsvg2-common_2.54.7+dfsg-1~deb12u1_amd64.deb ...
+
+2025-09-14T17:57:55.846048824Z [inf]  Unpacking librsvg2-common:amd64 (2.54.7+dfsg-1~deb12u1) ...
+
+2025-09-14T17:57:55.862215008Z [inf]  Selecting previously unselected package libsasl2-modules:amd64.
+
+2025-09-14T17:57:55.864099001Z [inf]  Preparing to unpack .../219-libsasl2-modules_2.1.28+dfsg-10_amd64.deb ...
+
+2025-09-14T17:57:55.868720116Z [inf]  Unpacking libsasl2-modules:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:55.888004141Z [inf]  Selecting previously unselected package libsm6:amd64.
+
+2025-09-14T17:57:55.889702863Z [inf]  Preparing to unpack .../220-libsm6_2%3a1.2.3-1_amd64.deb ...
+
+2025-09-14T17:57:55.890688827Z [inf]  Unpacking libsm6:amd64 (2:1.2.3-1) ...
+
+2025-09-14T17:57:55.904796208Z [inf]  Selecting previously unselected package libtext-iconv-perl:amd64.
+
+2025-09-14T17:57:55.90623768Z [inf]  Preparing to unpack .../221-libtext-iconv-perl_1.7-8_amd64.deb ...
+
+2025-09-14T17:57:55.907220802Z [inf]  Unpacking libtext-iconv-perl:amd64 (1.7-8) ...
+
+2025-09-14T17:57:55.922130946Z [inf]  Selecting previously unselected package libtie-ixhash-perl.
+
+2025-09-14T17:57:55.923503392Z [inf]  Preparing to unpack .../222-libtie-ixhash-perl_1.23-4_all.deb ...
+
+2025-09-14T17:57:55.924464296Z [inf]  Unpacking libtie-ixhash-perl (1.23-4) ...
+
+2025-09-14T17:57:55.9380011Z [inf]  Selecting previously unselected package libunwind8:amd64.
+
+2025-09-14T17:57:55.939387414Z [inf]  Preparing to unpack .../223-libunwind8_1.6.2-3_amd64.deb ...
+
+2025-09-14T17:57:55.940593015Z [inf]  Unpacking libunwind8:amd64 (1.6.2-3) ...
+
+2025-09-14T17:57:55.958190049Z [inf]  Selecting previously unselected package libx11-protocol-perl.
+
+2025-09-14T17:57:55.959640609Z [inf]  Preparing to unpack .../224-libx11-protocol-perl_0.56-9_all.deb ...
+
+2025-09-14T17:57:55.960677857Z [inf]  Unpacking libx11-protocol-perl (0.56-9) ...
+
+2025-09-14T17:57:55.982730278Z [inf]  Selecting previously unselected package libxt6:amd64.
+
+2025-09-14T17:57:55.984141048Z [inf]  Preparing to unpack .../225-libxt6_1%3a1.2.1-1.1_amd64.deb ...
+
+2025-09-14T17:57:55.985115202Z [inf]  Unpacking libxt6:amd64 (1:1.2.1-1.1) ...
+
+2025-09-14T17:57:56.011689193Z [inf]  Selecting previously unselected package libxmu6:amd64.
+
+2025-09-14T17:57:56.013206939Z [inf]  Preparing to unpack .../226-libxmu6_2%3a1.1.3-3_amd64.deb ...
+
+2025-09-14T17:57:56.014352134Z [inf]  Unpacking libxmu6:amd64 (2:1.1.3-3) ...
+
+2025-09-14T17:57:56.032368875Z [inf]  Selecting previously unselected package libxpm4:amd64.
+
+2025-09-14T17:57:56.033919583Z [inf]  Preparing to unpack .../227-libxpm4_1%3a3.5.12-1.1+deb12u1_amd64.deb ...
+
+2025-09-14T17:57:56.034999341Z [inf]  Unpacking libxpm4:amd64 (1:3.5.12-1.1+deb12u1) ...
+
+2025-09-14T17:57:56.052443705Z [inf]  Selecting previously unselected package libxaw7:amd64.
+
+2025-09-14T17:57:56.053961428Z [inf]  Preparing to unpack .../228-libxaw7_2%3a1.0.14-1_amd64.deb ...
+
+2025-09-14T17:57:56.054948183Z [inf]  Unpacking libxaw7:amd64 (2:1.0.14-1) ...
+
+2025-09-14T17:57:56.083062308Z [inf]  Selecting previously unselected package libxcb-shape0:amd64.
+
+2025-09-14T17:57:56.084623366Z [inf]  Preparing to unpack .../229-libxcb-shape0_1.15-1_amd64.deb ...
+
+2025-09-14T17:57:56.085642842Z [inf]  Unpacking libxcb-shape0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:56.106482618Z [inf]  Selecting previously unselected package libxfont2:amd64.
+
+2025-09-14T17:57:56.108085459Z [inf]  Preparing to unpack .../230-libxfont2_1%3a2.0.6-1_amd64.deb ...
+
+2025-09-14T17:57:56.10928824Z [inf]  Unpacking libxfont2:amd64 (1:2.0.6-1) ...
+
+2025-09-14T17:57:56.133000537Z [inf]  Selecting previously unselected package libxft2:amd64.
+
+2025-09-14T17:57:56.134969828Z [inf]  Preparing to unpack .../231-libxft2_2.3.6-1_amd64.deb ...
+
+2025-09-14T17:57:56.13611395Z [inf]  Unpacking libxft2:amd64 (2.3.6-1) ...
+
+2025-09-14T17:57:56.155917264Z [inf]  Selecting previously unselected package libxkbfile1:amd64.
+
+2025-09-14T17:57:56.157520919Z [inf]  Preparing to unpack .../232-libxkbfile1_1%3a1.1.0-1_amd64.deb ...
+
+2025-09-14T17:57:56.158923867Z [inf]  Unpacking libxkbfile1:amd64 (1:1.1.0-1) ...
+
+2025-09-14T17:57:56.177880301Z [inf]  Selecting previously unselected package libxml-xpathengine-perl.
+
+2025-09-14T17:57:56.179485597Z [inf]  Preparing to unpack .../233-libxml-xpathengine-perl_0.14-2_all.deb ...
+
+2025-09-14T17:57:56.180602303Z [inf]  Unpacking libxml-xpathengine-perl (0.14-2) ...
+
+2025-09-14T17:57:56.197082018Z [inf]  Selecting previously unselected package libxmuu1:amd64.
+
+2025-09-14T17:57:56.198598054Z [inf]  Preparing to unpack .../234-libxmuu1_2%3a1.1.3-3_amd64.deb ...
+
+2025-09-14T17:57:56.19980357Z [inf]  Unpacking libxmuu1:amd64 (2:1.1.3-3) ...
+
+2025-09-14T17:57:56.215586841Z [inf]  Selecting previously unselected package libxss1:amd64.
+
+2025-09-14T17:57:56.217006577Z [inf]  Preparing to unpack .../235-libxss1_1%3a1.2.3-1_amd64.deb ...
+
+2025-09-14T17:57:56.218208072Z [inf]  Unpacking libxss1:amd64 (1:1.2.3-1) ...
+
+2025-09-14T17:57:56.234203964Z [inf]  Selecting previously unselected package libxv1:amd64.
+
+2025-09-14T17:57:56.235961172Z [inf]  Preparing to unpack .../236-libxv1_2%3a1.0.11-1.1_amd64.deb ...
+
+2025-09-14T17:57:56.237121256Z [inf]  Unpacking libxv1:amd64 (2:1.0.11-1.1) ...
+
+2025-09-14T17:57:56.253739721Z [inf]  Selecting previously unselected package libxxf86dga1:amd64.
+
+2025-09-14T17:57:56.25548529Z [inf]  Preparing to unpack .../237-libxxf86dga1_2%3a1.1.5-1_amd64.deb ...
+
+2025-09-14T17:57:56.256714223Z [inf]  Unpacking libxxf86dga1:amd64 (2:1.1.5-1) ...
+
+2025-09-14T17:57:56.271674433Z [inf]  Selecting previously unselected package lsb-release.
+
+2025-09-14T17:57:56.273381Z [inf]  Preparing to unpack .../238-lsb-release_12.0-1_all.deb ...
+
+2025-09-14T17:57:56.274530426Z [inf]  Unpacking lsb-release (12.0-1) ...
+
+2025-09-14T17:57:56.289421192Z [inf]  Selecting previously unselected package psmisc.
+
+2025-09-14T17:57:56.290967595Z [inf]  Preparing to unpack .../239-psmisc_23.6-1_amd64.deb ...
+
+2025-09-14T17:57:56.292115241Z [inf]  Unpacking psmisc (23.6-1) ...
+
+2025-09-14T17:57:56.323961868Z [inf]  Selecting previously unselected package publicsuffix.
+
+2025-09-14T17:57:56.32544825Z [inf]  Preparing to unpack .../240-publicsuffix_20230209.2326-1_all.deb ...
+
+2025-09-14T17:57:56.326606209Z [inf]  Unpacking publicsuffix (20230209.2326-1) ...
+
+2025-09-14T17:57:56.350178989Z [inf]  Selecting previously unselected package x11-utils.
+
+2025-09-14T17:57:56.35163715Z [inf]  Preparing to unpack .../241-x11-utils_7.7+5_amd64.deb ...
+
+2025-09-14T17:57:56.352737442Z [inf]  Unpacking x11-utils (7.7+5) ...
+
+2025-09-14T17:57:56.380259291Z [inf]  Selecting previously unselected package x11-xkb-utils.
+
+2025-09-14T17:57:56.3816156Z [inf]  Preparing to unpack .../242-x11-xkb-utils_7.7+7_amd64.deb ...
+
+2025-09-14T17:57:56.382696235Z [inf]  Unpacking x11-xkb-utils (7.7+7) ...
+
+2025-09-14T17:57:56.409120145Z [inf]  Selecting previously unselected package x11-xserver-utils.
+
+2025-09-14T17:57:56.410746328Z [inf]  Preparing to unpack .../243-x11-xserver-utils_7.7+9+b1_amd64.deb ...
+
+2025-09-14T17:57:56.411900929Z [inf]  Unpacking x11-xserver-utils (7.7+9+b1) ...
+
+2025-09-14T17:57:56.437563653Z [inf]  Selecting previously unselected package xauth.
+
+2025-09-14T17:57:56.439163508Z [inf]  Preparing to unpack .../244-xauth_1%3a1.1.2-1_amd64.deb ...
+
+2025-09-14T17:57:56.44032575Z [inf]  Unpacking xauth (1:1.1.2-1) ...
+
+2025-09-14T17:57:56.458698602Z [inf]  Selecting previously unselected package xdg-user-dirs.
+
+2025-09-14T17:57:56.460234002Z [inf]  Preparing to unpack .../245-xdg-user-dirs_0.18-1_amd64.deb ...
+
+2025-09-14T17:57:56.464372076Z [inf]  Unpacking xdg-user-dirs (0.18-1) ...
+
+2025-09-14T17:57:56.486175583Z [inf]  Selecting previously unselected package xdg-utils.
+
+2025-09-14T17:57:56.487756661Z [inf]  Preparing to unpack .../246-xdg-utils_1.1.3-4.1_all.deb ...
+
+2025-09-14T17:57:56.489138034Z [inf]  Unpacking xdg-utils (1.1.3-4.1) ...
+
+2025-09-14T17:57:56.508512137Z [inf]  Selecting previously unselected package xfonts-encodings.
+
+2025-09-14T17:57:56.509963741Z [inf]  Preparing to unpack .../247-xfonts-encodings_1%3a1.0.4-2.2_all.deb ...
+
+2025-09-14T17:57:56.511257664Z [inf]  Unpacking xfonts-encodings (1:1.0.4-2.2) ...
+
+2025-09-14T17:57:56.564149792Z [inf]  Selecting previously unselected package xfonts-utils.
+
+2025-09-14T17:57:56.565684454Z [inf]  Preparing to unpack .../248-xfonts-utils_1%3a7.7+6_amd64.deb ...
+
+2025-09-14T17:57:56.566925361Z [inf]  Unpacking xfonts-utils (1:7.7+6) ...
+
+2025-09-14T17:57:56.589573467Z [inf]  Selecting previously unselected package xfonts-base.
+
+2025-09-14T17:57:56.591069249Z [inf]  Preparing to unpack .../249-xfonts-base_1%3a1.0.5+nmu1_all.deb ...
+
+2025-09-14T17:57:56.592463295Z [inf]  Unpacking xfonts-base (1:1.0.5+nmu1) ...
+
+2025-09-14T17:57:56.869486774Z [inf]  Selecting previously unselected package xserver-common.
+
+2025-09-14T17:57:56.87141237Z [inf]  Preparing to unpack .../250-xserver-common_2%3a21.1.7-3+deb12u10_all.deb ...
+
+2025-09-14T17:57:56.872480481Z [inf]  Unpacking xserver-common (2:21.1.7-3+deb12u10) ...
+
+2025-09-14T17:57:56.897164203Z [inf]  Selecting previously unselected package xvfb.
+
+2025-09-14T17:57:56.899160609Z [inf]  Preparing to unpack .../251-xvfb_2%3a21.1.7-3+deb12u10_amd64.deb ...
+
+2025-09-14T17:57:56.90023371Z [inf]  Unpacking xvfb (2:21.1.7-3+deb12u10) ...
+
+2025-09-14T17:57:56.970563426Z [inf]  Selecting previously unselected package libegl1:amd64.
+
+2025-09-14T17:57:56.972505593Z [inf]  Preparing to unpack .../252-libegl1_1.6.0-1_amd64.deb ...
+
+2025-09-14T17:57:56.973463726Z [inf]  Unpacking libegl1:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:56.988780954Z [inf]  Selecting previously unselected package zutty.
+
+2025-09-14T17:57:56.990488616Z [inf]  Preparing to unpack .../253-zutty_0.14.0.20230218+dfsg1-1_amd64.deb ...
+
+2025-09-14T17:57:56.991566209Z [inf]  Unpacking zutty (0.14.0.20230218+dfsg1-1) ...
+
+2025-09-14T17:57:57.023744638Z [inf]  Setting up libexpat1:amd64 (2.5.0-1+deb12u2) ...
+
+2025-09-14T17:57:57.026727862Z [inf]  Setting up libtext-iconv-perl:amd64 (1.7-8) ...
+
+2025-09-14T17:57:57.029538848Z [inf]  Setting up libgraphite2-3:amd64 (1.3.14-1) ...
+
+2025-09-14T17:57:57.032541289Z [inf]  Setting up liblcms2-2:amd64 (2.14-2) ...
+
+2025-09-14T17:57:57.035796186Z [inf]  Setting up libpixman-1-0:amd64 (0.42.2-1) ...
+
+2025-09-14T17:57:57.038792968Z [inf]  Setting up libwayland-server0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:57.041752059Z [inf]  Setting up libpciaccess0:amd64 (0.17-2) ...
+
+2025-09-14T17:57:57.044600094Z [inf]  Setting up systemd-sysv (252.39-1~deb12u1) ...
+
+2025-09-14T17:57:57.048614388Z [inf]  Setting up libxau6:amd64 (1:1.0.9-1) ...
+
+2025-09-14T17:57:57.051504539Z [inf]  Setting up libkeyutils1:amd64 (1.6.3-2) ...
+
+2025-09-14T17:57:57.054497036Z [inf]  Setting up libpsl5:amd64 (0.21.2-1) ...
+
+2025-09-14T17:57:57.057378146Z [inf]  Setting up libgpm2:amd64 (1.20.7-10+b1) ...
+
+2025-09-14T17:57:57.060496532Z [inf]  Setting up libicu72:amd64 (72.1-3+deb12u1) ...
+
+2025-09-14T17:57:57.063485294Z [inf]  Setting up liblerc4:amd64 (4.0.0+ds-2) ...
+
+2025-09-14T17:57:57.066545228Z [inf]  Setting up wget (1.21.3-1+deb12u1) ...
+
+2025-09-14T17:57:57.070588018Z [inf]  Setting up hicolor-icon-theme (0.17-2) ...
+
+2025-09-14T17:57:57.081859907Z [inf]  Setting up libdatrie1:amd64 (0.2.13-2+b1) ...
+
+2025-09-14T17:57:57.084619285Z [inf]  Setting up xdg-user-dirs (0.18-1) ...
+
+2025-09-14T17:57:57.092785022Z [inf]  Setting up psmisc (23.6-1) ...
+
+2025-09-14T17:57:57.096672241Z [inf]  Setting up libglib2.0-0:amd64 (2.74.6-2+deb12u7) ...
+
+2025-09-14T17:57:57.108069829Z [inf]  Setting up libglvnd0:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:57.111110908Z [inf]  Setting up libdbusmenu-glib4:amd64 (18.10.20180917~bzr492+repack1-3) ...
+
+2025-09-14T17:57:57.11389572Z [inf]  Setting up libbrotli1:amd64 (1.0.9-2+b6) ...
+
+2025-09-14T17:57:57.116911974Z [inf]  Setting up libsqlite3-0:amd64 (3.40.1-2+deb12u2) ...
+
+2025-09-14T17:57:57.119946558Z [inf]  Setting up libsasl2-modules:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:57.126286444Z [inf]  Setting up libgdk-pixbuf2.0-common (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:57:57.129387155Z [inf]  Setting up x11-common (1:7.7+23) ...
+
+2025-09-14T17:57:57.200700726Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:57:57.205582655Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:57:57.221060438Z [inf]  invoke-rc.d: could not determine current runlevel
+
+2025-09-14T17:57:57.223788001Z [inf]  invoke-rc.d: policy-rc.d denied execution of restart.
+
+2025-09-14T17:57:57.227516034Z [inf]  Setting up libsensors-config (1:3.6.0-7.1) ...
+
+2025-09-14T17:57:57.232044641Z [inf]  Setting up libdeflate0:amd64 (1.14-1) ...
+
+2025-09-14T17:57:57.234541558Z [inf]  Setting up perl-openssl-defaults:amd64 (7+b1) ...
+
+2025-09-14T17:57:57.237100172Z [inf]  Setting up libnss-systemd:amd64 (252.39-1~deb12u1) ...
+
+2025-09-14T17:57:57.246623308Z [inf]  Setting up xkb-data (2.35.1-1) ...
+
+2025-09-14T17:57:57.249237072Z [inf]  Setting up krb5-locales (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:57.251868281Z [inf]  Setting up libldap-common (2.5.13+dfsg-5) ...
+
+2025-09-14T17:57:57.255291118Z [inf]  Setting up libunwind8:amd64 (1.6.2-3) ...
+
+2025-09-14T17:57:57.258011385Z [inf]  Setting up libjbig0:amd64 (2.1-6.1) ...
+
+2025-09-14T17:57:57.260847412Z [inf]  Setting up libcolord2:amd64 (1.4.6-2.2) ...
+
+2025-09-14T17:57:57.263761253Z [inf]  Setting up libkrb5support0:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:57.266456889Z [inf]  Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:57.269033942Z [inf]  Setting up libdconf1:amd64 (0.40.0-4) ...
+
+2025-09-14T17:57:57.271775059Z [inf]  Setting up libasound2-data (1.2.8-1) ...
+
+2025-09-14T17:57:57.274225424Z [inf]  Setting up ca-certificates (20230311+deb12u1) ...
+
+2025-09-14T17:57:57.336233883Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:57:57.341285418Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:57:58.269439816Z [inf]  Updating certificates in /etc/ssl/certs...
+
+2025-09-14T17:57:58.814341607Z [inf]  rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+
+2025-09-14T17:57:58.818471063Z [inf]  2 added, 0 removed; done.
+
+2025-09-14T17:57:58.833911288Z [inf]  Setting up libfontenc1:amd64 (1:1.1.4-1) ...
+
+2025-09-14T17:57:58.836852669Z [inf]  Setting up perl-modules-5.36 (5.36.0-7+deb12u3) ...
+
+2025-09-14T17:57:58.840321533Z [inf]  Setting up libz3-4:amd64 (4.8.12-3.1) ...
+
+2025-09-14T17:57:58.843262667Z [inf]  Setting up libglib2.0-data (2.74.6-2+deb12u7) ...
+
+2025-09-14T17:57:58.846185022Z [inf]  Setting up libgles2:amd64 (1.6.0-1) ...
+
+2025-09-14T17:57:58.849102539Z [inf]  Setting up libjpeg62-turbo:amd64 (1:2.1.5-2) ...
+
+2025-09-14T17:57:58.851954926Z [inf]  Setting up libx11-data (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:57:58.854645866Z [inf]  Setting up libepoxy0:amd64 (1.5.10-1) ...
+
+2025-09-14T17:57:58.857439202Z [inf]  Setting up libmpfr6:amd64 (4.2.0-1) ...
+
+2025-09-14T17:57:58.860086268Z [inf]  Setting up libnspr4:amd64 (2:4.35-1) ...
+
+2025-09-14T17:57:58.863142415Z [inf]  Setting up libavahi-common-data:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:57:58.866508863Z [inf]  Setting up libdbus-1-3:amd64 (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:58.86934905Z [inf]  Setting up xfonts-encodings (1:1.0.4-2.2) ...
+
+2025-09-14T17:57:58.872301166Z [inf]  Setting up libfribidi0:amd64 (1.0.8-2.1) ...
+
+2025-09-14T17:57:58.875457912Z [inf]  Setting up libproc2-0:amd64 (2:4.0.2-3) ...
+
+2025-09-14T17:57:58.878442734Z [inf]  Setting up libpng16-16:amd64 (1.6.39-2) ...
+
+2025-09-14T17:57:58.88153388Z [inf]  Setting up libmpc3:amd64 (1.3.1-1) ...
+
+2025-09-14T17:57:58.884507116Z [inf]  Setting up systemd-timesyncd (252.39-1~deb12u1) ...
+
+2025-09-14T17:57:58.893524721Z [inf]  Creating group 'systemd-timesync' with GID 997.
+
+
+2025-09-14T17:57:58.893722309Z [inf]  Creating user 'systemd-timesync' (systemd Time Synchronization) with UID 997 and GID 997.
+
+
+2025-09-14T17:57:58.992788141Z [inf]  Created symlink /etc/systemd/system/dbus-org.freedesktop.timesync1.service → /lib/systemd/system/systemd-timesyncd.service.
+
+Created symlink /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service → /lib/systemd/system/systemd-timesyncd.service.
+
+
+2025-09-14T17:57:58.996765347Z [inf]  Setting up libsensors5:amd64 (1:3.6.0-7.1) ...
+
+2025-09-14T17:57:58.999573641Z [inf]  Setting up libncursesw6:amd64 (6.4-4) ...
+
+2025-09-14T17:57:59.002509283Z [inf]  Setting up libk5crypto3:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:59.005361097Z [inf]  Setting up libglapi-mesa:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:57:59.007972392Z [inf]  Setting up libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+
+2025-09-14T17:57:59.010728297Z [inf]  Setting up libwebp7:amd64 (1.2.4-0.2+deb12u1) ...
+
+2025-09-14T17:57:59.013572417Z [inf]  Setting up alsa-topology-conf (1.2.5.1-2) ...
+
+2025-09-14T17:57:59.016325355Z [inf]  Setting up sensible-utils (0.0.17+nmu1) ...
+
+2025-09-14T17:57:59.019845794Z [inf]  Setting up libxshmfence1:amd64 (1.3-1) ...
+
+2025-09-14T17:57:59.022986883Z [inf]  Setting up at-spi2-common (2.46.0-5) ...
+
+2025-09-14T17:57:59.025863857Z [inf]  Setting up libtiff6:amd64 (4.5.0-6+deb12u2) ...
+
+2025-09-14T17:57:59.028731725Z [inf]  Setting up dbus-session-bus-common (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:59.031578084Z [inf]  Setting up procps (2:4.0.2-3) ...
+
+2025-09-14T17:57:59.052082354Z [inf]  Setting up libasound2:amd64 (1.2.8-1+b1) ...
+
+2025-09-14T17:57:59.054985705Z [inf]  Setting up fonts-liberation (1:1.07.4-11) ...
+
+2025-09-14T17:57:59.063673412Z [inf]  Setting up libthai-data (0.1.29-1) ...
+
+2025-09-14T17:57:59.066379808Z [inf]  Setting up netbase (6.4) ...
+
+2025-09-14T17:57:59.074586014Z [inf]  Setting up libgtk2.0-common (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:57:59.078376293Z [inf]  Setting up libatk1.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:57:59.08111918Z [inf]  Setting up libkrb5-3:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:57:59.083837657Z [inf]  Setting up libwayland-egl1:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:59.086564896Z [inf]  Setting up lsb-release (12.0-1) ...
+
+2025-09-14T17:57:59.089431414Z [inf]  Setting up dbus-system-bus-common (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:59.134224431Z [inf]  Setting up libisl23:amd64 (0.25-1.1) ...
+
+2025-09-14T17:57:59.137412149Z [inf]  Setting up libbsd0:amd64 (0.11.7-2) ...
+
+2025-09-14T17:57:59.140587953Z [inf]  Setting up libdrm-common (2.4.114-1) ...
+
+2025-09-14T17:57:59.143500905Z [inf]  Setting up libelf1:amd64 (0.188-2.1) ...
+
+2025-09-14T17:57:59.146503226Z [inf]  Setting up publicsuffix (20230209.2326-1) ...
+
+2025-09-14T17:57:59.149328033Z [inf]  Setting up libxml2:amd64 (2.9.14+dfsg-1.3~deb12u4) ...
+
+2025-09-14T17:57:59.152265541Z [inf]  Setting up xdg-utils (1.1.3-4.1) ...
+
+2025-09-14T17:57:59.155464852Z [inf]  update-alternatives: using /usr/bin/xdg-open to provide /usr/bin/open (open) in auto mode
+
+2025-09-14T17:57:59.155554082Z [inf]  update-alternatives: warning: skip creation of /usr/share/man/man1/open.1.gz because associated file /usr/share/man/man1/xdg-open.1.gz (of link group open) doesn't exist
+
+2025-09-14T17:57:59.15772947Z [inf]  Setting up dbus-bin (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:59.160857329Z [inf]  Setting up libgdbm6:amd64 (1.23-3) ...
+
+2025-09-14T17:57:59.163920632Z [inf]  Setting up libxkbcommon0:amd64 (1.5.0-1) ...
+
+2025-09-14T17:57:59.166905502Z [inf]  Setting up libwayland-client0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:57:59.169982762Z [inf]  Setting up libice6:amd64 (2:1.0.10-1) ...
+
+2025-09-14T17:57:59.17302668Z [inf]  Setting up libxdmcp6:amd64 (1:1.1.2-3) ...
+
+2025-09-14T17:57:59.17588535Z [inf]  Setting up cpp-12 (12.2.0-14+deb12u1) ...
+
+2025-09-14T17:57:59.178944595Z [inf]  Setting up libxcb1:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.181837564Z [inf]  Setting up libxcb-xfixes0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.184848179Z [inf]  Setting up alsa-ucm-conf (1.2.8-1) ...
+
+2025-09-14T17:57:59.187885643Z [inf]  Setting up libxcb-render0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.191187835Z [inf]  Setting up fontconfig-config (2.14.1-4) ...
+
+2025-09-14T17:57:59.249269733Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:57:59.254364997Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:57:59.359453055Z [inf]  Setting up libxcb-glx0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.362984272Z [inf]  Setting up libedit2:amd64 (3.1-20221030-2) ...
+
+2025-09-14T17:57:59.365905642Z [inf]  Setting up libxcb-shape0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.368786296Z [inf]  Setting up libavahi-common3:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:57:59.371620563Z [inf]  Setting up libnss3:amd64 (2:3.87.1-1+deb12u1) ...
+
+2025-09-14T17:57:59.374630914Z [inf]  Setting up libxcb-shm0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.37755059Z [inf]  Setting up dbus-daemon (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:59.388468863Z [inf]  Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+
+2025-09-14T17:57:59.391319367Z [inf]  Setting up libxcb-present0:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.394318949Z [inf]  Setting up libthai0:amd64 (0.1.29-1) ...
+
+2025-09-14T17:57:59.397232804Z [inf]  Setting up libfreetype6:amd64 (2.12.1+dfsg-5+deb12u4) ...
+
+2025-09-14T17:57:59.400178999Z [inf]  Setting up libxcb-sync1:amd64 (1.15-1) ...
+
+2025-09-14T17:57:59.402866297Z [inf]  Setting up libdbus-glib-1-2:amd64 (0.112-3) ...
+
+2025-09-14T17:57:59.405613313Z [inf]  Setting up dbus (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:57:59.424032126Z [inf]  invoke-rc.d: could not determine current runlevel
+
+2025-09-14T17:57:59.4267907Z [inf]  invoke-rc.d: policy-rc.d denied execution of start.
+
+2025-09-14T17:57:59.428485334Z [inf]  Setting up shared-mime-info (2.2-1) ...
+
+2025-09-14T17:58:00.064868814Z [inf]  Setting up libgssapi-krb5-2:amd64 (1.20.1-2+deb12u4) ...
+
+2025-09-14T17:58:00.069484702Z [inf]  Setting up libgdbm-compat4:amd64 (1.23-3) ...
+
+2025-09-14T17:58:00.072578489Z [inf]  Setting up ucf (3.0043+nmu1+deb12u1) ...
+
+2025-09-14T17:58:00.130753159Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:58:00.135736581Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:58:00.154768817Z [inf]  Setting up libxcb-dri2-0:amd64 (1.15-1) ...
+
+2025-09-14T17:58:00.157878436Z [inf]  Setting up libdrm2:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:58:00.16087211Z [inf]  Setting up libwayland-cursor0:amd64 (1.21.0-1) ...
+
+2025-09-14T17:58:00.164094996Z [inf]  Setting up libxcb-randr0:amd64 (1.15-1) ...
+
+2025-09-14T17:58:00.167179397Z [inf]  Setting up cpp (4:12.2.0-3) ...
+
+2025-09-14T17:58:00.172851969Z [inf]  Setting up libllvm15:amd64 (1:15.0.6-4+b1) ...
+
+2025-09-14T17:58:00.175603426Z [inf]  Setting up libpam-systemd:amd64 (252.39-1~deb12u1) ...
+
+2025-09-14T17:58:00.234730868Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:58:00.239753235Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:58:00.282555954Z [inf]  Setting up libx11-6:amd64 (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:58:00.285931581Z [inf]  Setting up libharfbuzz0b:amd64 (6.0.0+dfsg-3) ...
+
+2025-09-14T17:58:00.288983138Z [inf]  Setting up libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:58:00.307671005Z [inf]  Setting up libfontconfig1:amd64 (2.14.1-4) ...
+
+2025-09-14T17:58:00.310740336Z [inf]  Setting up libxkbfile1:amd64 (1:1.1.0-1) ...
+
+2025-09-14T17:58:00.314167925Z [inf]  Setting up libxcomposite1:amd64 (1:0.4.5-1) ...
+
+2025-09-14T17:58:00.316999984Z [inf]  Setting up libsm6:amd64 (2:1.2.3-1) ...
+
+2025-09-14T17:58:00.319900602Z [inf]  Setting up libxfont2:amd64 (1:2.0.6-1) ...
+
+2025-09-14T17:58:00.323298542Z [inf]  Setting up libavahi-client3:amd64 (0.8-10+deb12u1) ...
+
+2025-09-14T17:58:00.327043268Z [inf]  Setting up libperl5.36:amd64 (5.36.0-7+deb12u3) ...
+
+2025-09-14T17:58:00.330250307Z [inf]  Setting up libxmuu1:amd64 (2:1.1.3-3) ...
+
+2025-09-14T17:58:00.333460617Z [inf]  Setting up libdrm-amdgpu1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:58:00.336452754Z [inf]  Setting up libxcb-dri3-0:amd64 (1.15-1) ...
+
+2025-09-14T17:58:00.339207382Z [inf]  Setting up gtk-update-icon-cache (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:58:00.34215904Z [inf]  Setting up libx11-xcb1:amd64 (2:1.8.4-2+deb12u2) ...
+
+2025-09-14T17:58:00.34535194Z [inf]  Setting up fontconfig (2.14.1-4) ...
+
+2025-09-14T17:58:00.348718829Z [inf]  Regenerating fonts cache... 
+2025-09-14T17:58:01.182525523Z [inf]  
+> medicos@0.1.0 postinstall
+> playwright install chromium
+
+
+2025-09-14T17:58:01.660142349Z [inf]  Downloading Chromium 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-linux.zip
+
+2025-09-14T17:58:02.123135771Z [inf]  |                                                                                |   0% of 173.7 MiB
+
+2025-09-14T17:58:02.352091158Z [inf]  |■■■■■■■■                                                                        |  10% of 173.7 MiB
+
+2025-09-14T17:58:02.490071016Z [inf]  |■■■■■■■■■■■■■■■■                                                                |  20% of 173.7 MiB
+
+2025-09-14T17:58:02.675466664Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.7 MiB
+
+2025-09-14T17:58:02.801554853Z [inf]  done.
+
+2025-09-14T17:58:02.808210238Z [inf]  Setting up libdrm-nouveau2:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:58:02.811271801Z [inf]  Setting up libxdamage1:amd64 (1:1.1.6-1) ...
+
+2025-09-14T17:58:02.814391552Z [inf]  Setting up libgdk-pixbuf-xlib-2.0-0:amd64 (2.40.2-2) ...
+
+2025-09-14T17:58:02.817297465Z [inf]  Setting up libxpm4:amd64 (1:3.5.12-1.1+deb12u1) ...
+
+2025-09-14T17:58:02.820515574Z [inf]  Setting up libxrender1:amd64 (1:0.9.10-1.1) ...
+
+2025-09-14T17:58:02.823430722Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.7 MiB
+
+2025-09-14T17:58:02.823430847Z [inf]  Setting up libgbm1:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:58:02.826268259Z [inf]  Setting up libdrm-radeon1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:58:02.829238222Z [inf]  Setting up libpango-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:58:02.832383257Z [inf]  Setting up libdrm-intel1:amd64 (2.4.114-1+b1) ...
+
+2025-09-14T17:58:02.835385072Z [inf]  Setting up libgl1-mesa-dri:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:58:02.841886298Z [inf]  Setting up libxext6:amd64 (2:1.3.4-1+b1) ...
+
+2025-09-14T17:58:02.845075761Z [inf]  Setting up xfonts-utils (1:7.7+6) ...
+
+2025-09-14T17:58:02.855329263Z [inf]  Setting up libcairo2:amd64 (1.16.0-7) ...
+
+2025-09-14T17:58:02.858126916Z [inf]  Setting up libxxf86vm1:amd64 (1:1.1.4-1+b2) ...
+
+2025-09-14T17:58:02.861231909Z [inf]  Setting up dbus-user-session (1.14.10-1~deb12u1) ...
+
+2025-09-14T17:58:02.865138201Z [inf]  Setting up perl (5.36.0-7+deb12u3) ...
+
+2025-09-14T17:58:02.875007466Z [inf]  Setting up xfonts-base (1:1.0.5+nmu1) ...
+
+2025-09-14T17:58:02.914163974Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.7 MiB
+
+2025-09-14T17:58:02.918268387Z [inf]  Setting up libegl-mesa0:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:58:02.921680986Z [inf]  Setting up gconf2-common (3.2.6-8) ...
+
+2025-09-14T17:58:03.0031107Z [inf]  debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+2025-09-14T17:58:03.008822242Z [inf]  debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+
+2025-09-14T17:58:03.011692757Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.7 MiB
+
+2025-09-14T17:58:03.040423895Z [inf]  
+Creating config file /etc/gconf/2/path with new version
+
+2025-09-14T17:58:03.055507794Z [inf]  Setting up adwaita-icon-theme (43-1) ...
+
+2025-09-14T17:58:03.088102088Z [inf]  update-alternatives: using /usr/share/icons/Adwaita/cursor.theme to provide /usr/share/icons/default/index.theme (x-cursor-theme) in auto mode
+
+2025-09-14T17:58:03.090179517Z [inf]  Setting up libdata-dump-perl (1.25-1) ...
+
+2025-09-14T17:58:03.092939227Z [inf]  Setting up libxfixes3:amd64 (1:6.0.0-2) ...
+
+2025-09-14T17:58:03.095978084Z [inf]  Setting up libipc-system-simple-perl (1.30-2) ...
+
+2025-09-14T17:58:03.098917271Z [inf]  Setting up libxml-xpathengine-perl (0.14-2) ...
+
+2025-09-14T17:58:03.101652807Z [inf]  Setting up libgdk-pixbuf2.0-0:amd64 (2.40.2-2) ...
+
+2025-09-14T17:58:03.104400066Z [inf]  Setting up libxinerama1:amd64 (2:1.1.4-3) ...
+
+2025-09-14T17:58:03.107343484Z [inf]  Setting up libxv1:amd64 (2:1.0.11-1.1) ...
+
+2025-09-14T17:58:03.110279701Z [inf]  Setting up libio-html-perl (1.004-3) ...
+
+2025-09-14T17:58:03.113251588Z [inf]  Setting up libxrandr2:amd64 (2:1.5.2-2+b1) ...
+
+2025-09-14T17:58:03.116043235Z [inf]  Setting up libxt6:amd64 (1:1.2.1-1.1) ...
+
+2025-09-14T17:58:03.118576309Z [inf]  Setting up libtimedate-perl (2.3300-2) ...
+
+2025-09-14T17:58:03.121098089Z [inf]  Setting up libregexp-ipv6-perl (0.03-3) ...
+
+2025-09-14T17:58:03.12358192Z [inf]  Setting up libcups2:amd64 (2.4.2-3+deb12u9) ...
+
+2025-09-14T17:58:03.126312817Z [inf]  Setting up xauth (1:1.1.2-1) ...
+
+2025-09-14T17:58:03.128951948Z [inf]  Setting up libgdk-pixbuf2.0-bin (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:58:03.129003248Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.7 MiB
+
+2025-09-14T17:58:03.131443307Z [inf]  Setting up libegl1:amd64 (1.6.0-1) ...
+
+2025-09-14T17:58:03.133839763Z [inf]  Setting up libcairo-gobject2:amd64 (1.16.0-7) ...
+
+2025-09-14T17:58:03.136620165Z [inf]  Setting up libxss1:amd64 (1:1.2.3-1) ...
+
+2025-09-14T17:58:03.139407956Z [inf]  Setting up libpangoft2-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:58:03.142086589Z [inf]  Setting up libdbusmenu-gtk4:amd64 (18.10.20180917~bzr492+repack1-3) ...
+
+2025-09-14T17:58:03.144976104Z [inf]  Setting up liburi-perl (5.17-1) ...
+
+2025-09-14T17:58:03.147653098Z [inf]  Setting up libx11-protocol-perl (0.56-9) ...
+
+2025-09-14T17:58:03.150374321Z [inf]  Setting up libpangocairo-1.0-0:amd64 (1.50.12+ds-1) ...
+
+2025-09-14T17:58:03.153020077Z [inf]  Setting up libnet-ssleay-perl:amd64 (1.92-2+b1) ...
+
+2025-09-14T17:58:03.155613356Z [inf]  Setting up libhttp-date-perl (6.05-2) ...
+
+2025-09-14T17:58:03.158277808Z [inf]  Setting up libxft2:amd64 (2.3.6-1) ...
+
+2025-09-14T17:58:03.161053905Z [inf]  Setting up libxmu6:amd64 (2:1.1.3-3) ...
+
+2025-09-14T17:58:03.164202564Z [inf]  Setting up libfile-basedir-perl (0.09-2) ...
+
+2025-09-14T17:58:03.167062661Z [inf]  Setting up libtie-ixhash-perl (1.23-4) ...
+
+2025-09-14T17:58:03.169903489Z [inf]  Setting up libglx-mesa0:amd64 (22.3.6-1+deb12u1) ...
+
+2025-09-14T17:58:03.172563185Z [inf]  Setting up libfile-listing-perl (6.15-1) ...
+
+2025-09-14T17:58:03.175336091Z [inf]  Setting up libxi6:amd64 (2:1.8-1+b1) ...
+
+2025-09-14T17:58:03.178189499Z [inf]  Setting up libglx0:amd64 (1.6.0-1) ...
+
+2025-09-14T17:58:03.181249085Z [inf]  Setting up libfont-afm-perl (1.20-4) ...
+
+2025-09-14T17:58:03.184017397Z [inf]  Setting up libgconf-2-4:amd64 (3.2.6-8) ...
+
+2025-09-14T17:58:03.186623755Z [inf]  Setting up libclone-perl:amd64 (0.46-1) ...
+
+2025-09-14T17:58:03.189760926Z [inf]  Setting up libio-stringy-perl (2.111-3) ...
+
+2025-09-14T17:58:03.192771671Z [inf]  Setting up libxtst6:amd64 (2:1.2.3-1.1) ...
+
+2025-09-14T17:58:03.195863722Z [inf]  Setting up libhtml-tagset-perl (3.20-6) ...
+
+2025-09-14T17:58:03.199093483Z [inf]  Setting up libauthen-sasl-perl (2.1600-3) ...
+
+2025-09-14T17:58:03.202366125Z [inf]  Setting up libxcursor1:amd64 (1:1.2.1-1) ...
+
+2025-09-14T17:58:03.205491259Z [inf]  Setting up liblwp-mediatypes-perl (6.04-2) ...
+
+2025-09-14T17:58:03.208512444Z [inf]  Setting up libtry-tiny-perl (0.31-2) ...
+
+2025-09-14T17:58:03.211396743Z [inf]  Setting up libxxf86dga1:amd64 (2:1.1.5-1) ...
+
+2025-09-14T17:58:03.214402762Z [inf]  Setting up libnet-http-perl (6.22-1) ...
+
+2025-09-14T17:58:03.21749487Z [inf]  Setting up libencode-locale-perl (1.05-3) ...
+
+2025-09-14T17:58:03.220648593Z [inf]  Setting up dconf-service (0.40.0-4) ...
+
+2025-09-14T17:58:03.223870597Z [inf]  Setting up libxaw7:amd64 (2:1.0.14-1) ...
+
+2025-09-14T17:58:03.226572162Z [inf]  Setting up libatspi2.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:58:03.22924819Z [inf]  Setting up x11-xserver-utils (7.7+9+b1) ...
+
+2025-09-14T17:58:03.233931463Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.7 MiB
+
+2025-09-14T17:58:03.234772599Z [inf]  Setting up librsvg2-2:amd64 (2.54.7+dfsg-1~deb12u1) ...
+
+2025-09-14T17:58:03.237815901Z [inf]  Setting up libatk-bridge2.0-0:amd64 (2.46.0-5) ...
+
+2025-09-14T17:58:03.241103768Z [inf]  Setting up libgl1:amd64 (1.6.0-1) ...
+
+2025-09-14T17:58:03.24432839Z [inf]  Setting up librsvg2-common:amd64 (2.54.7+dfsg-1~deb12u1) ...
+
+2025-09-14T17:58:03.251220847Z [inf]  Setting up libfile-desktopentry-perl (0.22-3) ...
+
+2025-09-14T17:58:03.253947505Z [inf]  Setting up libwww-robotrules-perl (6.02-1) ...
+
+2025-09-14T17:58:03.256585485Z [inf]  Setting up zutty (0.14.0.20230218+dfsg1-1) ...
+
+2025-09-14T17:58:03.260060465Z [inf]  update-alternatives: using /usr/bin/zutty to provide /usr/bin/x-terminal-emulator (x-terminal-emulator) in auto mode
+
+2025-09-14T17:58:03.260104095Z [inf]  update-alternatives: warning: skip creation of /usr/share/man/man1/x-terminal-emulator.1.gz because associated file /usr/share/man/man1/zutty.1.gz (of link group x-terminal-emulator) doesn't exist
+
+2025-09-14T17:58:03.262230503Z [inf]  Setting up gconf-service (3.2.6-8) ...
+
+2025-09-14T17:58:03.265437012Z [inf]  Setting up libhtml-parser-perl:amd64 (3.81-1) ...
+
+2025-09-14T17:58:03.268820714Z [inf]  Setting up x11-utils (7.7+5) ...
+
+2025-09-14T17:58:03.281282381Z [inf]  Setting up libio-socket-ssl-perl (2.081-2) ...
+
+2025-09-14T17:58:03.284290725Z [inf]  Setting up libhttp-message-perl (6.44-1) ...
+
+2025-09-14T17:58:03.287511698Z [inf]  Setting up libhtml-form-perl (6.11-1) ...
+
+2025-09-14T17:58:03.290559447Z [inf]  Setting up libfile-mimeinfo-perl (0.33-1) ...
+
+2025-09-14T17:58:03.29339734Z [inf]  Setting up libhttp-negotiate-perl (6.01-2) ...
+
+2025-09-14T17:58:03.296357597Z [inf]  Setting up dconf-gsettings-backend:amd64 (0.40.0-4) ...
+
+2025-09-14T17:58:03.299450226Z [inf]  Setting up libhttp-cookies-perl (6.10-1) ...
+
+2025-09-14T17:58:03.302876101Z [inf]  Setting up x11-xkb-utils (7.7+7) ...
+
+2025-09-14T17:58:03.305816172Z [inf]  Setting up libgtk2.0-0:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:58:03.312843481Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.7 MiB
+
+2025-09-14T17:58:03.316820032Z [inf]  Setting up libhtml-tree-perl (5.07-3) ...
+
+2025-09-14T17:58:03.319605455Z [inf]  Setting up libhtml-format-perl (2.16-2) ...
+
+2025-09-14T17:58:03.330048778Z [inf]  Setting up libnet-smtp-ssl-perl (1.04-2) ...
+
+2025-09-14T17:58:03.33301655Z [inf]  Setting up libmailtools-perl (2.21-2) ...
+
+2025-09-14T17:58:03.336223198Z [inf]  Setting up libgail18:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:58:03.338909734Z [inf]  Setting up libhttp-daemon-perl (6.16-1) ...
+
+2025-09-14T17:58:03.341656862Z [inf]  Setting up libgtk2.0-bin (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:58:03.345125602Z [inf]  Setting up xserver-common (2:21.1.7-3+deb12u10) ...
+
+2025-09-14T17:58:03.348035874Z [inf]  Setting up libgtk-3-common (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:58:03.352561376Z [inf]  Setting up gsettings-desktop-schemas (43.0-1) ...
+
+2025-09-14T17:58:03.355560827Z [inf]  Setting up libayatana-indicator7:amd64 (0.9.3-1) ...
+
+2025-09-14T17:58:03.358678981Z [inf]  Setting up libgail-common:amd64 (2.24.33-2+deb12u1) ...
+
+2025-09-14T17:58:03.361932605Z [inf]  Setting up libgtk-3-0:amd64 (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:58:03.378838941Z [inf]  Setting up xvfb (2:21.1.7-3+deb12u10) ...
+
+2025-09-14T17:58:03.382062922Z [inf]  Setting up libayatana-appindicator1 (0.5.92-1) ...
+
+2025-09-14T17:58:03.385113Z [inf]  Setting up libgtk-3-bin (3.24.38-2~deb12u3) ...
+
+2025-09-14T17:58:03.388061433Z [inf]  Setting up at-spi2-core (2.46.0-5) ...
+
+2025-09-14T17:58:03.389390631Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.7 MiB
+
+2025-09-14T17:58:03.396212337Z [inf]  Setting up liblwp-protocol-https-perl (6.10-1) ...
+
+2025-09-14T17:58:03.400118001Z [inf]  Setting up libwww-perl (6.68-1) ...
+
+2025-09-14T17:58:03.404299076Z [inf]  Setting up libxml-parser-perl (2.46-4) ...
+
+2025-09-14T17:58:03.408100699Z [inf]  Setting up libxml-twig-perl (1:3.52-2) ...
+
+2025-09-14T17:58:03.411485006Z [inf]  Setting up libnet-dbus-perl (1.2.0-2) ...
+
+2025-09-14T17:58:03.414878545Z [inf]  Processing triggers for libc-bin (2.36-9+deb12u13) ...
+
+2025-09-14T17:58:03.427591007Z [inf]  Processing triggers for ca-certificates (20230311+deb12u1) ...
+
+2025-09-14T17:58:03.432076591Z [inf]  Updating certificates in /etc/ssl/certs...
+
+2025-09-14T17:58:03.831585974Z [inf]  0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+
+2025-09-14T17:58:03.832565078Z [inf]  done.
+
+2025-09-14T17:58:03.836348753Z [inf]  Processing triggers for libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-1+deb12u2) ...
+
+2025-09-14T17:58:04.233654952Z [inf]  install apt packages: ca-certificates fonts-liberation gconf-service libappindicator1 libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils xvfb
+2025-09-14T17:58:06.322042559Z [inf]  Chromium 140.0.7339.16 (playwright build v1187) downloaded to /root/.cache/ms-playwright/chromium-1187
+
+2025-09-14T17:58:06.32225457Z [inf]  Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+
+2025-09-14T17:58:06.478967798Z [inf]  |                                                                                |   0% of 2.3 MiB
+
+2025-09-14T17:58:06.483017709Z [inf]  |■■■■■■■■                                                                        |  10% of 2.3 MiB
+
+2025-09-14T17:58:06.484921787Z [inf]  |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+
+2025-09-14T17:58:06.490404659Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+
+2025-09-14T17:58:06.491796725Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+
+2025-09-14T17:58:06.492962862Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+
+2025-09-14T17:58:06.494201199Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+
+2025-09-14T17:58:06.495811745Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+
+2025-09-14T17:58:06.497025423Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+
+2025-09-14T17:58:06.498039297Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+
+2025-09-14T17:58:06.499322397Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+
+2025-09-14T17:58:06.546172628Z [inf]  FFMPEG playwright build v1011 downloaded to /root/.cache/ms-playwright/ffmpeg-1011
+
+2025-09-14T17:58:06.54648728Z [inf]  Downloading Chromium Headless Shell 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-headless-shell-linux.zip
+
+2025-09-14T17:58:06.728710266Z [inf]  |                                                                                |   0% of 104.3 MiB
+
+2025-09-14T17:58:06.803417713Z [inf]  |■■■■■■■■                                                                        |  10% of 104.3 MiB
+
+2025-09-14T17:58:06.882045999Z [inf]  |■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
+
+2025-09-14T17:58:06.957888537Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
+
+2025-09-14T17:58:07.02648487Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
+
+2025-09-14T17:58:07.107547934Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
+
+2025-09-14T17:58:07.174194833Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
+
+2025-09-14T17:58:07.279199723Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
+
+2025-09-14T17:58:07.370154442Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
+
+2025-09-14T17:58:07.444996128Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
+
+2025-09-14T17:58:07.494669464Z [inf]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
+
+2025-09-14T17:58:09.157664592Z [inf]  Chromium Headless Shell 140.0.7339.16 (playwright build v1187) downloaded to /root/.cache/ms-playwright/chromium_headless_shell-1187
+
+2025-09-14T17:58:09.183907374Z [inf]  Playwright Host validation warning: 
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Please install them with the following command:      ║
+║                                                      ║
+║     npx playwright install-deps                      ║
+║                                                      ║
+║ Alternatively, use apt:                              ║
+║     apt-get install libglib2.0-0\                    ║
+║         libatk1.0-0\                                 ║
+║         libatk-bridge2.0-0\                          ║
+║         libcups2\                                    ║
+║         libxkbcommon0\                               ║
+║         libatspi2.0-0\                               ║
+║         libxcomposite1\                              ║
+║         libxdamage1\                                 ║
+║         libxfixes3\                                  ║
+║         libxrandr2\                                  ║
+║         libgbm1\                                     ║
+║         libcairo2\                                   ║
+║         libpango-1.0-0\                              ║
+║         libasound2                                   ║
+║                                                      ║
+║ <3 Playwright Team                                   ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/app/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Registry._validateHostRequirements (/app/node_modules/playwright-core/lib/server/registry/index.js:934:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/app/node_modules/playwright-core/lib/server/registry/index.js:1056:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/app/node_modules/playwright-core/lib/server/registry/index.js:1045:7)
+    at async i.<anonymous> (/app/node_modules/playwright-core/lib/cli/program.js:217:7)
+
+2025-09-14T17:58:09.208655249Z [inf]  
+added 1529 packages, and audited 1530 packages in 32s
+
+2025-09-14T17:58:09.257842911Z [inf]  
+9 vulnerabilities (3 low, 1 moderate, 5 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible, run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+
+2025-09-14T17:58:09.706016866Z [inf]  npm ci
+2025-09-14T17:58:09.707024335Z [inf]  copy / /app
+2025-09-14T17:58:10.273009051Z [inf]  copy / /app
+2025-09-14T17:58:10.273951247Z [inf]  npm run build
+2025-09-14T17:58:10.457581422Z [inf]  npm warn config production Use `--omit=dev` instead.
+
+2025-09-14T17:58:10.469491168Z [inf]  
+> medicos@0.1.0 build
+> next build
+
+
+2025-09-14T17:58:10.554836551Z [inf]   ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+
+2025-09-14T17:58:10.982559805Z [inf]     ▲ Next.js 15.2.4
+
+2025-09-14T17:58:10.982577124Z [inf]  
+
+2025-09-14T17:58:10.994917114Z [inf]     Creating an optimized production build ...
+
+2025-09-14T17:58:22.129345371Z [inf]   ⚠ Compiled with warnings
+
+
+2025-09-14T17:58:22.129672418Z [inf]  ./src/app/api/generate-paper-pdf/route.ts
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./src/app/api/generate-paper-pdf/route.ts
+
+./src/app/api/generate-paper-pdf/route.ts
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./src/app/api/generate-paper-pdf/route.ts
+
+./src/app/api/generate-solutions-pdf/route.ts
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./src/app/api/generate-solutions-pdf/route.ts
+
+
+2025-09-14T17:58:32.526352564Z [inf]   ✓ Compiled successfully
+
+2025-09-14T17:58:32.528466032Z [inf]     Linting and checking validity of types ...
+
+2025-09-14T17:58:36.453683236Z [inf]  
+./src/app/admin/page.tsx
+6:8  Warning: 'CollegeChart' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/generate-paper-pdf/route.ts
+6:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
+46:51  Warning: Empty block statement.  no-empty
+60:62  Warning: Empty block statement.  no-empty
+61:63  Warning: Empty block statement.  no-empty
+264:123  Warning: 'after' is defined but never used.  @typescript-eslint/no-unused-vars
+303:13  Warning: Empty block statement.  no-empty
+342:7  Warning: 'filename' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+353:16  Warning: 'resolveBundledChromiumPath' is defined but never used.  @typescript-eslint/no-unused-vars
+685:21  Warning: 'originalText' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+935:13  Warning: Empty block statement.  no-empty
+967:43  Warning: Empty block statement.  no-empty
+
+./src/app/api/generate-solutions-pdf/route.ts
+7:8  Warning: 'path' is defined but never used.  @typescript-eslint/no-unused-vars
+29:51  Warning: Empty block statement.  no-empty
+48:53  Warning: Empty block statement.  no-empty
+49:54  Warning: Empty block statement.  no-empty
+254:76  Warning: '_after' is defined but never used.  @typescript-eslint/no-unused-vars
+572:13  Warning: 'processedOpt' is never reassigned. Use 'const' instead.  prefer-const
+700:45  Warning: Empty block statement.  no-empty
+
+./src/app/college/page.tsx
+156:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+167:6  Warning: React Hook useEffect has a missing dependency: 'colorPalette'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/college/teachers-list/page.tsx
+23:10  Warning: 'isFilterModalOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+30:10  Warning: 'departments' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+38:10  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+199:17  Warning: 'DepartmentMap' is defined but never used.  @typescript-eslint/no-unused-vars
+306:7  Warning: 'handleFilterApply' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/forgot-password/page.tsx
+8:10  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/layout.tsx
+4:10  Warning: 'NavigationLoadingWrapper' is defined but never used.  @typescript-eslint/no-unused-vars
+9:7  Warning: 'outfit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/login/page.tsx
+9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/signup/page.tsx
+9:23  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+9:29  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+9:35  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/downloaded-papers/page.tsx
+3:27  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/page.tsx
+8:10  Warning: 'activeTab' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+10:9  Warning: 'handleTabChange' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/CollegeChart.tsx
+5:3  Warning: 'LineChart' is defined but never used.  @typescript-eslint/no-unused-vars
+6:3  Warning: 'Line' is defined but never used.  @typescript-eslint/no-unused-vars
+18:10  Warning: 'cn' is defined but never used.  @typescript-eslint/no-unused-vars
+20:28  Warning: 'CollegeGrowthResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/SubjectQuestionsChart.tsx
+56:10  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+73:9  Warning: 'start' is never reassigned. Use 'const' instead.  prefer-const
+153:6  Warning: React Hook useEffect has a missing dependency: 'fetchChartData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/TeacherList/AddTeacherForm.tsx
+27:6  Warning: 'TeacherFormValues' is defined but never used.  @typescript-eslint/no-unused-vars
+30:9  Warning: 'params' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+31:11  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+31:17  Warning: 'userRole' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+85:21  Warning: 'setIsLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/TeacherList/FilterModal.tsx
+2:17  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+11:10  Warning: 'Label' is defined but never used.  @typescript-eslint/no-unused-vars
+28:10  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/TeacherList/Tabs.tsx
+2:15  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/UsageChart.tsx
+19:26  Warning: 'UsageTrendsResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+89:27  Warning: Assignments to the 'yAxisDomain' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
+95:26  Warning: Assignments to the 'yAxisTicks' variable from inside React Hook useEffect will be lost after each render. To preserve the value over time, store it in a useRef Hook and keep the mutable value in the '.current' property. Otherwise, you can move this variable directly inside useEffect.  react-hooks/exhaustive-deps
+
+./src/components/admin/add-question-form.tsx
+43:7  Warning: 'ACCEPTED_IMAGE_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+44:7  Warning: 'ACCEPTED_PDF_TYPES' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+266:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+372:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
+803:38  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+
+./src/components/admin/college-registration-form.tsx
+15:10  Warning: 'uploadFile' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/admin/edit-question-form.tsx
+15:29  Warning: 'FormDescription' is defined but never used.  @typescript-eslint/no-unused-vars
+41:7  Warning: 'MAX_FILE_SIZE' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+265:9  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+359:11  Warning: 'finalQuestionData' is never reassigned. Use 'const' instead.  prefer-const
+583:36  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+
+./src/components/admin/question-bank/question-bank.tsx
+33:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+34:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+51:10  Warning: 'refreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+51:24  Warning: 'setRefreshToken' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+472:15  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/components/admin/question-bank/question-list.tsx
+119:9  Warning: 'getSolutionData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/admin/subject-chapter-manager.tsx
+11:10  Warning: 'useToast' is defined but never used.  @typescript-eslint/no-unused-vars
+125:6  Warning: React Hook useEffect has missing dependencies: 'initialSubjects.length', 'initialTopics.length', and 'selectedSubjectId'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/admin/university-card.tsx
+24:10  Warning: 'isApiSuccess' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing-page/Footer.tsx
+25:35  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/layout/command-menu.tsx
+6:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+9:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+11:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+12:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+13:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/layout/dashboard-layout.tsx
+17:10  Warning: 'sidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+17:23  Warning: 'setSidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/layout/dashboard-navbar.tsx
+4:10  Warning: 'Bell' is defined but never used.  @typescript-eslint/no-unused-vars
+7:10  Warning: 'ThemeToggle' is defined but never used.  @typescript-eslint/no-unused-vars
+17:10  Warning: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+28:10  Warning: 'notificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+28:29  Warning: 'setNotificationCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/layout/dashboard-sidebar.tsx
+9:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+10:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+11:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+12:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+13:3  Warning: 'LayoutDashboard' is defined but never used.  @typescript-eslint/no-unused-vars
+14:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+15:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+16:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+17:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/layout/navigation-loading-wrapper.tsx
+31:11  Warning: 'handleRouteChangeComplete' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/table/table-title.tsx
+2:10  Warning: 'Search' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/table/teachers-table.tsx
+5:45  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+9:3  Warning: 'title' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+12:3  Warning: 'columns' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+15:3  Warning: 'onRefresh' is defined but never used.  @typescript-eslint/no-unused-vars
+16:3  Warning: 'onFilter' is defined but never used.  @typescript-eslint/no-unused-vars
+33:9  Warning: 'totalPages' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/question-paper-wizard.tsx
+446:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/steps/actions-step.tsx
+5:20  Warning: 'Eye' is defined but never used.  @typescript-eslint/no-unused-vars
+5:25  Warning: 'Edit' is defined but never used.  @typescript-eslint/no-unused-vars
+14:31  Warning: 'formData' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/steps/chapter-selection-step.tsx
+13:10  Warning: 'Plus' is defined but never used.  @typescript-eslint/no-unused-vars
+44:6  Warning: React Hook useEffect has a missing dependency: 'loadChapters'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/teacher/steps/course-subject-step.tsx
+3:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/steps/multi-subject-config-step.tsx
+49:10  Warning: 'loadingSubjects' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+128:6  Warning: React Hook useEffect has a missing dependency: 'loadChaptersForSubject'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+244:6  Warning: React Hook useEffect has a missing dependency: 'initializeSubjectConfig'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/teacher/steps/question-title-description-step.tsx
+4:10  Warning: 'OptionButton' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/steps/topic-selection-step.tsx
+51:6  Warning: React Hook useEffect has a missing dependency: 'loadTopics'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/teacher/user-profile.tsx
+3:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+5:10  Warning: 'Facebook' is defined but never used.  @typescript-eslint/no-unused-vars
+5:20  Warning: 'Instagram' is defined but never used.  @typescript-eslint/no-unused-vars
+5:31  Warning: 'Linkedin' is defined but never used.  @typescript-eslint/no-unused-vars
+5:41  Warning: 'Pencil' is defined but never used.  @typescript-eslint/no-unused-vars
+5:49  Warning: 'Twitter' is defined but never used.  @typescript-eslint/no-unused-vars
+6:8  Warning: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
+32:9  Warning: 'handleEdit' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/chemical-image-display.tsx
+4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/sidebar.tsx
+6:10  Warning: 'PanelLeftIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/text-with-images.tsx
+4:10  Warning: 'MathText' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/toaster.tsx
+16:9  Warning: 'auth' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/use-toast.ts
+14:7  Warning: 'toastEventTarget' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+15:7  Warning: 'TOAST_ADD_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:7  Warning: 'TOAST_REMOVE_EVENT' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/api/questionPapers.ts
+207:20  Warning: 'jsonError' is defined but never used.  @typescript-eslint/no-unused-vars
+212:16  Warning: 'parseError' is defined but never used.  @typescript-eslint/no-unused-vars
+260:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/api/questions.ts
+4:7  Warning: 'API_BASE_URL' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/api/teachers.ts
+1:10  Warning: 'api' is defined but never used.  @typescript-eslint/no-unused-vars
+121:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/auth.ts
+21:27  Warning: React Hook "useAuth" is called in function "setUserRole" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".  react-hooks/rules-of-hooks
+
+./src/lib/constants/menuItems.ts
+3:3  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+4:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+5:3  Warning: 'FolderArchive' is defined but never used.  @typescript-eslint/no-unused-vars
+6:3  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+7:3  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+8:3  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+9:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+10:3  Warning: 'Receipt' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/utils/htmlToImage.ts
+8:10  Warning: 'JSDOM' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/utils/imageUtils.ts
+67:10  Warning: 'findMatchingImageKey' is defined but never used.  @typescript-eslint/no-unused-vars
+226:11  Warning: 'imageSrc' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/utils/mathRenderer.ts
+106:9  Warning: 'fallbackText' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/utils/pdfGenerator.ts
+3:10  Warning: 'MathRenderer' is defined but never used.  @typescript-eslint/no-unused-vars
+539:9  Warning: 'displayText' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/utils/svgMathRenderer.ts
+62:34  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+62:66  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+65:58  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+68:39  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+69:41  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+148:33  Warning: 'expression' is defined but never used.  @typescript-eslint/no-unused-vars
+148:53  Warning: 'options' is defined but never used.  @typescript-eslint/no-unused-vars
+221:32  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+221:64  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+223:61  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+227:27  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+228:29  Warning: Forbidden non-null assertion.  @typescript-eslint/no-non-null-assertion
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+
+2025-09-14T17:58:39.34545009Z [inf]     Collecting page data ...
+
+2025-09-14T17:58:42.433735609Z [inf]     Generating static pages (0/23) ...
+
+2025-09-14T17:58:43.047995096Z [inf]  Error: <Html> should not be imported outside of pages/_document.
+Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+    at y (.next/server/chunks/8548.js:6:1351)
+Error occurred prerendering page "/404". Read more: https://nextjs.org/docs/messages/prerender-error
+Error: <Html> should not be imported outside of pages/_document.
+Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+    at K (/app/node_modules/next/dist/compiled/next-server/pages.runtime.prod.js:16:6526)
+    at y (/app/.next/server/chunks/8548.js:6:1351)
+    at react-stack-bottom-frame (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:9251:18)
+    at renderWithHooks (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4898:19)
+    at renderElement (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5333:23)
+    at retryNode (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+    at renderNodeDestructive (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+    at renderElement (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5319:11)
+    at retryNode (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+    at renderNodeDestructive (/app/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+Export encountered an error on /_error: /404, exiting the build.
+
+2025-09-14T17:58:43.054032761Z [inf]   ⨯ Next.js build worker exited with code: 1 and signal: null
+
+2025-09-14T17:58:43.241882631Z [err]  npm run build
+2025-09-14T17:58:43.258339808Z [err]  ERROR: failed to build: failed to solve: process "npm run build" did not complete successfully: exit code: 1
