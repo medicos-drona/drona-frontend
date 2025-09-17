@@ -53,22 +53,30 @@ async function getLaunchOptions() {
   let launchOptions: any = { headless: true };
 
   if (isVercel) {
-    // Serverless: puppeteer-core with @sparticuz/chromium
-    chromium = (await import('@sparticuz/chromium')).default;
-    puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
+    // Serverless (Vercel): puppeteer-core + @sparticuz/chromium(-min) with remote pack fallback
+    try {
+      chromium = (await import('@sparticuz/chromium-min')).default;
+    } catch {
+      chromium = (await import('@sparticuz/chromium')).default;
+    }
+    const core = await import('puppeteer-core');
+    puppeteer = (core as any).default || (core as any);
 
-    try { (chromium as any).setHeadlessMode?.(true); } catch {}
-    try { (chromium as any).setGraphicsMode?.(false); } catch {}
+    try { chromium.setHeadlessMode?.(true); } catch {}
+    try { chromium.setGraphicsMode?.(false); } catch {}
 
-    const executablePath = await chromium.executablePath(); // always resolves a real path
+    let executablePath: string | undefined;
+    try { executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK); }
+    catch { executablePath = await chromium.executablePath(); }
+
     launchOptions = {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport ?? { width: 1280, height: 800 },
       executablePath,
-      headless: chromium.headless,
+      headless: true,
     };
   } else {
-    // Local: prefer full puppeteer, fallback to puppeteer-core
+    // Local dev: prefer full puppeteer, fallback to puppeteer-core
     try {
       const modName = 'puppeteer' as any;
       const full = await (import(modName));
@@ -350,33 +358,6 @@ export const POST = async (req: NextRequest) => {
       console.error('No valid questions found');
       return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });
     }
-      function resolveBundledChromiumPath(): string | undefined {
-        try {
-          const base = require('node:path').join(process.cwd(), 'node_modules', 'playwright-core', '.local-browsers');
-          console.log('[PDF] resolveBundledChromiumPath base', { base });
-          if (!fs.existsSync(base)) {
-            console.warn('[PDF] bundled browsers base does not exist');
-            return undefined;
-          }
-          const dirs = fs.readdirSync(base, { withFileTypes: true }).filter((d: any) => d.isDirectory()).map((d: any) => d.name);
-          console.log('[PDF] bundled browsers found', { dirs });
-          const preferred = dirs.find((d: string) => d.startsWith('chromium_headless_shell')) || dirs.find((d: string) => d.startsWith('chromium'));
-          if (!preferred) {
-            console.warn('[PDF] no chromium directory found under .local-browsers');
-            return undefined;
-          }
-          const headlessPath = require('node:path').join(base, preferred, 'chrome-linux', 'headless_shell');
-          const chromePath = require('node:path').join(base, preferred, 'chrome-linux', 'chrome');
-          if (fs.existsSync(headlessPath)) return headlessPath;
-          if (fs.existsSync(chromePath)) return chromePath;
-          console.warn('[PDF] neither headless_shell nor chrome exists in chromium dir');
-          return undefined;
-        } catch (e) {
-          console.warn('[PDF] resolveBundledChromiumPath error', e);
-          return undefined;
-        }
-      }
-
 
     // FIX: Ensure chromium libs are resolvable at runtime (fixes libnss3.so errors)
     const libPath = `${process.cwd()}/node_modules/@sparticuz/chromium/lib`;
@@ -384,54 +365,16 @@ export const POST = async (req: NextRequest) => {
 
     console.log('[PDF] environment', { NODE_ENV: process.env.NODE_ENV, VERCEL: !!process.env.VERCEL });
 
-    console.log('[PDF] Launching Chromium for PDF generation...');
-    const launchOpts = await getLaunchOptions();
-    console.log('Resolved executablePath:', launchOpts.executablePath || '(serverless)');
-
-    // Use puppeteer-core with @sparticuz/chromium on serverless; local Chrome/Edge otherwise
     let browser: any = null;
-      if (!chromium || !puppeteer) {
-        chromium = (await import('@sparticuz/chromium')).default;
-        puppeteer = (await import('puppeteer-core')).default || (await import('puppeteer-core'));
-      }
-
     let page: any = null;
 
     try {
-      const isProd = !!process.env.VERCEL || process.env.NEXT_PUBLIC_VERCEL_ENVIRONMENT === 'production';
-      let launchOptions: any;
-
-      if (isProd) {
-        try {
-          chromium = (await import('@sparticuz/chromium-min')).default;
-        } catch {
-          chromium = (await import('@sparticuz/chromium')).default;
-        }
-        const core = await import('puppeteer-core');
-        puppeteer = (core as any).default || (core as any);
-        let executablePath: string | undefined;
-        try { executablePath = await chromium.executablePath(REMOTE_CHROMIUM_PACK); }
-        catch { executablePath = await chromium.executablePath(); }
-        launchOptions = {
-          args: chromium.args,
-          executablePath,
-          headless: true,
-        };
-        console.log('[PDF] Puppeteer options (serverless):', { executablePath, args: launchOptions.args });
-      } else {
-        const modName = 'puppeteer' as any;
-        const full = await (import(modName));
-        puppeteer = (full as any).default || (full as any);
-        const envExec = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_SHIM || process.env.CHROMIUM_PATH;
-        const localExec = (envExec && fs.existsSync(envExec)) ? envExec : findLocalChromeExecutable();
-        launchOptions = {
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          ...(localExec ? { executablePath: localExec } : {}),
-        };
-        console.log('[PDF] Puppeteer options (local):', { executablePath: launchOptions.executablePath, args: launchOptions.args });
-      }
-
+      const launchOptions = await getLaunchOptions();
+      console.log('[PDF] Launching Puppeteer with options:', {
+        executablePath: launchOptions.executablePath,
+        args: launchOptions.args,
+        headless: launchOptions.headless,
+      });
       browser = await puppeteer.launch(launchOptions);
       page = await browser.newPage();
       console.log('[PDF] Browser launched successfully');
@@ -944,20 +887,18 @@ ${subjectQuestions.map((q, questionIndex) => {
       margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
     } as any);
 
-    await browser?.close();
+    await browser.close();
     console.log('PDF generated successfully, size:', pdfBuffer.length);
 
-    const response = new NextResponse(Buffer.from(pdfBuffer), {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${payload.filename || 'question-paper.pdf'}"`,
       },
     });
-
-    return response;
   } catch (browserError) {
-    console.error('Browser launch/render failed:', {
+    console.error('PDF generation failed (browser):', {
       message: (browserError as any)?.message,
       stack: (browserError as any)?.stack,
       name: (browserError as any)?.name
@@ -968,18 +909,7 @@ ${subjectQuestions.map((q, questionIndex) => {
   }
 
   } catch (error: any) {
-    console.error('PDF generation failed with detailed error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
-
-    return new NextResponse(
-      JSON.stringify({
-        error: 'PDF generation failed',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      }),
-      { status: 500 }
-    );
+    console.error('PDF generation failed:', error);
+    return new NextResponse(JSON.stringify({ error: 'PDF generation failed' }), { status: 500 });
   }
 };
