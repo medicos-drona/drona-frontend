@@ -604,7 +604,6 @@ export const POST = async (req: NextRequest) => {
             <div class="subject-heading">Subject: ${subject}</div>
 
             <div class="subject-content">
-            // Updated question processing section within the HTML generation
 ${subjectQuestions.map((q, questionIndex) => {
   const currentQuestionNumber = overallQuestionNumber++;
   try {
