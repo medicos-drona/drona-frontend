@@ -92,7 +92,7 @@ async function getLaunchOptions() {
     launchOptions = {
       headless: true,
       executablePath: localExec,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage','--disable-gpu','--disable-software-rasterizer'],
       defaultViewport: { width: 1280, height: 800 },
     };
   }
