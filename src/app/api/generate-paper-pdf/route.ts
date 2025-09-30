@@ -130,8 +130,23 @@ function processTextForPDF(text: string): string {
 
   // Helper function to create properly styled image tags
   const createImageTag = (src: string, alt: string = 'Image') => {
-    const cleanBase64 = src.replace(/\s+/g, '');
-    return `<img src="${cleanBase64}" alt="${alt}" style="max-width:90%;width:auto;height:auto;display:block;margin:8px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;" onerror="this.style.display='none';" />`;
+    // Clean up the base64 string and validate it
+    const cleanSrc = src.replace(/\s+/g, '');
+
+    // Check if the base64 string is valid and not too long
+    if (!cleanSrc.startsWith('data:image/')) {
+      console.warn('Invalid image data format:', cleanSrc.substring(0, 50));
+      return `<div style="border:1px solid #ccc;padding:5px;margin:4px auto;text-align:center;background:#f9f9f9;font-size:12px;max-width:300px;">Image could not be loaded</div>`;
+    }
+
+    // For very large images, add additional error handling
+    const base64Part = cleanSrc.split(',')[1];
+    if (base64Part && base64Part.length > 100000) {
+      console.warn('Very large image detected, length:', base64Part.length);
+    }
+
+    // Use smaller max-width to preserve 2-column layout and fix HTML escaping
+    return `<img src="${cleanSrc}" alt="${alt}" style="max-width:100%;width:auto;height:auto;display:block;margin:4px auto;border:1px solid #ddd;padding:2px;break-inside:avoid;page-break-inside:avoid;box-sizing:border-box;" onerror="this.style.display='none';" />`;
   };
 
   // Process standalone base64 image data that appears directly in text
@@ -158,7 +173,7 @@ function processTextForPDF(text: string): string {
   });
 
   // Handle cases where base64 appears at the very beginning of text
-  processedText = processedText.replace(/^(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, base64Data) => {
+  processedText = processedText.replace(/^(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/gm, (match, base64Data) => {
     return createImageTag(base64Data);
   });
 
@@ -168,24 +183,47 @@ function processTextForPDF(text: string): string {
   });
 
   // Then handle any remaining standalone base64 data
+  // Use the correct pattern that finds individual base64 strings
+  // Process from end to beginning to avoid index shifting issues
+  const base64Matches = [];
   const base64Pattern = /data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g;
-  const matches = processedText.match(base64Pattern);
+  let match;
 
-  if (matches) {
-    matches.forEach((base64Data) => {
-      // Only process if it's not already inside an img tag
-      const imgTagPattern = new RegExp(`<img[^>]*src=["']${base64Data.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'i');
-      if (!processedText.match(imgTagPattern)) {
-        // Replace standalone base64 string with an img tag
-        processedText = processedText.replace(base64Data, createImageTag(base64Data));
-      }
+  // Collect all matches first
+  while ((match = base64Pattern.exec(processedText)) !== null) {
+    base64Matches.push({
+      fullMatch: match[0],
+      startIndex: match.index,
+      endIndex: match.index + match[0].length
     });
+  }
+
+  // Process matches from end to beginning to avoid index shifting
+  for (let i = base64Matches.length - 1; i >= 0; i--) {
+    const matchInfo = base64Matches[i];
+    const base64Data = matchInfo.fullMatch;
+
+    // Only process if it's not already inside an img tag
+    const beforeMatch = processedText.substring(Math.max(0, matchInfo.startIndex - 100), matchInfo.startIndex);
+    const afterMatch = processedText.substring(matchInfo.endIndex, Math.min(processedText.length, matchInfo.endIndex + 100));
+
+    // Check if it's already inside an img tag
+    if (!beforeMatch.includes('<img') || afterMatch.includes('</img>') || afterMatch.includes('/>')) {
+      // Replace standalone base64 string with an img tag
+      const beforeText = processedText.substring(0, matchInfo.startIndex);
+      const afterText = processedText.substring(matchInfo.endIndex);
+      processedText = beforeText + createImageTag(base64Data) + afterText;
+    }
   }
 
   // Note: If any base64 remains after processing, we log but do not drop content
   const remainingBase64 = processedText.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g);
   if (remainingBase64 && remainingBase64.length > 0) {
     console.warn('Remaining base64 found after processing:', remainingBase64.length);
+    // Log the first few characters of each remaining base64 for debugging
+    remainingBase64.forEach((base64, index) => {
+      console.warn(`Remaining base64 ${index + 1}:`, base64.substring(0, 100) + '...');
+    });
   }
 
   // Process markdown tables - convert to HTML
@@ -278,45 +316,354 @@ function processTextForPDF(text: string): string {
 
   return processedText;
 }
-// Normalize LaTeX inside math delimiters and fix common broken constructs
-function sanitizeLatexForPDF(text: string): string {
+// Convert LaTeX expressions to human-readable text for PDF
+function convertLatexToReadableText(text: string): string {
   if (!text) return '';
 
-  // Helper to clean a math segment
-  const cleanMath = (inner: string) => {
-    let s = inner;
-    // Collapse newlines and excessive spaces inside math
-    s = s.replace(/[\r\n]+/g, ' ').replace(/\s{2,}/g, ' ');
+  // Helper function to convert LaTeX math expressions to readable text
+  const convertMathExpression = (mathContent: string): string => {
+    let converted = mathContent.trim();
 
-    // If \left/\right are not followed by proper delimiters, fix them safely
-    // Guard against \leftarrow / \rightarrow sequences: do not alter when followed by 'arrow'
-    // Acceptable after \left: ( [ { | \lvert \lVert
-    s = s.replace(/\\left(?!arrow)\s*(?![\(\[\{\\|])/g, '');
-    // Map sequences like \lefta or \leftx to opening parenthesis + that char (but not \leftarrow)
-    s = s.replace(/\\left(?!arrow)\s*([A-Za-z0-9\\])/g, '($1');
-    // Acceptable after \right: ) ] } |
-    s = s.replace(/\\right(?!arrow)\s*(?![\)\]\}\\|])/g, '');
-    // Map sequences like \righta or stray \right to closing parenthesis (but not \rightarrow)
-    s = s.replace(/\\right(?!arrow)\s*([A-Za-z0-9\\]|$)/g, ')$1');
+    // Remove common LaTeX commands and convert to readable text
+    converted = converted
+      // Handle \left and \right delimiters first (remove them but keep the delimiters)
+      .replace(/\\left\s*\(/g, '(')
+      .replace(/\\right\s*\)/g, ')')
+      .replace(/\\left\s*\[/g, '[')
+      .replace(/\\right\s*\]/g, ']')
+      .replace(/\\left\s*\{/g, '{')
+      .replace(/\\right\s*\}/g, '}')
+      .replace(/\\left\s*\|/g, '|')
+      .replace(/\\right\s*\|/g, '|')
+      .replace(/\\left\s*/g, '')  // Remove any remaining \left
+      .replace(/\\right\s*/g, '') // Remove any remaining \right
 
-    // Common OCR issues: 1eft/1ight within math
-    s = s.replace(/(?<!\\)1eft/g, '\\left');
-    s = s.replace(/(?<!\\)1ight/g, '\\right');
+      // Handle vector arrows and overlines FIRST (before removing braces)
+      // Use simple arrow notation for vectors (widely supported)
+      .replace(/\\overrightarrow\{([^}]+)\}/g, '$1→')
+      .replace(/\\vec\{([^}]+)\}/g, '$1→')
+      .replace(/\\overline\{([^}]+)\}/g, '$1̄')
+      .replace(/\\bar\{([^}]+)\}/g, '$1̄')
+      .replace(/overrightarrow\{([^}]+)\}/g, '$1→')  // Handle missing backslash
+      .replace(/overrightarrow([a-zA-Z0-9]+)/g, '$1→')  // Handle malformed overrightarrow
 
-    // Balance parentheses if needed (append missing ) )
-    try {
-      const opens = (s.match(/\(/g) || []).length;
-      const closes = (s.match(/\)/g) || []).length;
-      if (closes < opens) s = s + ')'.repeat(opens - closes);
-    } catch {}
+      // Handle fractions (including malformed ones) - AFTER vector processing
+      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\ffrac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\ffrac([^{}\s]+)([^{}\s]+)/g, '$1/$2')
+      .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\tfrac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')  // Handle missing backslash
+      .replace(/frac([^{}\s]+)([^{}\s]+)/g, '$1/$2')        // Handle malformed frac
 
-    return s;
+      // Handle superscripts and subscripts
+      .replace(/\^{([^}]+)}/g, (_, content) => {
+        // Convert common superscripts to Unicode
+        const superscriptMap: Record<string, string> = {
+          '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵',
+          '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '+': '⁺', '-': '⁻',
+          '=': '⁼', '(': '⁽', ')': '⁾', 'n': 'ⁿ'
+        };
+        return content.split('').map((char: string) => superscriptMap[char] || char).join('');
+      })
+      .replace(/\^([0-9+-])/g, (_, char) => {
+        const superscriptMap: Record<string, string> = {
+          '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵',
+          '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '+': '⁺', '-': '⁻'
+        };
+        return superscriptMap[char] || char;
+      })
+
+      .replace(/_{([^}]+)}/g, (_, content) => {
+        // Convert common subscripts to Unicode
+        const subscriptMap: Record<string, string> = {
+          '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅',
+          '6': '₆', '7': '₇', '8': '₈', '9': '₉', '+': '₊', '-': '₋',
+          '=': '₌', '(': '₍', ')': '₎'
+        };
+        return content.split('').map((char: string) => subscriptMap[char] || char).join('');
+      })
+      .replace(/_([0-9+-])/g, (_, char) => {
+        const subscriptMap: Record<string, string> = {
+          '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅',
+          '6': '₆', '7': '₇', '8': '₈', '9': '₉', '+': '₊', '-': '₋'
+        };
+        return subscriptMap[char] || char;
+      })
+
+
+
+      // Handle arrows
+      .replace(/\\rightarrow/g, '→')
+      .replace(/\\leftarrow/g, '←')
+      .replace(/\\leftrightarrow/g, '↔')
+      .replace(/\\Rightarrow/g, '⇒')
+      .replace(/\\Leftarrow/g, '⇐')
+      .replace(/\\Leftrightarrow/g, '⇔')
+      .replace(/rightarrow/g, '→')  // Handle missing backslash
+      .replace(/leftarrow/g, '←')   // Handle missing backslash
+
+      // Handle common mathematical symbols
+      .replace(/\\times/g, '×')
+      .replace(/\\cdot/g, '·')
+      .replace(/\\div/g, '÷')
+      .replace(/\\pm/g, '±')
+      .replace(/\\mp/g, '∓')
+      .replace(/\\approx/g, '≈')
+      .replace(/\\neq/g, '≠')
+      .replace(/\\leq/g, '≤')
+      .replace(/\\geq/g, '≥')
+      .replace(/\\ll/g, '≪')
+      .replace(/\\gg/g, '≫')
+      .replace(/\\propto/g, '∝')
+      .replace(/\\infty/g, '∞')
+      .replace(/\\partial/g, '∂')
+      .replace(/\\nabla/g, '∇')
+      .replace(/\\sum/g, '∑')
+      .replace(/\\prod/g, '∏')
+      .replace(/\\int/g, '∫')
+      .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+      .replace(/\\sqrt/g, '√')
+      .replace(/\\degree/g, '°')
+      .replace(/\\celsius/g, '°C')
+      .replace(/\\ohm/g, 'Ω')
+      .replace(/\\micro/g, 'μ')
+      .replace(/\\angstrom/g, 'Å')
+
+      // Handle Greek letters
+      .replace(/\\alpha/g, 'α')
+      .replace(/\\beta/g, 'β')
+      .replace(/\\gamma/g, 'γ')
+      .replace(/\\delta/g, 'δ')
+      .replace(/\\epsilon/g, 'ε')
+      .replace(/\\varepsilon/g, 'ε')
+      .replace(/\\zeta/g, 'ζ')
+      .replace(/\\eta/g, 'η')
+      .replace(/\\theta/g, 'θ')
+      .replace(/\\iota/g, 'ι')
+      .replace(/\\kappa/g, 'κ')
+      .replace(/\\lambda/g, 'λ')
+      .replace(/\\mu/g, 'μ')
+      .replace(/\\nu/g, 'ν')
+      .replace(/\\xi/g, 'ξ')
+      .replace(/\\pi/g, 'π')
+      .replace(/\\rho/g, 'ρ')
+      .replace(/\\sigma/g, 'σ')
+      .replace(/\\tau/g, 'τ')
+      .replace(/\\upsilon/g, 'υ')
+      .replace(/\\phi/g, 'φ')
+      .replace(/\\chi/g, 'χ')
+      .replace(/\\psi/g, 'ψ')
+      .replace(/\\omega/g, 'ω')
+      .replace(/\\Omega/g, 'Ω')
+      .replace(/\\Delta/g, 'Δ')
+      .replace(/\\Gamma/g, 'Γ')
+      .replace(/\\Lambda/g, 'Λ')
+      .replace(/\\Phi/g, 'Φ')
+      .replace(/\\Pi/g, 'Π')
+      .replace(/\\Psi/g, 'Ψ')
+      .replace(/\\Sigma/g, 'Σ')
+      .replace(/\\Theta/g, 'Θ')
+      .replace(/\\Xi/g, 'Ξ')
+
+      // Handle text commands
+      .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+      .replace(/\\text\{([^}]+)\}/g, '$1')
+      .replace(/\\textrm\{([^}]+)\}/g, '$1')
+      .replace(/\\textbf\{([^}]+)\}/g, '$1')
+      .replace(/\\textit\{([^}]+)\}/g, '$1')
+
+      // Handle spacing commands
+      .replace(/\\,/g, ' ')
+      .replace(/\\;/g, ' ')
+      .replace(/\\:/g, ' ')
+      .replace(/\\!/g, '')
+      .replace(/\\quad/g, '  ')
+      .replace(/\\qquad/g, '    ')
+
+      // Handle common chemistry notation
+      .replace(/\\ce\{([^}]+)\}/g, '$1')
+
+      // Handle malformed patterns that appear in the examples
+      .replace(/Mleft/g, 'M ')
+      .replace(/kleft/g, 'k ')
+      .replace(/left/g, '')  // Remove remaining 'left' text
+      .replace(/right/g, '') // Remove remaining 'right' text
+      .replace(/cright/g, 'c')
+      .replace(/~dright/g, ' d')
+
+      // Clean up parentheses issues
+      .replace(/\(\(/g, '(')
+      .replace(/\)\)/g, ')')
+      .replace(/\[\[/g, '[')
+      .replace(/\]\]/g, ']')
+
+      // Handle spacing around mathematical operators
+      .replace(/([a-zA-Z0-9])\(/g, '$1 (')  // Add space before opening parenthesis
+      .replace(/\)([a-zA-Z0-9])/g, ') $1')  // Add space after closing parenthesis
+
+
+      // Handle aligned/align environments and alignment markers
+      .replace(/\\begin\{aligned\}|\\begin\{align\*?\}/g, '')
+      .replace(/\\end\{aligned\}|\\end\{align\*?\}/g, '')
+      .replace(/\bbeginaligned\b|\bbeginalign\*?\b/gi, '')
+      .replace(/\bendaligned\b|\bendalign\*?\b/gi, '')
+      .replace(/\\\\/g, '; ') // line breaks inside aligned/align
+      .replace(/\\&/g, '&')
+      .replace(/\s*&\s*/g, ' ')
+
+      // Logical operators (including malformed without backslashes)
+      .replace(/\\vee/g, '∨')
+      .replace(/\\wedge/g, '∧')
+      .replace(/\\lor/g, '∨')
+      .replace(/\\land/g, '∧')
+      .replace(/\bvee\b/g, '∨')
+      .replace(/\bwedge\b/g, '∧')
+      .replace(/\blor\b/g, '∨')
+      .replace(/\bland\b/g, '∧')
+
+      // Clean up remaining backslashes and braces
+      .replace(/\\([a-zA-Z]+)/g, '$1')
+      .replace(/[{}]/g, '')
+
+      // Add proper spacing around operators
+      .replace(/([^=\s])=/g, '$1 =')  // Add space before = if not already there
+      .replace(/=([^=\s])/g, '= $1')  // Add space after = if not already there
+
+      // Clean up multiple spaces but preserve single spaces around operators
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return converted;
   };
 
-  // Process $$...$$ blocks first (greedy-safe)
-  text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_m, inner) => `$$${cleanMath(inner)}$$`);
-  // Then process $...$ blocks
-  text = text.replace(/\$([^$\n][\s\S]*?)\$/g, (_m, inner) => `$${cleanMath(inner)}$`);
+  // Process $$...$$ blocks first (display math)
+  text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, inner) => {
+    return convertMathExpression(inner);
+  });
+
+  // Then process $...$ blocks (inline math)
+  text = text.replace(/\$([^$\n]*?)\$/g, (_, inner) => {
+    return convertMathExpression(inner);
+  });
+
+  // Post-process text to handle malformed LaTeX patterns that appear outside of delimiters
+  text = text
+    // Handle malformed left/right patterns
+    .replace(/([a-zA-Z0-9])left\[/g, '$1 [')
+    .replace(/([a-zA-Z0-9])left\(/g, '$1 (')
+    .replace(/([a-zA-Z0-9])left\{/g, '$1 {')
+    .replace(/\]right([a-zA-Z0-9])/g, '] $1')
+    .replace(/\)right([a-zA-Z0-9])/g, ') $1')
+    .replace(/\}right([a-zA-Z0-9])/g, '} $1')
+    .replace(/right\]/g, ']')
+    .replace(/right\)/g, ')')
+    .replace(/right\}/g, '}')
+    .replace(/left\[/g, '[')
+    .replace(/left\(/g, '(')
+    .replace(/left\{/g, '{')
+
+    // Handle malformed frac patterns outside of math delimiters
+    // Common malformed cases: "fracl₂r₂⁴", "frac2 Re", "fracAB" etc.
+    // 1) brace form (correct but left outside math)
+    .replace(/frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    // 2) with whitespace between numerator and denominator
+    .replace(/\bfrac\s*([^\s{}()]+)\s+([^\s{}()]+)/g, '($1)/($2)')
+    // 3) two tokens glued together starting with letters (e.g., fracl₂r₂⁴)
+    .replace(/\bfrac([A-Za-z]+[₀-₉⁰-⁹]*)([A-Za-z]+[₀-₉⁰-⁹]*)/g, '($1)/($2)')
+    // 4) number then symbol (e.g., frac2Re)
+    .replace(/\bfrac([0-9⁰-⁹]+)([A-Za-z]+[₀-₉⁰-⁹]*)/g, '($1)/($2)')
+    // 5) general fallback (tokens without spaces)
+    .replace(/\bfrac([^{}\s]+)([^{}\s]+)/g, '($1)/($2)')
+
+    // Clean specific artifact where superscripts got split by a slash
+    .replace(/⁻\/¹/g, '⁻¹')
+
+    // Handle overrightarrow patterns outside of math delimiters
+    .replace(/overrightarrow([a-zA-Z0-9_]+)/g, '$1→')
+    .replace(/overrightarrow\{([^}]+)\}/g, '$1→')
+
+    // Handle other common malformed patterns
+    .replace(/\\neq/g, '≠')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\times/g, '×')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\rightarrow/g, '→')
+    .replace(/\\leftarrow/g, '←')
+
+    // Handle literal "arrow" text (common in converted/processed text)
+    .replace(/\s+arrow\s+/g, ' → ')
+    .replace(/arrow/g, '→')
+
+    // Handle malformed text commands (tex/t instead of \text{})
+    .replace(/tex\/t\s+/g, '')  // Remove "tex/t " completely
+    .replace(/tex\/t/g, '')     // Remove "tex/t" completely
+    .replace(/text\s+/g, '')    // Remove standalone "text "
+
+    // Handle other malformed LaTeX text patterns
+    .replace(/mathrm\s+/g, '')  // Remove "mathrm " without braces
+
+    // Clean up any remaining malformed patterns
+    .replace(/([a-zA-Z0-9])left/g, '$1 ')
+    .replace(/right([a-zA-Z0-9])/g, ' $1')
+    .replace(/left/g, '')
+    .replace(/right/g, '')
+
+    // Clean up multiple spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Final cleanup for specific text patterns (after all other processing)
+  text = text
+    .replace(/\\text\s+([a-zA-Z]+)/g, '$1')  // Convert "\text word" to "word"
+    .replace(/\\mathrm\s+([a-zA-Z]+)/g, '$1') // Convert "\mathrm word" to "word"
+    .replace(/\\text\s+/g, '')  // Remove "\text " without braces
+    .replace(/\\mathrm\s+/g, '') // Remove "\mathrm " without braces
+    .replace(/\\([a-zA-Z]+)\s+/g, '')  // Remove other "\command " patterns
+    .replace(/\\([a-zA-Z]+)/g, '')     // Remove remaining "\command" patterns
+
+    // Handle malformed Greek letters outside math delimiters
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\mu/g, 'μ')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\Omega/g, 'Ω')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\sigma/g, 'σ')
+
+    // Clean up any remaining malformed patterns
+    .replace(/([a-zA-Z0-9])left/g, '$1 ')
+    .replace(/right([a-zA-Z0-9])/g, ' $1')
+    .replace(/left/g, '')
+    .replace(/right/g, '')
+
+    // Clean up multiple spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Final cleanup for specific text patterns (after all other processing)
+  // Handle these patterns before general backslash cleanup
+  text = text
+    .replace(/\\text\s+([a-zA-Z]+)/g, '$1')  // Convert "\text word" to "word"
+    .replace(/\\mathrm\s+([a-zA-Z]+)/g, '$1') // Convert "\mathrm word" to "word"
+    .replace(/\\text(?=\s|$)/g, '')  // Remove "\text" when followed by space or end
+    .replace(/\\mathrm(?=\s|$)/g, '') // Remove "\mathrm" when followed by space or end
+
+    // Handle remaining backslash patterns (but exclude text and mathrm)
+    .replace(/\\(?!text|mathrm)([a-zA-Z]+)\s+/g, '')  // Remove other "\command " patterns
+    .replace(/\\(?!text|mathrm)([a-zA-Z]+)/g, '')     // Remove remaining "\command" patterns
+
+    // Final cleanup of any remaining text/mathrm patterns
+    .replace(/\\text/g, '')
+    .replace(/\\mathrm/g, '')
+    .replace(/\s+/g, ' ')  // Clean up multiple spaces again
+    .trim();
 
   return text;
 }
@@ -385,31 +732,12 @@ export const POST = async (req: NextRequest) => {
 <head>
   <meta charset="utf-8" />
   <title>${title}</title>
-  <link href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.renderMathInElement) {
-        window.renderMathInElement(document.body, {
-          delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false},
-            {left: '\\(', right: '\\)', display: false},
-            {left: '\\[', right: '\\]', display: true}
-          ],
-          throwOnError: false,
-          errorColor: '#000000',
-          strict: 'ignore'
-        });
-      }
-    });
-  </script>
+
 
 <style>
   @page {
     size: A4;
-    margin: 25mm 15mm 20mm 15mm;
+    margin: 20mm 15mm 15mm 15mm;
   }
   body { font-family: 'Times New Roman', serif; font-size: 10pt; line-height: 1.2; position: relative; }
   h1,h2,h3 { margin: 0; padding: 0; }
@@ -430,19 +758,19 @@ export const POST = async (req: NextRequest) => {
   }
 
   /* Header / Footer */
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .college { display: flex; align-items: center; gap: 6px; }
   .college img { height: 24px; width: auto; }
   .title { text-align: center; flex: 1; font-size: 14pt; font-weight: bold; }
   .meta { text-align: right; font-size: 10pt; }
   .meta div { margin: 0; }
 
-  .questions { position: relative; z-index: 1; padding-bottom: 25mm; }
+  .questions { position: relative; z-index: 1; padding-bottom: 10mm; }
   .subject-section {
     page-break-before: avoid;
-    margin-top: 20px;
-    page-break-inside: auto;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    page-break-inside: auto; /* allow section to start on first page */
+    margin-bottom: 8px;
     page-break-after: avoid;
   }
   .subject-section:first-child {
@@ -454,29 +782,52 @@ export const POST = async (req: NextRequest) => {
     column-gap: 10mm;
     column-rule: 1px solid #ccc;
     column-rule-style: solid;
+    orphans: 3; /* Minimum lines at bottom of column */
+    widows: 3; /* Minimum lines at top of column */
   }
 
   /* KEY FIX: Question container styling */
   .question {
-    break-inside: avoid; /* Prevents question from breaking across columns */
-    break-inside: avoid-column; /* Explicit for multi-column */
-    -webkit-column-break-inside: avoid; /* Vendor prefix for Chromium */
-    page-break-inside: avoid; /* Prevents question from breaking across pages */
-    margin-bottom: 12px;
+    break-inside: avoid !important; /* Prevents question from breaking across columns */
+    break-inside: avoid-column !important; /* Explicit for multi-column */
+    -webkit-column-break-inside: avoid !important; /* Vendor prefix for Chromium */
+    page-break-inside: avoid !important; /* Prevents question from breaking across pages */
+    margin-bottom: 8px;
     display: block; /* Ensure it's a block container */
     overflow: visible; /* Allow content to flow naturally */
+    min-height: 40px; /* Ensure minimum space for question + options */
   }
 
   /* Options styling */
   .options {
     margin-left: 16px;
-    break-inside: avoid; /* Keep options with their question */
-    break-inside: avoid-column;
-    -webkit-column-break-inside: avoid;
+    break-inside: avoid !important; /* Keep options with their question */
+    break-inside: avoid-column !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 3px;
   }
-  .options p { margin: 2px 0; break-inside: avoid; -webkit-column-break-inside: avoid; }
+  .options p {
+    margin: 0.5px 0;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
 
-  footer { position: fixed; bottom: 3mm; left: 0; right: 0; text-align: center; font-size: 9pt; color: #666; background: #fff; z-index: 2; }
+  footer {
+    position: fixed;
+    bottom: 1mm;
+    left: 0;
+    right: 0;
+    font-size: 9pt;
+    color: #666;
+    background: #fff;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10mm;
+  }
 
   .subject-heading {
     font-weight: bold;
@@ -513,13 +864,7 @@ export const POST = async (req: NextRequest) => {
     background-color: #f9f9f9;
   }
 
-  /* Math rendering support */
-  .katex {
-    font-size: 1em;
-  }
-  .katex-display {
-    margin: 0.3em 0;
-  }
+
 
   /* Global image styling */
   img {
@@ -554,10 +899,20 @@ export const POST = async (req: NextRequest) => {
 
   /* Ensure question text and images stay together */
   .question p, .question img, .options, .options p {
-    break-inside: avoid;
-    break-inside: avoid-column;
-    -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: avoid !important;
+    break-inside: avoid-column !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Prevent questions from being split near page bottom */
+  .question {
+    margin-bottom: 10px !important;
+  }
+
+  /* Ensure adequate space before footer */
+  @page {
+    margin-bottom: 10mm !important;
   }
 
   /* Additional fix for better column layout with images */
@@ -578,8 +933,8 @@ export const POST = async (req: NextRequest) => {
       <div>Duration: ${duration} mins</div>
     </div>
   </header>
-  <hr style="page-break-after: avoid;" />
-  <p style="page-break-after: avoid; margin-bottom: 10px;">${description}</p>
+  <hr style="page-break-after: avoid; margin: 4px 0;" />
+  <p style="page-break-after: avoid; margin-bottom: 4px; font-size: 10pt;">${description}</p>
   <div class="questions">
     ${(() => {
       // Group questions by subject
@@ -624,7 +979,6 @@ ${subjectQuestions.map((q, questionIndex) => {
             // For the first image, try to replace markdown/HTML references
             if (imgIndex === 0) {
               // Replace markdown image references like ![img-13.jpeg](img-13.jpeg) with actual images
-              const originalText = questionText;
               let markdownReplacements = 0;
               questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt) => {
                 console.log(`Replacing markdown image: ${match}`);
@@ -695,8 +1049,8 @@ ${subjectQuestions.map((q, questionIndex) => {
       // This ensures base64 images are converted to img tags first
       processedQuestion = processTextForPDF(questionText);
 
-      // Then apply LaTeX sanitization
-      processedQuestion = sanitizeLatexForPDF(processedQuestion);
+      // Then apply LaTeX conversion to readable text
+      processedQuestion = convertLatexToReadableText(processedQuestion);
 
       // Final cleanup: Remove any broken img tags that don't have src attributes
       processedQuestion = processedQuestion.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
@@ -709,124 +1063,18 @@ ${subjectQuestions.map((q, questionIndex) => {
       processedQuestion = questionText; // Fallback to raw text
     }
 
-    // Apply LaTeX fixes after table processing
-    processedQuestion = processedQuestion
-      // Fix the main \ffrac issue - exact patterns from your examples
-      .replace(/\\ffracÏ‰LR/g, '\\frac{Ï‰}{LR}')
-      .replace(/\\ffrac1Ï‰CR/g, '\\frac{1}{Ï‰CR}')
-      .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
-      .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
-      .replace(/\\ffrac100Ï€MHz/g, '\\frac{100}{Ï€MHz}')
-      .replace(/\\ffrac1000Ï€Hz/g, '\\frac{1000}{Ï€Hz}')
-      .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
-      .replace(/\\ffrac1CÏ‰/g, '\\frac{1}{CÏ‰}')
-      // Fix basic \ffrac patterns
-      .replace(/\\ffrac\{/g, '\\frac{')
-      .replace(/\\ffrac([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2}')
-      .replace(/\\ffrac(\d+)([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2$3}')
-      .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
-      // Convert Greek letters to Unicode symbols
-      .replace(/\\alpha/g, 'Î±')
-      .replace(/\\beta/g, 'Î²')
-      .replace(/\\gamma/g, 'Î³')
-      .replace(/\\delta/g, 'Î´')
-      .replace(/\\epsilon/g, 'Îµ')
-      .replace(/\\varepsilon/g, 'Îµ')
-      .replace(/\\zeta/g, 'Î¶')
-      .replace(/\\eta/g, 'Î·')
-      .replace(/\\theta/g, 'Î¸')
-      .replace(/\\iota/g, 'Î¹')
-      .replace(/\\kappa/g, 'Îº')
-      .replace(/\\lambda/g, 'Î»')
-      .replace(/\\mu/g, 'Î¼')
-      .replace(/\\nu/g, 'Î½')
-      .replace(/\\xi/g, 'Î¾')
-      .replace(/\\pi/g, 'Ï€')
-      .replace(/\\rho/g, 'Ï')
-      .replace(/\\sigma/g, 'Ïƒ')
-      .replace(/\\tau/g, 'Ï„')
-      .replace(/\\upsilon/g, 'Ï…')
-      .replace(/\\phi/g, 'Ï†')
-      .replace(/\\chi/g, 'Ï‡')
-      .replace(/\\psi/g, 'Ïˆ')
-      .replace(/\\omega/g, 'Ï‰')
-      .replace(/\\Omega/g, 'Î©')
-      .replace(/\\Delta/g, 'Î"')
-      .replace(/\\Gamma/g, 'Î"')
-      .replace(/\\Lambda/g, 'Î›')
-      .replace(/\\Phi/g, 'Î¦')
-      .replace(/\\Pi/g, 'Î ')
-      .replace(/\\Psi/g, 'Î¨')
-      .replace(/\\Sigma/g, 'Î£')
-      .replace(/\\Theta/g, 'Î˜')
-      .replace(/\\Xi/g, 'Îž')
-      // Remove any remaining broken image references
-      .replace(/img\s*[âˆ'-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-      ;
+
 
     const processedOptions = (q.options || []).map((opt: string) => {
       try {
-        // Process option text with images first, then apply LaTeX sanitization
+        // Process option text with images first, then apply LaTeX conversion to readable text
         let processedOpt = processTextForPDF(opt);
-        processedOpt = sanitizeLatexForPDF(processedOpt);
+        processedOpt = convertLatexToReadableText(processedOpt);
 
         // Clean up any broken img tags in options too
         processedOpt = processedOpt.replace(/<img(?![^>]*src=)[^>]*>/gi, '');
 
-        // Apply LaTeX fixes after table processing
-        return processedOpt
-          // Fix the main \ffrac issue - exact patterns
-          .replace(/\\ffracÏ‰LR/g, '\\frac{Ï‰}{LR}')
-          .replace(/\\ffrac1Ï‰CR/g, '\\frac{1}{Ï‰CR}')
-          .replace(/\\ffracLC\\ffrac1R/g, '\\frac{LC}{\\frac{1}{R}}')
-          .replace(/\\ffracRLC/g, '\\frac{R}{LC}')
-          .replace(/\\ffrac100Ï€MHz/g, '\\frac{100}{Ï€MHz}')
-          .replace(/\\ffrac1000Ï€Hz/g, '\\frac{1000}{Ï€Hz}')
-          .replace(/\\ffrac11000ohm/g, '\\frac{1}{1000ohm}')
-          .replace(/\\ffrac1CÏ‰/g, '\\frac{1}{CÏ‰}')
-          // Fix basic \ffrac patterns
-          .replace(/\\ffrac\{/g, '\\frac{')
-          .replace(/\\ffrac([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2}')
-          .replace(/\\ffrac(\d+)([Ï‰Ï€Î±-Ï‰Î©])([A-Z]+)/g, '\\frac{$1}{$2$3}')
-          .replace(/\\ffrac([A-Z]+)([A-Z]+)/g, '\\frac{$1}{$2}')
-          // Convert Greek letters to Unicode symbols
-          .replace(/\\alpha/g, 'Î±')
-          .replace(/\\beta/g, 'Î²')
-          .replace(/\\gamma/g, 'Î³')
-          .replace(/\\delta/g, 'Î´')
-          .replace(/\\epsilon/g, 'Îµ')
-          .replace(/\\varepsilon/g, 'Îµ')
-          .replace(/\\zeta/g, 'Î¶')
-          .replace(/\\eta/g, 'Î·')
-          .replace(/\\theta/g, 'Î¸')
-          .replace(/\\iota/g, 'Î¹')
-          .replace(/\\kappa/g, 'Îº')
-          .replace(/\\lambda/g, 'Î»')
-          .replace(/\\mu/g, 'Î¼')
-          .replace(/\\nu/g, 'Î½')
-          .replace(/\\xi/g, 'Î¾')
-          .replace(/\\pi/g, 'Ï€')
-          .replace(/\\rho/g, 'Ï')
-          .replace(/\\sigma/g, 'Ïƒ')
-          .replace(/\\tau/g, 'Ï„')
-          .replace(/\\upsilon/g, 'Ï…')
-          .replace(/\\phi/g, 'Ï†')
-          .replace(/\\chi/g, 'Ï‡')
-          .replace(/\\psi/g, 'Ïˆ')
-          .replace(/\\omega/g, 'Ï‰')
-          .replace(/\\Omega/g, 'Î©')
-          .replace(/\\Delta/g, 'Î"')
-          .replace(/\\Gamma/g, 'Î"')
-          .replace(/\\Lambda/g, 'Î›')
-          .replace(/\\Phi/g, 'Î¦')
-          .replace(/\\Pi/g, 'Î ')
-          .replace(/\\Psi/g, 'Î¨')
-          .replace(/\\Sigma/g, 'Î£')
-          .replace(/\\Theta/g, 'Î˜')
-          .replace(/\\Xi/g, 'Îž')
-          // Remove any remaining broken image references
-          .replace(/img\s*[âˆ'-]\s*\d+\.(jpeg|jpg|png)\s*\([^)]*\)/gi, '')
-          ;
+        return processedOpt;
       } catch (error) {
         console.error('Error processing option:', error);
         return opt; // Fallback to raw option text
@@ -860,7 +1108,10 @@ ${subjectQuestions.map((q, questionIndex) => {
       }).join('');
     })()}
   </div>
-  <footer>Medicos | ${new Date().toLocaleDateString()}</footer>
+  <footer>
+    <span>Medicos</span>
+    <span>${new Date().toLocaleDateString()}</span>
+  </footer>
 </body>
 </html>`;
 
@@ -869,12 +1120,7 @@ ${subjectQuestions.map((q, questionIndex) => {
 
     await page.setContent(html, { waitUntil: 'networkidle2' });
 
-    // Wait until KaTeX has rendered math (best-effort)
-    try {
-      await page.waitForFunction(() => {
-        return Array.from(document.querySelectorAll('.katex')).length > 0;
-      }, { timeout: 3000 });
-    } catch {}
+
 
     // Small extra delay to allow layout to settle in multi-column flow
     await new Promise(resolve => setTimeout(resolve, 200));
