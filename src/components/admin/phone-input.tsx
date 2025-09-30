@@ -17,32 +17,14 @@ interface CountryCode {
   flag: string
 }
 
+// Restrict to India and format as per Indian mobile standards
 const countryCodes: CountryCode[] = [
   {
-    id: "us",
-    name: "United States",
-    code: "+1",
-    flag: "🇺🇸",
+    id: "in",
+    name: "India",
+    code: "+91",
+    flag: "🇮🇳",
   },
-  {
-    id: "ca",
-    name: "Canada",
-    code: "+1",
-    flag: "🇨🇦",
-  },
-  {
-    id: "gb",
-    name: "United Kingdom",
-    code: "+44",
-    flag: "🇬🇧",
-  },
-  {
-    id: "au",
-    name: "Australia",
-    code: "+61",
-    flag: "🇦🇺",
-  },
-  // Add more countries as needed
 ]
 
 interface PhoneInputProps {
@@ -59,18 +41,23 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
     // Remove all non-digits
     const digits = value.replace(/\D/g, "")
 
-    // Format as (XXX) XXX-XXXX for US/CA numbers
-    if (selectedCountry.id === "us" || selectedCountry.id === "ca") {
-      if (digits.length <= 3) {
-        return digits
-      } else if (digits.length <= 6) {
-        return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
-      } else {
-        return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
+    // Indian format: always use +91 prefix and group as 5-5 digits
+    if (selectedCountry.id === "in") {
+      let phoneDigits = digits
+      // If user includes country code, drop it for normalization
+      if (phoneDigits.startsWith("91")) {
+        phoneDigits = phoneDigits.slice(2)
       }
+      // Limit to 10 digits for Indian mobile numbers
+      if (phoneDigits.length > 10) {
+        phoneDigits = phoneDigits.slice(0, 10)
+      }
+      if (phoneDigits.length === 0) return ""
+      if (phoneDigits.length <= 5) return `+91 ${phoneDigits}`
+      return `+91 ${phoneDigits.slice(0, 5)} ${phoneDigits.slice(5)}`
     }
 
-    // For other countries, just return the digits
+    // Fallback: just return digits
     return digits
   }
 
@@ -123,7 +110,7 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
         value={value}
         onChange={handlePhoneChange}
         className="rounded-l-none"
-        placeholder={selectedCountry.id === "us" ? "(000) 000-0000" : "Phone number"}
+        placeholder={selectedCountry.id === "in" ? "+91 00000 00000" : "Phone number"}
       />
     </div>
   )
