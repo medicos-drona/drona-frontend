@@ -1,57 +1,108 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { motion } from "framer-motion"
+import { Star, Users, Award } from "lucide-react"
 
 export default function HeroSection() {
   return (
     <div className="flex flex-col space-y-6">
-      <h1
+      <motion.h1
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
         className="text-3xl md:text-5xl font-extrabold leading-tight md:leading-none"
         style={{ fontFamily: "Nunito, sans-serif" }}
       >
-        NEET & JEE Papers – Practice Smarter, Rank Higher!&quot;
-      </h1>
+        Master NEET & JEE with India's Most Trusted Platform
+      </motion.h1>
 
-      <p className="text-gray-600">
-        Download free NEET and JEE question papers, mock tests, and practice sets to boost your preparation. Study
-        smart, practice more, and get exam-ready today.
-      </p>
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="text-gray-600 text-lg"
+      >
+        Join 25,000+ successful students who cracked NEET & JEE with our comprehensive question banks,
+        AI-powered mock tests, and expert guidance. Start your journey to top medical and engineering colleges today.
+      </motion.p>
 
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="flex flex-col sm:flex-row gap-4"
+      >
         <Link
           href="/login"
-          className="inline-block px-6 py-3 text-white font-medium rounded-md shadow-sm"
-          style={{ backgroundColor: "#84BF9F" }}
+          className="inline-block px-8 py-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          style={{ backgroundColor: "#05603A" }}
         >
-          Login / Create Account
+          Start Free Trial
         </Link>
-      </div>
+        <Link
+          href="#about"
+          className="inline-block px-8 py-4 text-gray-700 font-semibold border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all duration-300"
+        >
+          Learn More
+        </Link>
+      </motion.div>
 
-      <div className="flex items-center mt-4">
-        <div className="flex -space-x-2 mr-3">
-          <Image
-            src="/assets/landing-page/pro-user-1.png"
-            alt="User"
-            width={32}
-            height={32}
-            className="rounded-full border-2 border-white"
-          />
-          <Image
-            src="/assets/landing-page/pro-user-2.png"
-            alt="User"
-            width={32}
-            height={32}
-            className="rounded-full border-2 border-white"
-          />
-          <Image
-            src="/assets/landing-page/pro-user-3.png"
-            alt="User"
-            width={32}
-            height={32}
-            className="rounded-full border-2 border-white"
-          />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mt-6"
+      >
+        <div className="flex items-center">
+          <div className="flex -space-x-2 mr-3">
+            <Image
+              src="/assets/landing-page/pro-user-1.png"
+              alt="Student"
+              width={40}
+              height={40}
+              className="rounded-full border-2 border-white shadow-sm"
+            />
+            <Image
+              src="/assets/landing-page/pro-user-2.png"
+              alt="Student"
+              width={40}
+              height={40}
+              className="rounded-full border-2 border-white shadow-sm"
+            />
+            <Image
+              src="/assets/landing-page/pro-user-3.png"
+              alt="Student"
+              width={40}
+              height={40}
+              className="rounded-full border-2 border-white shadow-sm"
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <span className="font-bold text-lg">25,000+</span>
+              <Users className="w-4 h-4 ml-1 text-gray-500" />
+            </div>
+            <span className="text-sm text-gray-600">Active Students</span>
+          </div>
         </div>
-        <span className="font-medium">3,500+ Pro Users</span>
-      </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center">
+            <div className="flex text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-current" />
+              ))}
+            </div>
+            <span className="ml-2 font-semibold">4.9/5</span>
+          </div>
+          <div className="flex items-center text-green-600">
+            <Award className="w-5 h-5 mr-1" />
+            <span className="font-semibold">98% Success Rate</span>
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }

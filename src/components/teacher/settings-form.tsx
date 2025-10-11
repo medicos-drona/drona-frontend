@@ -188,7 +188,7 @@ export function SettingsForm({
                           <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                           <Input
                             className="pl-10 font-medium text-[#6B7280]"
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="+91 85535 77004"
                             {...field}
                           />
                         </div>

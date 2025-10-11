@@ -110,7 +110,7 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
         value={value}
         onChange={handlePhoneChange}
         className="rounded-l-none"
-        placeholder={selectedCountry.id === "in" ? "+91 00000 00000" : "Phone number"}
+        placeholder={selectedCountry.id === "in" ? "+91 85535 77004" : "Phone number"}
       />
     </div>
   )

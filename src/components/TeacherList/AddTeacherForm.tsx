@@ -356,7 +356,7 @@ const AddTeacherForm: React.FC<AddTeacherFormProps> = ({ onCancel, onSuccess }) 
               type="tel"
               value={formData.phone}
               onChange={handlePhoneChange}
-              placeholder="+91 00000 00000"
+              placeholder="+91 85535 77004"
               className="border-none flex-1 focus-visible:ring-0 h-full"
             />
           </div>
