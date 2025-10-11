@@ -104,10 +104,13 @@ export default function Consultation() {
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
                 viewport={{ once: true }}
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 0.5 },
+                  scale: { duration: 0.5, delay: 0.5 },
+                  y: { duration: 2, repeat: Infinity }
+                }}
                 className="absolute top-[20%] right-[30%] bg-green-600 text-white p-3 rounded-full shadow-lg hidden md:block"
               >
                 <Phone className="w-6 h-6" />
@@ -116,10 +119,13 @@ export default function Consultation() {
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
                 viewport={{ once: true }}
                 animate={{ x: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 0.7 },
+                  scale: { duration: 0.5, delay: 0.7 },
+                  x: { duration: 3, repeat: Infinity }
+                }}
                 className="absolute top-[50%] left-[10%] bg-white p-3 rounded-lg shadow-lg hidden md:block"
               >
                 <BarChart3 className="w-6 h-6 text-green-600" />
@@ -128,10 +134,13 @@ export default function Consultation() {
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.9 }}
                 viewport={{ once: true }}
                 animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 0.9 },
+                  scale: { duration: 0.5, delay: 0.9 },
+                  y: { duration: 2.5, repeat: Infinity }
+                }}
                 className="absolute bottom-[30%] right-[10%] bg-white py-2 px-4 rounded-lg shadow-lg hidden md:block"
               >
                 <p className="text-sm font-medium">
@@ -142,10 +151,13 @@ export default function Consultation() {
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 1.1 }}
                 viewport={{ once: true }}
                 animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 1.1 },
+                  scale: { duration: 0.5, delay: 1.1 },
+                  rotate: { duration: 4, repeat: Infinity }
+                }}
                 className="absolute top-[70%] left-[20%] bg-blue-500 text-white p-2 rounded-lg shadow-lg hidden md:block"
               >
                 <Award className="w-5 h-5" />
