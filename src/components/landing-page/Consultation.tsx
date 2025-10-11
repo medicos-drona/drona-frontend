@@ -15,7 +15,7 @@ export default function Consultation() {
 
   return (
     <section id="consultation" className="w-full py-12 md:py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-gray-50 to-green-50">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}

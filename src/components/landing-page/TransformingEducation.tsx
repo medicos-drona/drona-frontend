@@ -42,7 +42,7 @@ export default function EducationLanding() {
         <div className="absolute bottom-32 left-40 w-20 h-20 border border-white/20 rounded-full"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           {/* Left Content */}
           <motion.div

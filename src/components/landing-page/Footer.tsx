@@ -4,7 +4,7 @@ import Image from "next/image"
 export default function Footer() {
   return (
     <footer className="bg-gray-100 py-12">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         <div className="text-center">
           <Link href="/" className="inline-block mb-6">
             <Image src="/assets/logo/medicos-logo.svg" alt="Medicos Logo" width={180} height={50} className="h-auto" />

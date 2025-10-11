@@ -22,7 +22,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="container mx-auto py-8 md:py-4"
+          className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 md:py-4"
         >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <HeroSection />
@@ -49,7 +49,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className="container mx-auto py-12 text-center"
+        className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 text-center"
       >
         <p className="text-gray-600 mb-8">Trusted by 25,000+ students and 500+ educational institutions across India</p>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
@@ -80,12 +80,12 @@ export default function Home() {
 
       <div className="w-full">
         <section id="about">
-          <div className="container mx-auto py-8">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8">
             <AboutSection />
           </div>
         </section>
         <section id="courses">
-          <div className="container mx-auto py-8">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8">
             <LessonsSection />
             {/* <NavigationTabs /> */}
           </div>
