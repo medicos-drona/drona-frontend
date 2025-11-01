@@ -17,6 +17,13 @@ export interface QuestionData {
   difficulty: 'easy' | 'medium' | 'hard';
   type: string;
   explanation?: string;
+  // Optional structured solution accepted by backend schema
+  solution?: {
+    steps?: string[];
+    methodology?: string;
+    key_concepts?: string[];
+    final_explanation?: string;
+  } | string;
   status?: 'active' | 'inactive';
   reviewStatus?: 'pending' | 'approved' | 'rejected';
   createdBy?: string;

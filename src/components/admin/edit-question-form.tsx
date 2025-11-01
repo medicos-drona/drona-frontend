@@ -19,24 +19,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "@/components/ui/use-toast"
-import { getSubjectsWithChapters } from "@/lib/api/subjects"
+import { getSubjectsWithChaptersAndTopics } from "@/lib/api/subjects"
 import { updateQuestion, QuestionData } from "@/lib/api/questions"
 import { ApiQuestion } from "@/types/question"
 import { isBase64Image, ensureDataUrl } from "@/utils/imageUtils"
 
 // Define interfaces for API data
-interface Chapter {
-  _id: string;
-  name: string;
-  description?: string;
-}
-
-interface SubjectWithChapters {
-  _id: string;
-  name: string;
-  description?: string;
-  chapters: Chapter[];
-}
+interface Topic { _id: string; name: string }
+interface ChapterExt { _id: string; name: string; topics?: Topic[] }
+interface SubjectFull { _id: string; name: string; chapters: ChapterExt[] }
+interface ChapterOrTopic { _id: string; name: string }
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/svg+xml"]
@@ -53,10 +45,11 @@ const formSchema = z.object({
   correctAnswer: z.enum(["A", "B", "C", "D"], {
     required_error: "Please select the correct answer",
   }),
-  explanation: z.string().optional(),
   difficulty: z.enum(["Easy", "Medium", "Hard"], {
     required_error: "Please select a difficulty level",
   }),
+  // Single solution text (optional)
+  solutionText: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -76,8 +69,9 @@ export default function EditQuestionForm({ questionData, questionId }: EditQuest
     C: null,
     D: null,
   })
-  const [subjects, setSubjects] = useState<SubjectWithChapters[]>([])
-  const [chapters, setChapters] = useState<Chapter[]>([])
+  const [subjects, setSubjects] = useState<SubjectFull[]>([])
+  const [chapters, setChapters] = useState<ChapterOrTopic[]>([])
+  const [idKindMap, setIdKindMap] = useState<Record<string, 'chapter' | 'topic'>>({})
   const [loading, setLoading] = useState(true)
   const [optionValidationErrors, setOptionValidationErrors] = useState<{[key: string]: boolean}>({
     A: false,
@@ -110,8 +104,8 @@ const returnPageSize = searchParams.get("pageSize") || "10";
       optionC: "",
       optionD: "",
       correctAnswer: "" as any,
-      explanation: "",
       difficulty: "" as any,
+      solutionText: "",
     },
   })
 
@@ -153,48 +147,134 @@ const returnPageSize = searchParams.get("pageSize") || "10";
       const answerIndex = questionData.options?.findIndex(opt => opt === questionData.answer) ?? -1;
       const correctAnswerLetter = answerIndex >= 0 ? String.fromCharCode(65 + answerIndex) : "A";
 
-      // Handle topicId - it could be a string ID or a populated object
-      const topicId = questionData.topicId
-        ? (typeof questionData.topicId === 'string' ? questionData.topicId : questionData.topicId._id)
-        : "";
+      // Prefer topicId; if missing, fall back to chapterId (for backward compatibility)
+      let preselectId = "";
+      if (questionData.topicId) {
+        preselectId = typeof questionData.topicId === 'string' ? (questionData.topicId as any) : (questionData.topicId as any)._id;
+      } else if ((questionData as any).chapterId) {
+        preselectId = typeof (questionData as any).chapterId === 'string' ? (questionData as any).chapterId : (questionData as any).chapterId._id;
+      }
 
       console.log("Question data:", questionData);
-      console.log("Topic ID extracted:", topicId);
+      console.log("Topic/Chapter preselect:", preselectId);
       console.log("Available subjects:", subjects);
 
-      // Set chapters for the selected subject FIRST
+      // Set chapters/topics for the selected subject FIRST
       const selectedSubject = subjects.find(s => s._id === questionData.subjectId._id);
       console.log("Selected subject:", selectedSubject);
 
       if (selectedSubject) {
-        setChapters(selectedSubject.chapters || []);
-        console.log("Set chapters:", selectedSubject.chapters);
+        const combined: ChapterOrTopic[] = [];
+        const map: Record<string, 'chapter' | 'topic'> = {};
+        const seen = new Set<string>();
+        (selectedSubject.chapters || []).forEach((ch) => {
+          if (ch && ch._id && !seen.has(ch._id)) {
+            combined.push({ _id: ch._id, name: ch.name || 'Chapter' });
+            map[ch._id] = 'chapter';
+            seen.add(ch._id);
+          }
+          (ch?.topics || []).forEach((t) => {
+            if (t && t._id && !seen.has(t._id)) {
+              const prefix = ch?.name ? ch.name + ' - ' : '';
+              combined.push({ _id: t._id, name: `${prefix}${t.name || 'Topic'}` });
+              map[t._id] = 'topic';
+              seen.add(t._id);
+            }
+          });
+        });
+        setChapters(combined);
+        setIdKindMap(map);
+        console.log("Set chapter/topic options:", combined.length);
+
+        // If preselect is a chapter without topic, try defaulting to first topic under that chapter
+        if (!preselectId && (questionData as any).chapterId) {
+          const chapId = typeof (questionData as any).chapterId === 'string' ? (questionData as any).chapterId : (questionData as any).chapterId._id;
+          const chapter = (selectedSubject.chapters || []).find((c) => c._id === chapId);
+          const firstTopic = chapter && (chapter.topics || [])[0];
+          if (firstTopic) {
+            preselectId = firstTopic._id;
+          } else {
+            // No topics under this chapter; preselect the chapter itself
+            preselectId = chapId;
+          }
+        }
+
+        // If we have a preselect, ensure it exists in the current map (topics or chapters); otherwise clear
+        if (preselectId && !map[preselectId]) {
+          preselectId = "";
+        }
+      }
+
+      // Ensure the preselect exists in current chapters; otherwise clear it
+      if (selectedSubject && preselectId) {
+        const exists = (selectedSubject.chapters || []).some((c: any) => c._id === preselectId);
+        if (!exists) preselectId = "";
+      }
+
+      // Prepare single solution text from existing data
+      const sol: any = (questionData as any).solution || null;
+      let solutionText = "";
+      if (typeof sol === 'string') {
+        solutionText = sol;
+      } else if (sol) {
+        const parts: string[] = [];
+        if (sol.methodology) parts.push(String(sol.methodology));
+        if (Array.isArray(sol.steps) && sol.steps.length) parts.push((sol.steps as string[]).join("\n"));
+        if (sol.final_explanation) parts.push(String(sol.final_explanation));
+        if (Array.isArray(sol.key_concepts) && sol.key_concepts.length) parts.push(`Key concepts: ${sol.key_concepts.join(', ')}`);
+        solutionText = parts.join("\n\n");
       }
 
       // Set form values AFTER chapters are set
       form.reset({
         subject: questionData.subjectId._id,
-        topic: topicId,
+        topic: preselectId,
         questionText: questionData.content,
         optionA: parsedOptions[0] || "",
         optionB: parsedOptions[1] || "",
         optionC: parsedOptions[2] || "",
         optionD: parsedOptions[3] || "",
         correctAnswer: correctAnswerLetter as "A" | "B" | "C" | "D",
-        explanation: questionData.explanation || "",
+        // explanation removed; using solutionText instead
         difficulty: (questionData.difficulty.charAt(0).toUpperCase() + questionData.difficulty.slice(1)) as "Easy" | "Medium" | "Hard",
+        solutionText,
       });
 
-      console.log("Form reset with chapter:", topicId);
+      console.log("Form reset with topic/chapter:", preselectId);
     }
   }, [questionData, subjects, form]);
 
-  // Fetch subjects and chapters from API
+  // Ensure topic is set after chapters are populated
+  useEffect(() => {
+    if (!questionData) return;
+    const currentTopic = form.getValues("topic");
+    const hasCurrent = currentTopic && chapters.some(c => c._id === currentTopic);
+    if (hasCurrent) return;
+
+    // Recompute preferred id
+    let preferred = "";
+    if (questionData.topicId) {
+      preferred = typeof (questionData as any).topicId === 'string' ? (questionData as any).topicId : (questionData as any).topicId._id;
+    } else if ((questionData as any).chapterId) {
+      const chapId = typeof (questionData as any).chapterId === 'string' ? (questionData as any).chapterId : (questionData as any).chapterId._id;
+      // If chapter exists in chapters list, try to find a topic under it using subjects data
+      const subj = subjects.find(s => s._id === (questionData as any).subjectId._id);
+      const chapter = subj?.chapters?.find(ch => ch._id === chapId);
+      const firstTopic = chapter?.topics && chapter.topics[0];
+      preferred = firstTopic ? firstTopic._id : chapId;
+    }
+
+    if (preferred && chapters.some(c => c._id === preferred)) {
+      form.setValue("topic", preferred, { shouldDirty: false, shouldTouch: false });
+    }
+  }, [chapters, questionData, subjects, form]);
+
+  // Fetch subjects (with chapters and topics) from API
   useEffect(() => {
     const fetchSubjectsAndChapters = async () => {
       try {
         setLoading(true)
-        const data = await getSubjectsWithChapters()
+        const data = await getSubjectsWithChaptersAndTopics()
         setSubjects(data)
       } catch (error: any) {
         console.error("Error fetching subjects and chapters:", error)
@@ -211,17 +291,37 @@ const returnPageSize = searchParams.get("pageSize") || "10";
     fetchSubjectsAndChapters()
   }, [])
 
-  // Handle subject change to update chapters
+  // Handle subject change to update chapters/topics
   const handleSubjectChange = (value: string) => {
     form.setValue("subject", value)
     form.setValue("topic", "")
 
-    // Find the selected subject and set its chapters
+    // Find the selected subject and set its combined chapter/topic list
     const selectedSubject = subjects.find(subject => subject._id === value)
     if (selectedSubject) {
-      setChapters(selectedSubject.chapters || [])
+      const combined: ChapterOrTopic[] = []
+      const map: Record<string, 'chapter' | 'topic'> = {}
+      const seen = new Set<string>()
+      ;(selectedSubject.chapters || []).forEach((ch) => {
+        if (ch && ch._id && !seen.has(ch._id)) {
+          combined.push({ _id: ch._id, name: ch.name || 'Chapter' })
+          map[ch._id] = 'chapter'
+          seen.add(ch._id)
+        }
+        ;(ch?.topics || []).forEach((t) => {
+          if (t && t._id && !seen.has(t._id)) {
+            const prefix = ch?.name ? ch.name + ' - ' : ''
+            combined.push({ _id: t._id, name: `${prefix}${t.name || 'Topic'}` })
+            map[t._id] = 'topic'
+            seen.add(t._id)
+          }
+        })
+      })
+      setChapters(combined)
+      setIdKindMap(map)
     } else {
       setChapters([])
+      setIdKindMap({})
     }
   }
 
@@ -341,15 +441,34 @@ const returnPageSize = searchParams.get("pageSize") || "10";
         options,
         answer,
         subjectId: data.subject,
-        topicId: data.topic, // Send topicId to backend (chapter not required)
         difficulty,
         type: "multiple-choice"
       };
+
+      // Set specific target based on selected id kind
+      const selectedKind = idKindMap[data.topic]
+      if (selectedKind === 'topic') {
+        (baseQuestionData as any).topicId = data.topic
+      } else if (selectedKind === 'chapter') {
+        // Map to the first topic under this chapter when submitting
+        const subj = subjects.find(s => s._id === data.subject)
+        const chapter = subj?.chapters?.find(ch => ch._id === data.topic)
+        const firstTopic = chapter?.topics && chapter.topics[0]
+        if (firstTopic) {
+          (baseQuestionData as any).topicId = firstTopic._id
+        } else {
+          // No topics under the chapter; omit topicId (backend allows optional)
+        }
+      } else {
+        // Fallback assume topic
+        (baseQuestionData as any).topicId = data.topic
+      }
+      // Backend compatibility: map Solution text to 'explanation' field (omit 'solution' to avoid 400)
+      if ((data as any).solutionText && (data as any).solutionText.trim() !== "") {
+        (baseQuestionData as any).explanation = (data as any).solutionText.trim();
+      }
       
-      // Only add explanation if it has a value
-      const questionData = data.explanation && data.explanation.trim() !== '' 
-        ? { ...baseQuestionData, explanation: data.explanation }
-        : baseQuestionData;
+      const questionData = baseQuestionData;
       
       console.log("Prepared question data:", questionData);
       
@@ -446,8 +565,8 @@ const returnPageSize = searchParams.get("pageSize") || "10";
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {chapters.map((chapter) => (
-                            <SelectItem key={chapter._id} value={chapter._id}>
+                          {chapters.map((chapter, idx) => (
+                            <SelectItem key={`${chapter._id || 'item'}-${idx}`} value={chapter._id}>
                               {chapter.name}
                             </SelectItem>
                           ))}
@@ -653,27 +772,27 @@ const returnPageSize = searchParams.get("pageSize") || "10";
                 )}
               />
 
-              {/* Explanation */}
+              {/* Solution (Optional) */}
               <FormField
                 control={form.control}
-                name="explanation"
+                name="solutionText"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Explanation (Optional)
+                      Solution (Optional)
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Info className="inline h-4 w-4 ml-1 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Provide an explanation for the correct answer</p>
+                          <p>Enter the full solution text to show in Question Bank</p>
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Explain why this is the correct answer..."
-                        className="min-h-[80px]"
+                        placeholder="Enter the solution text..."
+                        className="min-h-[120px]"
                         {...field}
                       />
                     </FormControl>

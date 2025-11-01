@@ -65,12 +65,12 @@ export function ChapterSelectionStep({
       }
 
       // Convert topics to ChapterWithQuestionCount format for UI and fetch question counts
-      const { getQuestionCountByTopic } = await import("@/lib/api/chapters")
+      const { getUnusedQuestionCountByTopic } = await import("@/lib/api/chapters")
 
       const topicsData = await Promise.all(
         subject.topics.map(async (topic) => {
           try {
-          const questionCount = await getQuestionCountByTopic(topic._id, subject._id)
+          const questionCount = await getUnusedQuestionCountByTopic(topic._id, subject._id)
             return {
               _id: topic._id,
               name: topic.name,
@@ -128,9 +128,15 @@ export function ChapterSelectionStep({
       totalMarks: ch.totalMarks
     }))
 
+    // Sync top-level totals with sum of selected chapters
+    const sumQuestions = updatedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = updatedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
     updateFormData({
       chapters: updatedChapters, // Keep for UI consistency
-      topics: topicsConfig // Use for API calls
+      topics: topicsConfig, // Use for API calls
+      numberOfQuestions: sumQuestions,
+      totalMarks: sumMarks,
     })
   }
 
@@ -146,9 +152,15 @@ export function ChapterSelectionStep({
       totalMarks: ch.totalMarks
     }))
 
+    // Sync top-level totals with sum of selected chapters
+    const sumQuestions = updatedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = updatedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
     updateFormData({
       chapters: updatedChapters, // Keep for UI consistency
-      topics: topicsConfig // Use for API calls
+      topics: topicsConfig, // Use for API calls
+      numberOfQuestions: sumQuestions,
+      totalMarks: sumMarks,
     })
   }
 
@@ -166,9 +178,15 @@ export function ChapterSelectionStep({
       totalMarks: ch.totalMarks
     }))
 
+    // Sync top-level totals with sum of selected chapters
+    const sumQuestions = updatedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = updatedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
     updateFormData({
       chapters: updatedChapters, // Keep for UI consistency
-      topics: topicsConfig // Use for API calls
+      topics: topicsConfig, // Use for API calls
+      numberOfQuestions: sumQuestions,
+      totalMarks: sumMarks,
     })
   }
 

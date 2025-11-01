@@ -115,17 +115,21 @@ const handleEdit = (questionId: string) => {
     return ansLower === label || ansLower === `option ${label}`
   }
 
-  // Extract a friendly solution view supporting both string and object shapes
-  const getSolutionData = (q: FormattedQuestion) => {
+  // Extract a friendly solution view supporting both string/object shapes, with fallback to explanation
+  const getSolutionData = (q: any) => {
     const sol: any = q.solution
-    if (!sol) return { has: false } as const
+    const explanation: string | undefined = q.explanation
+    if (!sol && !explanation) return { has: false } as const
     if (typeof sol === 'string') {
       return { has: true, text: sol } as const
     }
-    const text = sol.final_explanation || ''
-    const methodology = sol.methodology || ''
-    const steps: string[] = Array.isArray(sol.steps) ? sol.steps : []
-    const keyConcepts: string[] = Array.isArray(sol.key_concepts) ? sol.key_concepts : []
+    if (!sol && explanation) {
+      return { has: true, text: explanation } as const
+    }
+    const text = (sol && (sol.final_explanation || '')) || explanation || ''
+    const methodology = sol?.methodology || ''
+    const steps: string[] = Array.isArray(sol?.steps) ? sol.steps : []
+    const keyConcepts: string[] = Array.isArray(sol?.key_concepts) ? sol.key_concepts : []
     const has = Boolean(text || methodology || steps.length || keyConcepts.length)
     return { has, text, methodology, steps, keyConcepts } as const
   }

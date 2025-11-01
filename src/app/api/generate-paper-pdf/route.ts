@@ -348,8 +348,24 @@ export const POST = async (req: NextRequest) => {
       collegeLogoUrl = '',
     } = payload;
 
-    // Validate questions
-    const validQuestions = questions.filter(q => q && q.question && q.options);
+    // Normalize question items to expected structure
+    const normalizedQuestions = questions.map((q: any) => {
+      if (!q || typeof q !== 'object') return null;
+      const questionText = typeof q.question === 'string' && q.question
+        ? q.question
+        : (typeof q.content === 'string' ? q.content : '');
+      const optionsArr = Array.isArray(q.options) ? q.options : [];
+      const answerText = typeof q.answer === 'string' ? q.answer : '';
+      return {
+        ...q,
+        question: questionText,
+        options: optionsArr,
+        answer: answerText,
+      }
+    }).filter(Boolean);
+
+    // Validate questions (only require non-empty question text; options may be empty for non-MCQs)
+    const validQuestions = normalizedQuestions.filter((q: any) => typeof q.question === 'string' && q.question.trim().length > 0);
     if (validQuestions.length === 0) {
       console.error('No valid questions found');
       return new NextResponse(JSON.stringify({ error: 'No valid questions found' }), { status: 400 });

@@ -224,6 +224,10 @@ export function QuestionPaperWizard() {
           topicId: formData.topicId, // For single topic selection (most specific)
         }
 
+        // Track computed totals when using topic/chapter selection
+        let computedTotalQuestions: number | undefined = undefined
+        let computedTotalMarks: number | undefined = undefined
+
         // If topics are selected from chapter selection, add them to single-subject payload
         if (formData.topics && formData.topics.length > 0) {
           // Use single-subject format with topics array
@@ -233,14 +237,9 @@ export function QuestionPaperWizard() {
           const totalQuestions = formData.topics.reduce((sum, topic) => sum + topic.numberOfQuestions, 0)
           const totalMarks = formData.topics.reduce((sum, topic) => sum + topic.totalMarks, 0)
 
-          // Set total marks at the top level for single-subject
-          apiPayload.totalMarks = totalMarks
-
-          // Update customise object with calculated values
-          if (apiPayload.customise) {
-            apiPayload.customise.numberOfQuestions = totalQuestions
-            apiPayload.customise.totalMarks = totalMarks
-          }
+          // Store for later customise assignment
+          computedTotalQuestions = totalQuestions
+          computedTotalMarks = totalMarks
         }
         // If chapters are selected (but no topics), add them to single-subject payload
         else if (formData.chapters && formData.chapters.length > 0) {
@@ -251,22 +250,17 @@ export function QuestionPaperWizard() {
           const totalQuestions = formData.chapters.reduce((sum, chapter) => sum + chapter.numberOfQuestions, 0)
           const totalMarks = formData.chapters.reduce((sum, chapter) => sum + chapter.totalMarks, 0)
 
-          // Set total marks at the top level for single-subject
-          apiPayload.totalMarks = totalMarks
-
-          // Update customise object with calculated values
-          if (apiPayload.customise) {
-            apiPayload.customise.numberOfQuestions = totalQuestions
-            apiPayload.customise.totalMarks = totalMarks
-          }
+          // Store for later customise assignment
+          computedTotalQuestions = totalQuestions
+          computedTotalMarks = totalMarks
         }
 
         // Add customization if not auto mode
         if (formData.difficultyMode === "custom") {
           apiPayload.customise = {
             customDifficulty: formData.difficultyLevels,
-            numberOfQuestions: formData.numberOfQuestions,
-            totalMarks: formData.totalMarks,
+            numberOfQuestions: computedTotalQuestions ?? formData.numberOfQuestions,
+            totalMarks: computedTotalMarks ?? formData.totalMarks,
             duration: formData.duration,
             includeAnswers: formData.includeAnswers,
           }
@@ -278,11 +272,16 @@ export function QuestionPaperWizard() {
               mediumPercentage: 50,
               hardPercentage: 20,
             },
-            numberOfQuestions: formData.numberOfQuestions,
-            totalMarks: formData.totalMarks,
+            numberOfQuestions: computedTotalQuestions ?? formData.numberOfQuestions,
+            totalMarks: computedTotalMarks ?? formData.totalMarks,
             duration: formData.duration,
             includeAnswers: formData.includeAnswers,
           }
+        }
+
+        // If we computed totals from topics/chapters, mirror at top-level for consistency
+        if (computedTotalMarks !== undefined) {
+          apiPayload.totalMarks = computedTotalMarks
         }
       } else {
         // Multi-subject mode
@@ -363,36 +362,72 @@ export function QuestionPaperWizard() {
       const qp = fullData.questionPaper;
       const college = fullData.college || { name: "", logoUrl: "", address: "" };
 
-      // Flatten questions with subject names and image data
+      // Flatten questions with robust mapping (handles IDs, {questionId}, or full objects)
       const flattenQuestions = () => {
+        const allQ: any[] = Array.isArray(qp.questions) ? qp.questions : [];
+
+        const resolveQuestion = (wrap: any): any | null => {
+          if (!wrap) return null;
+          // Direct full object
+          if (wrap.question && typeof wrap.question === 'object') return wrap.question;
+          // Sometimes wrap itself is the full question object
+          if (wrap.content || wrap.options || wrap.answer) return wrap;
+          // Lookup by questionId
+          const id = wrap.questionId || wrap._id || (typeof wrap === 'string' ? wrap : undefined);
+          if (id && allQ && allQ.length) {
+            const found = allQ.find((qq: any) => {
+              const qid = qq && (qq._id || qq.id);
+              return qid && qid.toString() === id.toString();
+            });
+            if (found) return found;
+          }
+          // If wrap.question is a string (rare), treat as content
+          if (typeof wrap.question === 'string') {
+            return { content: wrap.question };
+          }
+          return null;
+        };
+
         if (qp.isMultiSubject && qp.sections) {
           const arr: any[] = [];
           qp.sections.forEach((sec: any) => {
-            const subjectName = sec.subjectName || sec.name || "";
-            sec.questions.forEach((qwrap: any) => {
-              const q = qwrap.question || qwrap;
+            const subjectName = sec.subjectName || sec.name || '';
+            const secQuestions = Array.isArray(sec.questions) ? sec.questions : [];
+            secQuestions.forEach((qwrap: any) => {
+              const q = resolveQuestion(qwrap);
+              const text = q?.content || q?.question || '';
+              if (!text || !String(text).trim()) return; // skip empties
               arr.push({
-                question: q.content || q.question || "",
-                options: q.options || [],
-                answer: q.answer || "",
+                question: String(text),
+                options: Array.isArray(q?.options) ? q.options : [],
+                answer: typeof q?.answer === 'string' ? q.answer : '',
                 subject: subjectName,
-                imageUrls: q.imageUrls || [], // Include image data for PDF generation
-                solution: q.solution || null,
-                hints: q.hints || [],
+                imageUrls: Array.isArray(q?.imageUrls) ? q.imageUrls : [],
+                solution: q?.solution || null,
+                hints: Array.isArray(q?.hints) ? q.hints : [],
               });
             });
           });
           return arr;
         }
-        return (qp.questions || []).map((q: any) => ({
-          question: q.content || q.question || "",
-          options: q.options || [],
-          answer: q.answer || "",
-          subject: qp.subjectId?.name || "",
-          imageUrls: q.imageUrls || [], // Include image data for PDF generation
-          solution: q.solution || null,
-          hints: q.hints || [],
-        }));
+
+        // Single-subject: qp.questions may be full objects or ids
+        return allQ
+          .map((item: any) => resolveQuestion(item) || item)
+          .map((q: any) => {
+            const text = q?.content || q?.question || '';
+            if (!text || !String(text).trim()) return null;
+            return {
+              question: String(text),
+              options: Array.isArray(q?.options) ? q.options : [],
+              answer: typeof q?.answer === 'string' ? q.answer : '',
+              subject: qp.subjectId?.name || '',
+              imageUrls: Array.isArray(q?.imageUrls) ? q.imageUrls : [],
+              solution: q?.solution || null,
+              hints: Array.isArray(q?.hints) ? q.hints : [],
+            };
+          })
+          .filter(Boolean) as any[];
       };
 
       const pdfPayload = {

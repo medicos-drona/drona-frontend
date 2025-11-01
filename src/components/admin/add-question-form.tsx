@@ -55,7 +55,7 @@ const manualFormSchema = z.object({
   correctAnswer: z.enum(["A", "B", "C", "D"], {
     required_error: "Please select the correct answer",
   }),
-  explanation: z.string().optional(),
+  solutionText: z.string().optional(),
   difficulty: z.enum(["Easy", "Medium", "Hard"], {
     required_error: "Please select a difficulty level",
   }),
@@ -155,7 +155,7 @@ export default function AddQuestionForm() {
       optionC: "",
       optionD: "",
       correctAnswer: "" as any,
-      explanation: "",
+      solutionText: "",
       difficulty: "" as any,
     },
   })
@@ -363,9 +363,9 @@ export default function AddQuestionForm() {
         baseQuestionData.createdBy = userId;
       }
 
-      // Only add explanation if it has a value
-      const questionData = data.explanation && data.explanation.trim() !== ''
-        ? { ...baseQuestionData, explanation: data.explanation }
+      // Backend compatibility: map Solution text to 'explanation' field (omit 'solution' to avoid 400)
+      const questionData = (data.solutionText && data.solutionText.trim() !== '')
+        ? { ...baseQuestionData, explanation: data.solutionText.trim() }
         : baseQuestionData;
 
       // If question has an image, embed it in the question text as base64
@@ -514,7 +514,7 @@ export default function AddQuestionForm() {
       optionC: "",
       optionD: "",
       correctAnswer: "" as any,
-      explanation: "",
+      solutionText: "",
       difficulty: "" as any,
     });
     setQuestionImage(null);
@@ -884,33 +884,32 @@ export default function AddQuestionForm() {
                   />
                 </div>
 
-                {/* Explanation */}
+                {/* Solution */}
                 <FormField
                   control={manualForm.control}
-                  name="explanation"
+                  name="solutionText"
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-2">
-                        <FormLabel>Explanation (Optional)</FormLabel>
+                        <FormLabel>Solution (Optional)</FormLabel>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Info className="h-4 w-4 text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Provide an explanation for the correct answer</p>
+                              <p>Provide the full solution text shown in the Question Bank</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </div>
                       <FormControl>
                         <Textarea
-                          placeholder="Explain why the correct answer is right..."
-                          className="min-h-[80px]"
+                          placeholder="Enter the solution text..."
+                          className="min-h-[100px]"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>This will be shown to students after they answer the question.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

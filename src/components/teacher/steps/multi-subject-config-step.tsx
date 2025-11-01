@@ -98,10 +98,10 @@ export function MultiSubjectConfigStep({
       }
 
       // Convert topics to ChapterWithQuestionCount format for UI and fetch UNUSED counts for this college
-      const { getQuestionCountByTopic } = await import("@/lib/api/chapters")
+      const { getUnusedQuestionCountByTopic } = await import("@/lib/api/chapters")
       const topicsData = await Promise.all(
         subjectObj.topics.map(async (topic) => {
-                    const questionCount = await getQuestionCountByTopic(topic._id, subjectObj._id)
+          const questionCount = await getUnusedQuestionCountByTopic(topic._id, subjectObj._id)
           return {
             _id: topic._id,
             name: topic.name,
@@ -172,13 +172,23 @@ export function MultiSubjectConfigStep({
     }
 
     const updatedChapters = [...(config.chapters || []), newChapter]
-    updateSubjectConfig(subject, { chapters: updatedChapters })
+
+    // Sync subject totals with sum of selected chapters
+    const sumQuestions = updatedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = updatedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
+    updateSubjectConfig(subject, { chapters: updatedChapters, numberOfQuestions: sumQuestions, totalMarks: sumMarks })
   }
 
   const removeChapterFromSubject = (subject: string, chapterId: string) => {
     const config = formData.subjectConfigs[subject] || initializeSubjectConfig(subject)
     const updatedChapters = (config.chapters || []).filter(c => c.chapterId !== chapterId)
-    updateSubjectConfig(subject, { chapters: updatedChapters })
+
+    // Sync subject totals with sum of selected chapters
+    const sumQuestions = updatedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = updatedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
+    updateSubjectConfig(subject, { chapters: updatedChapters, numberOfQuestions: sumQuestions, totalMarks: sumMarks })
   }
 
   const updateChapterConfig = (subject: string, chapterId: string, updates: Partial<ChapterConfig>) => {
@@ -186,7 +196,18 @@ export function MultiSubjectConfigStep({
     const updatedChapters = (config.chapters || []).map(chapter =>
       chapter.chapterId === chapterId ? { ...chapter, ...updates } : chapter
     )
-    updateSubjectConfig(subject, { chapters: updatedChapters })
+
+    // Ensure marks remain consistent if numberOfQuestions changed (4 marks per question)
+    const normalizedChapters = updatedChapters.map(ch => ({
+      ...ch,
+      totalMarks: typeof ch.totalMarks === 'number' ? ch.totalMarks : (ch.numberOfQuestions || 0) * 4,
+    }))
+
+    // Sync subject totals with sum of selected chapters
+    const sumQuestions = normalizedChapters.reduce((sum, ch) => sum + (ch.numberOfQuestions || 0), 0)
+    const sumMarks = normalizedChapters.reduce((sum, ch) => sum + (ch.totalMarks || 0), 0)
+
+    updateSubjectConfig(subject, { chapters: normalizedChapters, numberOfQuestions: sumQuestions, totalMarks: sumMarks })
   }
 
   const isChapterSelected = (subject: string, chapterId: string) => {

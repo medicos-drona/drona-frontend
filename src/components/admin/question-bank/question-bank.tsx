@@ -108,7 +108,8 @@ const [pagination, setPagination] = useState<PaginationInfo>({
         // Build query parameters
         const params = new URLSearchParams();
         if (selectedSubject && selectedSubject !== "all_subjects") params.append('subjectId', selectedSubject);
-        if (selectedChapter && selectedChapter !== "all_chapters") params.append('chapterId', selectedChapter);
+        // Our "chapters" are actually topics from /subjects/with-topics, so filter by topicId
+        if (selectedChapter && selectedChapter !== "all_chapters") params.append('topicId', selectedChapter);
         if (searchQuery) params.append('search', searchQuery);
         if (hasImagesFilter !== undefined) params.append('hasImages', hasImagesFilter.toString());
         params.append('page', pagination.currentPage.toString());

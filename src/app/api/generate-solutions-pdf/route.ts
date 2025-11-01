@@ -138,23 +138,37 @@ function processTextForPDF(text: string): string {
     return createImageTag(base64Data.replace(/[\s\-]+/g, ''));
   });
 
-  // Then handle any remaining standalone base64 data
+  // Additional robust patterns from question-paper route
+  processedText = processedText.replace(/([^\n])\s*\n\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, character, base64Data) => {
+    return character + ' ' + createImageTag(base64Data);
+  });
+  processedText = processedText.replace(/(\?|\.|\s)\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, punctuation, base64Data) => {
+    return punctuation + createImageTag(base64Data);
+  });
+  processedText = processedText.replace(/([a-zA-Z0-9])\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/g, (match, character, base64Data) => {
+    return character + ' ' + createImageTag(base64Data);
+  });
+  processedText = processedText.replace(/^(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/gm, (match, base64Data) => {
+    return createImageTag(base64Data);
+  });
+  processedText = processedText.replace(/\n\s*(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)\s*\n/g, (match, base64Data) => {
+    return '\n' + createImageTag(base64Data) + '\n';
+  });
+
+  // Then handle any remaining standalone base64 data (existing approach)
   const base64Pattern = /data:image\/[A-Za-z0-9.+-]+;base64,[A-Za-z0-9+/=\r\n\s\-]+/g;
   const matches = processedText.match(base64Pattern);
 
   if (matches) {
     matches.forEach((base64Data) => {
-      // FIXED: Instead of using regex with the full base64 string, use indexOf to check
-      // if the base64 data is already inside an img tag
       const imgTagStart = processedText.indexOf(`<img`);
       let alreadyInImgTag = false;
 
       if (imgTagStart !== -1) {
-        // Look for img tags that contain this base64 data
         const imgTagRegex = /<img[^>]*>/gi;
         let match;
         while ((match = imgTagRegex.exec(processedText)) !== null) {
-          if (match[0].includes(base64Data.substring(0, 50))) { // Check first 50 chars
+          if (match[0].includes(base64Data.substring(0, 50))) {
             alreadyInImgTag = true;
             break;
           }
@@ -162,10 +176,26 @@ function processTextForPDF(text: string): string {
       }
 
       if (!alreadyInImgTag) {
-        // Replace standalone base64 string with an img tag
         processedText = processedText.replace(base64Data, createImageTag(base64Data));
       }
     });
+  }
+
+  // Extra pass from question-paper route to ensure no base64 is left unconverted
+  const _b64Matches: { fullMatch: string; startIndex: number; endIndex: number }[] = [];
+  const _b64Pattern = /data:image\/[A-Za-z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g; // stricter (no whitespace)
+  let _m: RegExpExecArray | null;
+  while ((_m = _b64Pattern.exec(processedText)) !== null) {
+    _b64Matches.push({ fullMatch: _m[0], startIndex: _m.index, endIndex: _m.index + _m[0].length });
+  }
+  for (let i = _b64Matches.length - 1; i >= 0; i--) {
+    const mi = _b64Matches[i];
+    const b64 = mi.fullMatch;
+    const before = processedText.substring(Math.max(0, mi.startIndex - 100), mi.startIndex);
+    const after = processedText.substring(mi.endIndex, Math.min(processedText.length, mi.endIndex + 100));
+    if (!before.includes('<img') || after.includes('</img>') || after.includes('/>')) {
+      processedText = processedText.substring(0, mi.startIndex) + createImageTag(b64) + processedText.substring(mi.endIndex);
+    }
   }
 
   // Process markdown tables - convert to HTML
