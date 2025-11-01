@@ -17,8 +17,9 @@ type QuestionSelectionStepProps = {
 }
 
 export function QuestionSelectionStep({ formData, updateFormData, onNext, onSkip, onBack, backDisabled }: QuestionSelectionStepProps) {
+  const MAX_QUESTIONS = 200
   const adjustQuestionCount = (amount: number) => {
-    const newValue = Math.max(1, formData.numberOfQuestions + amount)
+    const newValue = Math.max(1, Math.min(MAX_QUESTIONS, formData.numberOfQuestions + amount))
     updateFormData({ numberOfQuestions: newValue })
   }
 
@@ -43,7 +44,7 @@ export function QuestionSelectionStep({ formData, updateFormData, onNext, onSkip
                 updateFormData({ numberOfQuestions: 0 });
               } else {
                 const numValue = parseInt(value);
-                if (!isNaN(numValue) && numValue >= 1) {
+                if (!isNaN(numValue) && numValue >= 1 && numValue <= MAX_QUESTIONS) {
                   updateFormData({ numberOfQuestions: numValue });
                 }
               }
@@ -52,10 +53,13 @@ export function QuestionSelectionStep({ formData, updateFormData, onNext, onSkip
               // If field is empty on blur, set to minimum value
               if (e.target.value === "" || formData.numberOfQuestions === 0) {
                 updateFormData({ numberOfQuestions: 1 });
+              } else if (formData.numberOfQuestions > MAX_QUESTIONS) {
+                updateFormData({ numberOfQuestions: MAX_QUESTIONS });
               }
             }}
             className="rounded-l-sm border-[#E5E7EB] h-[54px] text-lg"
             min={1}
+            max={MAX_QUESTIONS}
           />
           <div className="flex flex-col -ml-px">
             <Button
@@ -77,6 +81,7 @@ export function QuestionSelectionStep({ formData, updateFormData, onNext, onSkip
             </Button>
           </div>
         </div>
+        <p className="text-xs text-left text-gray-500">Maximum {MAX_QUESTIONS} questions per paper.</p>
       </div>
 
       <StepNavigation 

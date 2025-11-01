@@ -666,7 +666,7 @@ export const POST = async (req: NextRequest) => {
             <div class="subject-heading">Subject: ${subject}</div>
 
             <div class="subject-content">
-${subjectQuestions.map((q, questionIndex) => {
+${(subjectQuestions as any[]).map((q, questionIndex) => {
   const currentQuestionNumber = overallQuestionNumber++;
   try {
     // Process question text and handle images from imageUrls array
@@ -687,7 +687,8 @@ ${subjectQuestions.map((q, questionIndex) => {
             if (imgIndex === 0) {
               // Replace markdown image references like ![img-13.jpeg](img-13.jpeg) with actual images
               let markdownReplacements = 0;
-              questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt) => {
+              // questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt) => {
+              questionText = questionText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match: string, alt: string) => {
                 console.log(`Replacing markdown image: ${match}`);
                 markdownReplacements++;
                 return `<img src="${imageUrl}" alt="${alt || 'Question Image'}" style="max-width:75%;max-height:120px;width:auto;height:auto;display:block;margin:6px auto;border:1px solid #ddd;padding:3px;break-inside:avoid;page-break-inside:avoid;object-fit:contain;" onerror="this.style.display='none';" />`;
@@ -695,7 +696,8 @@ ${subjectQuestions.map((q, questionIndex) => {
 
               // Replace HTML img tags with actual images (but preserve existing valid ones)
               let htmlReplacements = 0;
-              questionText = questionText.replace(/<img[^>]*>/gi, (match) => {
+              // questionText = questionText.replace(/<img[^>]*>/gi, (match) => {
+              questionText = questionText.replace(/<img[^>]*>/gi, (match: string) => {
                 // If it already has a valid src attribute, keep it
                 if (match.includes('src="data:image/')) {
                   return match;

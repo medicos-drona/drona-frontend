@@ -72,6 +72,15 @@ export interface CreateQuestionPaperDto {
   includeAnswers?: boolean;
 }
 
+export interface QuestionUsageSummary {
+  collegeId?: string;
+  tier: 'free' | 'pro' | 'unknown';
+  limit: number | null;
+  used: number;
+  remaining: number | null;
+  message: string;
+}
+
 /**
  * Interface for question paper response (list view)
  */
@@ -167,6 +176,22 @@ function getAuthHeaders(): Record<string, string> {
   }
 
   return headers;
+}
+
+export async function getQuestionUsageSummary(): Promise<QuestionUsageSummary> {
+  const headers = getAuthHeaders();
+
+  const response = await fetch(`${API_BASE_URL}/question-papers/usage/summary`, {
+    method: 'GET',
+    headers,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error: ${response.status} - ${response.statusText}`);
+  }
+
+  return await response.json();
 }
 
 /**

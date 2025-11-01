@@ -9,9 +9,11 @@ type ActionsStepProps = {
   onSubmit: () => void
   isLoading?: boolean
   onBack?: () => void
+  isSubmitDisabled?: boolean
+  submitDisabledReason?: string
 }
 
-export function ActionsStep({ formData, onSubmit, isLoading = false, onBack }: ActionsStepProps) {
+export function ActionsStep({ formData, onSubmit, isLoading = false, onBack, isSubmitDisabled = false, submitDisabledReason }: ActionsStepProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -26,13 +28,17 @@ export function ActionsStep({ formData, onSubmit, isLoading = false, onBack }: A
         </Button> */}
 
         <Button
-          className="w-full max-w-xs flex gap-2 bg-[#05603A] hover:bg-[#04502F]"
+          className="w-full max-w-xs flex gap-2 bg-[#05603A] hover:bg-[#04502F] disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed"
           onClick={onSubmit}
-          disabled={isLoading}
+          disabled={isLoading || isSubmitDisabled}
         >
           <Download className="h-4 w-4" />
           {isLoading ? "Generating PDF..." : "Download PDF"}
         </Button>
+
+        {isSubmitDisabled && submitDisabledReason && (
+          <p className="text-sm text-red-600 text-center max-w-sm">{submitDisabledReason}</p>
+        )}
 
         {onBack && (
           <Button

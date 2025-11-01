@@ -6,11 +6,13 @@ export interface University {
     state: string;
   };
   status: string;
+  tier: 'free' | 'pro';
   logo: string;
   contactDetails: string;
   downloadedQuestions: {
-    current: number;
-    total: number;
+    used: number;
+    limit: number | null;
+    remaining: number | null;
   };
 }
   

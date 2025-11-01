@@ -9,9 +9,10 @@ interface UniversityGridProps {
   universities: University[]
   itemsPerPage: number
   onCollegeDeleted?: () => void
+  onTierUpdated?: () => void
 }
 
-export default function UniversityGrid({ universities, itemsPerPage, onCollegeDeleted }: UniversityGridProps) {
+export default function UniversityGrid({ universities, itemsPerPage, onCollegeDeleted, onTierUpdated }: UniversityGridProps) {
   const [currentPage, setCurrentPage] = useState(1)
 
   // Calculate pagination
@@ -28,10 +29,11 @@ export default function UniversityGrid({ universities, itemsPerPage, onCollegeDe
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {currentItems.map((university, index) => (
-          <UniversityCard 
-            key={index} 
-            university={university} 
+          <UniversityCard
+            key={index}
+            university={university}
             onDelete={onCollegeDeleted}
+            onTierChange={onTierUpdated}
           />
         ))}
       </div>

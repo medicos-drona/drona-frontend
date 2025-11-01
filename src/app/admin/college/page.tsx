@@ -22,21 +22,35 @@ const CollegeListPage: React.FC = () => {
       if (isApiSuccess(response)) {
         const collegesData = response.data;
         // Transform the data to match the University type
-        const transformedData = collegesData.map((college: any) => ({
-          id: college._id,
-          name: college.name,
-          location: {
-            city: college.city || '',
-            state: college.state || '',
-          },
-          status: college.status || 'Active',
-          logo: college.logoUrl || "/placeholder.svg?height=60&width=60",
-          contactDetails: college.contactPhone || '',
-          downloadedQuestions: {
-            current: 0,
-            total: 100,
-          },
-        }));
+        const transformedData = collegesData.map((college: any) => {
+          const tier = (college.tier === 'pro' ? 'pro' : 'free') as 'free' | 'pro';
+          const usage = college.questionUsage || {};
+          const used = typeof usage.used === 'number' ? usage.used : 0;
+          const limit = typeof usage.limit === 'number' ? usage.limit : tier === 'free' ? 500 : null;
+          const remaining = typeof usage.remaining === 'number'
+            ? usage.remaining
+            : limit !== null
+            ? Math.max(limit - used, 0)
+            : null;
+
+          return {
+            id: college._id,
+            name: college.name,
+            location: {
+              city: college.city || '',
+              state: college.state || '',
+            },
+            status: college.status || 'Active',
+            tier,
+            logo: college.logoUrl || "/placeholder.svg?height=60&width=60",
+            contactDetails: college.contactPhone || '',
+            downloadedQuestions: {
+              used,
+              limit,
+              remaining,
+            },
+          };
+        });
         setUniversities(transformedData);
       }
       // Error case is already handled by the API function (toast shown)
@@ -89,10 +103,11 @@ const CollegeListPage: React.FC = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#05603A]"></div>
           </div>
         ) : (
-          <UniversityGrid 
-            universities={universities} 
-            itemsPerPage={8} 
+          <UniversityGrid
+            universities={universities}
+            itemsPerPage={8}
             onCollegeDeleted={handleCollegeDeleted}
+            onTierUpdated={handleCollegeDeleted}
           />
         )}
       </div>

@@ -229,6 +229,45 @@ export async function updateCollege(id: string, collegeData: CollegeData): Promi
     );
   }
 }
+
+export async function updateCollegeTier(id: string, tier: 'free' | 'pro'): Promise<ApiResponse> {
+  const token = localStorage.getItem("backendToken");
+  if (!token) {
+    return handleApiError(
+      "Authentication required",
+      "Authentication required. Please log in again."
+    );
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const response = await fetch(`${baseUrl}/colleges/${id}/tier`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ tier })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return handleApiError(
+        errorData.message || `Error: ${response.status}`,
+        "Failed to update college tier. Please try again."
+      );
+    }
+
+    const result = await response.json();
+    return createSuccessResponse(result, true, "College tier updated successfully!");
+  } catch (error) {
+    console.error("Error updating college tier:", error);
+    return handleApiError(
+      error instanceof Error ? error.message : "Failed to update college tier. Please try again.",
+      "Failed to update college tier. Please try again."
+    );
+  }
+}
 /**
  * Get a college by ID
  * @param id College ID

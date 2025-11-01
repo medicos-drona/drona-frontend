@@ -243,6 +243,7 @@ export function MultiSubjectConfigStep({
   }
 
   const { totalQuestions, totalMarks } = calculateTotals()
+  const exceedsQuestionCap = totalQuestions > 200
 
   // Validation
   const isValid = formData.subjects.every(subject => {
@@ -251,7 +252,7 @@ export function MultiSubjectConfigStep({
                          config.difficultyLevels.mediumPercentage +
                          config.difficultyLevels.hardPercentage
     return difficultySum === 100 && config.numberOfQuestions > 0 && config.totalMarks > 0
-  })
+  }) && !exceedsQuestionCap
 
   // Initialize configs for all subjects if not already done
   useEffect(() => {
@@ -285,7 +286,9 @@ export function MultiSubjectConfigStep({
               <div className="text-sm text-gray-500">Subjects</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{totalQuestions}</div>
+              <div className={`text-2xl font-bold ${exceedsQuestionCap ? 'text-red-600' : 'text-green-600'}`}>
+                {totalQuestions}
+              </div>
               <div className="text-sm text-gray-500">Total Questions</div>
             </div>
             <div className="text-center">
@@ -294,6 +297,11 @@ export function MultiSubjectConfigStep({
             </div>
 
           </div>
+          {exceedsQuestionCap && (
+            <p className="mt-3 text-sm text-red-600 text-center font-medium">
+              A question paper can include at most 200 questions. Reduce the totals before continuing.
+            </p>
+          )}
         </CardContent>
       </Card>
 

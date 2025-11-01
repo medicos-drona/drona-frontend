@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createQuestionPaper, CreateQuestionPaperDto, SubjectConfiguration, CustomDifficultyConfig, getQuestionPaperForPDF } from "@/lib/api/questionPapers"
+import { createQuestionPaper, CreateQuestionPaperDto, SubjectConfiguration, CustomDifficultyConfig, getQuestionPaperForPDF, QuestionUsageSummary } from "@/lib/api/questionPapers"
 import { QuestionTypeStep } from "./steps/question-type-step"
 import { CourseSubjectStep } from "./steps/course-subject-step"
 import { DifficultyLevelStep } from "./steps/difficulty-level-step"
@@ -14,6 +14,11 @@ import { QuestionTitleAndDescriptionStep } from "./steps/question-title-descript
 import { MultiSubjectConfigStep } from "./steps/multi-subject-config-step"
 import { ChapterSelectionStep } from "./steps/chapter-selection-step"
 import { TopicSelectionStep } from "./steps/topic-selection-step"
+
+type QuestionPaperWizardProps = {
+  usageSummary: QuestionUsageSummary | null
+  onUsageSummaryRefresh?: () => Promise<void> | void
+}
 
 export type TopicConfig = {
   topicId: string
@@ -95,10 +100,61 @@ const initialFormData: FormData = {
   topicId: undefined,
 }
 
-export function QuestionPaperWizard() {
+export function QuestionPaperWizard({ usageSummary, onUsageSummaryRefresh }: QuestionPaperWizardProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const MAX_QUESTIONS_PER_PAPER = 200
+
+  const calculateSinglePaperTotal = (data: FormData): number => {
+    if (data.topics && data.topics.length > 0) {
+      return data.topics.reduce((sum, topic) => sum + (topic.numberOfQuestions || 0), 0)
+    }
+
+    if (data.chapters && data.chapters.length > 0) {
+      return data.chapters.reduce((sum, chapter) => sum + (chapter.numberOfQuestions || 0), 0)
+    }
+
+    return data.numberOfQuestions || 0
+  }
+
+  const calculateMultiPaperTotal = (data: FormData): number => {
+    if (!data.subjects.length) return 0
+
+    return data.subjects.reduce((sum, subjectName) => {
+      const config = data.subjectConfigs[subjectName]
+      return sum + (config?.numberOfQuestions || 0)
+    }, 0)
+  }
+
+  const getTotalQuestionsForForm = (data: FormData): number => {
+    return data.paperMode === "single"
+      ? calculateSinglePaperTotal(data)
+      : calculateMultiPaperTotal(data)
+  }
+
+  const totalRequestedQuestions = getTotalQuestionsForForm(formData)
+  const isFreeTier = usageSummary?.tier === 'free'
+  const remainingQuota = typeof usageSummary?.remaining === 'number' ? usageSummary.remaining : null
+  const exceedsMaxQuestions = totalRequestedQuestions > MAX_QUESTIONS_PER_PAPER
+  const quotaDepleted = Boolean(isFreeTier && typeof remainingQuota === 'number' && remainingQuota <= 0)
+  const quotaInsufficient = Boolean(isFreeTier && typeof remainingQuota === 'number' && totalRequestedQuestions > remainingQuota)
+
+  let isSubmitDisabled = false
+  let submitDisabledReason: string | undefined
+
+  if (exceedsMaxQuestions) {
+    isSubmitDisabled = true
+    submitDisabledReason = `A question paper can include at most ${MAX_QUESTIONS_PER_PAPER} questions. Reduce your selections before continuing.`
+  } else if (quotaDepleted) {
+    isSubmitDisabled = true
+    submitDisabledReason = 'You have used all 500 free-tier questions. Please contact the administrator to upgrade to the Pro tier for unlimited access.'
+  } else if (quotaInsufficient) {
+    isSubmitDisabled = true
+    const remainingText = Math.max(remainingQuota ?? 0, 0)
+    submitDisabledReason = `Only ${remainingText} questions remain in your free-tier quota. Reduce the number of questions in this paper or contact the administrator to upgrade to the Pro tier.`
+  }
 
   const updateFormData = (data: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...data }))
@@ -200,11 +256,24 @@ export function QuestionPaperWizard() {
           return;
         }
       } else {
-        if (formData.subjects.length === 0) {
-          setIsGenerating(false);
-          alert("Please select at least one subject");
-          return;
-        }
+      if (formData.subjects.length === 0) {
+        setIsGenerating(false);
+        alert("Please select at least one subject");
+        return;
+      }
+    }
+
+      const totalQuestionsForPaper = getTotalQuestionsForForm(formData)
+      if (totalQuestionsForPaper > MAX_QUESTIONS_PER_PAPER) {
+        setIsGenerating(false)
+        alert(`A question paper can include at most ${MAX_QUESTIONS_PER_PAPER} questions. You currently have ${totalQuestionsForPaper}. Please reduce the number of questions before proceeding.`)
+        return
+      }
+
+      if (isFreeTier && typeof remainingQuota === 'number' && totalQuestionsForPaper > remainingQuota) {
+        setIsGenerating(false)
+        alert(`You can generate ${remainingQuota} more questions under the free tier. Reduce the number of questions in this paper or contact the administrator to upgrade to the Pro tier.`)
+        return
       }
 
       // Prepare the API payload
@@ -468,6 +537,16 @@ export function QuestionPaperWizard() {
 
       alert("Question paper generated and downloaded successfully!");
 
+      if (onUsageSummaryRefresh) {
+        try {
+          await onUsageSummaryRefresh()
+        } catch (refreshError) {
+          console.warn("Failed to refresh usage summary", refreshError)
+        }
+      }
+
+      setIsGenerating(false)
+
       console.log("Success! About to redirect to first step in 1 second...");
 
       // Reset to first step and clear form data after a short delay (only on success)
@@ -475,7 +554,6 @@ export function QuestionPaperWizard() {
         console.log("Redirecting to first step now...");
         setCurrentStep(0)
         setFormData(initialFormData)
-        setIsGenerating(false)
         console.log("Redirect completed. Current step should be 0");
       }, 1000) // 1 second delay to ensure alert is visible
     } catch (error) {
@@ -662,7 +740,16 @@ export function QuestionPaperWizard() {
       {
         title: "Generate Paper",
         icon: "FileOutput",
-        component: <ActionsStep formData={formData} onSubmit={handleSubmit} isLoading={isGenerating} onBack={goToFirstStep} />,
+        component: (
+          <ActionsStep
+            formData={formData}
+            onSubmit={handleSubmit}
+            isLoading={isGenerating}
+            onBack={goToFirstStep}
+            isSubmitDisabled={isSubmitDisabled}
+            submitDisabledReason={submitDisabledReason}
+          />
+        ),
       }
     )
 
@@ -675,6 +762,24 @@ export function QuestionPaperWizard() {
 
   return (
     <div className="space-y-6">
+      {usageSummary && (
+        <div
+          className={`rounded-md border px-4 py-3 text-sm ${
+            usageSummary.tier === 'pro'
+              ? 'border-green-200 bg-green-50 text-green-800'
+              : usageSummary.tier === 'free'
+              ? 'border-amber-200 bg-amber-50 text-amber-800'
+              : 'border-gray-200 bg-gray-50 text-gray-700'
+          }`}
+        >
+          <p>{usageSummary.message}</p>
+          {isFreeTier && typeof remainingQuota === 'number' && (
+            <p className="mt-1 text-xs font-medium">
+              Remaining quota: {Math.max(remainingQuota, 0)} questions • Current paper: {totalRequestedQuestions} questions
+            </p>
+          )}
+        </div>
+      )}
       <StepIndicator currentStep={currentStep} steps={steps.map((step: any) => ({ title: step.title, icon: step.icon }))} />
       {steps[currentStep].component}
     </div>
